@@ -1,0 +1,23 @@
+using lib;
+
+struct Foo3 {
+	var str: string;
+	var bar: int;
+};
+fun foo() {
+	return Foo3{str="asda", bar=10};
+}
+println(foo().bar);
+
+// // using extern;
+
+// // include namespace x;
+
+// // xf();
+
+// using utils;
+
+// println(this, " calling uf");
+// uf();
+
+// using test_suite;

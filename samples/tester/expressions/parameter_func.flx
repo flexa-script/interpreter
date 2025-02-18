@@ -1,0 +1,10 @@
+fun foo_pf(arg) {
+	print("callback: " + string(arg));
+}
+
+fun bar_pf(func: function) {
+	func(this);
+	print(func);
+}
+
+bar_pf(foo_pf);

@@ -1,0 +1,158 @@
+# CP Interpreter
+
+## TODO
+- [X] Load file from arguments
+- [X] Automatically find and load included libs without to send by command line arguments
+- [X] Send rest arguments to flexa program
+- [X] Implements library support:
+    - [ ] Implements `using flx.core.*;` support
+- [ ] Implements interpreter parameter to says where are sdt libs
+- [X] Implements 'this' token to get current context name
+- [X] Implements any type
+- [X] Implements array type
+    <!-- - [ ] Change `var arr[]: any;` to `var arr: any[];`? -->
+    <!-- - [ ] Add `items[] = item;` as append support? -->
+- [X] Implements struct
+    - [X] Implements unpacked declaration statement to unpack struct values `foreach (var [key, value] in struct_var)`
+    - [ ] Adds code error to Exception struct
+    - [X] Implements struct array-like constructoror
+    - [X] Add struct iterating over in foreach
+<!-- - [ ] Super structs???
+    - [ ] Add struct functions?
+    - [ ] Add init function?
+    - [ ] Add struct heritage? -->
+- [X] Implements null
+- [X] Implements type convert support
+- [X] Implements string array-like accessor/assign
+- [X] Functions:
+    - [X] Implements parameter by reference
+    - [X] Implements rest parameters, like `fun foo(...args: any)`
+    - [X] Implements optional parameters `fun foo(arg: any = 10)`
+    - [X] Implements lambda function `fun (arg): void {}`, `fun (arg) {}`, `fun () {}`
+- [X] Built in functions:
+    - [X] print
+    - [X] read
+    - [X] len: returns size of array/string
+    - [X] readch: read 1 single char
+    - [X] equals: compare values, if struct, compare struct values and not struct pointer
+    - [X] system: execute systems commands
+    - [X] typing:
+        - [X] `typeof`: returns type of object
+        - [X] `typeid`: returns hash of typeof
+        - [X] `is_any`: returns if a variable is any
+        - [X] `is_array`: returns if a variable is array
+        - [X] `is_struct`: returns if a variable is struct
+        - [X] `refid`: returns reference id
+- [X] Statements:
+    - [X] var
+    - [X] const
+    - [X] for
+    - [X] foreach
+    - [X] if/else/else if
+    - [X] switch
+    - [X] break
+    - [X] continue
+    - [X] assignment
+        - [X] +=, -=
+        - [X] *=, /=, %=, %/=, **=
+        - [x] <<=, >>=
+        - [x] &=, ^=, |=
+    - [X] namespace
+    - [X] include namespace
+    - [X] exclude namespace
+    - [X] exit
+    - [X] enum
+    - [X] try/catch/throw
+        - [X] Implements ... to ignore catch error
+        - [X] Implements unpacked declaration `[type, error]` in catch to not include exception lib
+        - [X] Implements throw a simple string as Exception to avoid Exception include `throw "string error";`
+    - [X] do while
+- [X] Implements expressions:
+    - [X] multiline string ``
+        - [X] interpolated expression inside `This is a expression ${10 + 5} inside`
+        - [ ] add: single \ to ignore new line at end of line `text\(\n)` (`\n` is invisible)
+    - [X] `+` operator to join arrays
+    - [X] expression operators:
+        - [X] basic operations
+        - [X] binary operators 
+            - [X] mod `%` operation
+            - [X] floor `/%` division
+            - [X] pow `**` operation
+            - [X] spaceship `<=>` operation
+        - [X] `x++`, `x--` incrementor
+        - [X] `ref` and `unref` to handle variable references
+        - [X] `{ init_value }` to initilize all positions with same value
+        - [X] `{  }` to initilize all positions as undefined
+        - [X] `in` operator to check if anything is in array/string
+        - [X] ternary `expr ? texpr : fexpr`
+    - [X] bitwise operators:
+        - [x] &   bitwise AND
+        - [x] |   bitwise inclusive OR
+        - [x] ^   bitwise XOR (exclusive OR)
+        - [x] <<  left shift
+        - [x] >>  right shift
+        - [x] ~	  bitwise NOT (ones' complement) (unary)
+    - [X] expression literal:
+        - [X] base literals:
+            - [X] bin
+            - [X] oct
+            - [X] dec
+            - [X] hex
+        - [X] scientific notation `10e-1`, `10e0`, `10e1`
+- [X] Implements namespace scope nmspace::(method|variable|struct)
+- [x] Improve error system messages
+- [X] Improve REPL:
+    - [X] Now expressions can be executed in statements, dont need more to execute expression parser directly
+- [X] Implements a default interface to implements built in functions
+- [X] Implements a default interface to implements core libs
+- [X] Implements current working directory
+<!-- - [ ] Implements C-types? -->
+- [ ] Projects to implement in CP:
+    - [ ] https://github.com/bpslib/bps
+    - [ ] https://github.com/drmenguin/minilang-interpreter
+    - [ ] https://github.com/univesity-projects/sort-algorithms
+    - [ ] https://github.com/univesity-projects/caesar-cipher
+    - [ ] https://github.com/univesity-projects/pong-pro-player
+    - [ ] https://github.com/carlosebmachado-games/tetris-Clone
+    - [X] 2048
+
+## Refactoring
+- [ ] Split ASTTypingNode to more specific responsabilities
+- [ ] Split ASTNamespaceManagerNode to ASTIncludeNamespaceNode and ASTExcludeNamespaceNode
+
+## Known bugs
+- [ ] Can't executes returned function from another function eg: `here_is_returning_a_function()();`
+- [ ] Fix HTTP core lib
+- [ ] Check behaviour of rest arrays and why join and print haven't the same signature
+- [X] Fix function parameters root container, is generating mem leak
+- [X] Namespaces must be included in file, not in namespace level
+- [X] Review value copy and equal (mainly cause of pointers)
+- [X] Some function definition are not being found:
+    - [X] `var arr = {1, 2, 3, 4, 5, 6}` X `fun arr_size(arr[])`
+- [X] Undefined variables should not be assigned
+- [X] Array items cant verified correctly
+- [X] Return is not returning in some cases eg `while(){if(true){return;}}`
+- [X] `this` is not working on libs
+- [X] Fix references
+    - [X] Remove reference from variable
+    - [X] Function call is not taking account value ref
+- [X] Test function as parameter or variable behaviour when already exists a function with its name
+    - [X] Fix function assign, i cant declare function in expression evaluation of a declaration node...
+    - [X] change consume semicolon to stack
+- [X] Interpreter is not checking null struct values correctly
+- [X] Throw an error when trying to pass char to string or int to float reference in function parameter
+- [X] function shadowing IS GENERATING ERROR
+- [X] When a struct is passed by parameter, it can't be assigned as null, it occours because it's passed just the strcut reference and not the variable
+- [X] Can't assing string position anymore
+- [X] Parser can't handle unary assign operators when its inside a expression, as declaration expression its work (eg print(i++))
+- [X] `this` does not always return the expected value, eg when its inside a function tha does not has in main file
+- [X] If file is empty, it throw error
+- [X] If an statement is before include, it generate a semantic error
+- [X] Assigning struct values on constructors is not checking types correctly
+- [X] Function call strcut, string and array acessors is not working anymore
+- [X] functions with no block are not checked
+- [X] some expression nodes aren't cleaning return type like void funcions
+    - [X] add undefined checks after expression semantical analysis
+- [X] reference is not working properly
+- [X] searching functions in scope, it will not handle struct type
+- [X] struct assign seems not working in semantical analisys

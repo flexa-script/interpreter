@@ -1,0 +1,23 @@
+using utils;
+using flx.std.testing;
+
+// include namespace flx; // shouldn't call from flx namespace if it's commented
+
+var gsw: StopWatch = StopWatch{};
+
+timer_start(gsw);
+
+using test_suite;
+
+//execute_tests();
+
+timer_stop(gsw);
+print("full test suite elapsed time: ", gsw.elapsed_time, " ms");
+
+println('\n');
+
+exit(0);
+
+using test_suite_call;
+
+println("not exited the program");

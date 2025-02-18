@@ -1,0 +1,77 @@
+using flx.core.graphics;
+// using flx.std.random;
+// using flx.std.math;
+
+println("starting graphics test-------------------------------------------------------------");
+
+var window1: flx::Window = flx::create_window("flx Graphics 1", 800, 450);
+var window2: flx::Window = flx::create_window("flx Graphics 2", 400, 225);
+var img1: flx::Image = flx::load_image(cwd + "\\libs\\core\\logo.bmp");
+var img2: flx::Image = flx::load_image(cwd + "\\libs\\core\\logo-old.bmp");
+var font: flx::Font = flx::create_font();
+var font2: flx::Font = flx::create_font(30, "Arial", 0, false, false, true);
+
+var fontsize = flx::get_text_size(window2, "center text", font2);
+var fw = fontsize.width;
+var fh = fontsize.height;
+var ww = window2.width;
+var wh = window2.height;
+
+while (not flx::is_quit(window1) or not flx::is_quit(window2)) {
+	if (not flx::is_quit(window1)) {
+		flx::clear_screen(window1, flx::Color{r=0,g=0,b=0});
+
+		flx::draw_pixel(window1, 100, 50, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 101, 50, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 102, 50, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 103, 50, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 104, 50, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 105, 50, flx::Color{r=255,g=0,b=0});
+		
+		flx::draw_pixel(window1, 105, 51, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 105, 52, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 105, 53, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 105, 54, flx::Color{r=255,g=0,b=0});
+
+		flx::draw_pixel(window1, 100, 55, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 101, 55, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 102, 55, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 103, 55, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 104, 55, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 105, 55, flx::Color{r=255,g=0,b=0});
+		
+		flx::draw_pixel(window1, 100, 51, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 100, 52, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 100, 53, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window1, 100, 54, flx::Color{r=255,g=0,b=0});
+
+		flx::draw_line(window1, 90, 40, 600, 80, flx::Color{r=0,g=255,b=0});
+
+		flx::draw_rect(window1, 500, 200, 100, 80, flx::Color{r=0,g=255,b=255});
+		flx::fill_rect(window1, 200, 200, 100, 80, flx::Color{r=0,g=0,b=255});
+
+		flx::draw_circle(window1, 375, 100, 50, flx::Color{r=255,g=255,b=0});
+		flx::fill_circle(window1, 375, 300, 50, flx::Color{r=255,g=0,b=255});
+
+		flx::update(window1);
+	}
+	else {
+		flx::destroy_window(window1);
+	}
+	if (not flx::is_quit(window2)) {
+		flx::clear_screen(window2, flx::Color{r=0,g=0,b=0});
+		flx::fill_rect(window2, 5, 5, flx::get_current_width(window2) - 10, flx::get_current_height(window2) - 10, flx::Color{r=255,g=0,b=0});
+		flx::draw_pixel(window2, 100, 50, flx::Color{r=255,g=255,b=255});
+		flx::draw_image(window2, img1, 150, 50);
+		flx::draw_image(window2, img2, 230, 100);
+    flx::draw_text(window2, 0, 0, "test", flx::Color{r=255,g=255,b=255}, font);
+    flx::draw_text(window2, int(flx::get_current_width(window2) / 2 - fw / 2), int(flx::get_current_height(window2) / 2 - fh / 2), "center text", flx::rgb(0, 255, 0), font2);
+		flx::update(window2);
+	}
+	else {
+		flx::destroy_window(window2);
+	}
+}
+
+flx::destroy_window(window1);
+flx::destroy_window(window2);

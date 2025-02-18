@@ -1,0 +1,34 @@
+// func-param.cp
+
+def pow(base : float, exponent: int) : float {
+  var newValue = base;
+  var i = 0;
+  while (i < exponent) {
+    newValue = newValue * base;
+    i = i+1;
+  }
+  return newValue;
+}
+
+var num : int = 10;
+
+var pNum : float = pow(float(num), 3);
+
+print(pNum);
+print("\n\n");
+
+print(num);
+print("\n\n");
+
+def tryAlterVariableInsideFunction(num : int, test : float) {
+  num = 99;
+  test = 99;
+}
+
+tryAlterVariableInsideFunction(num, pNum);
+
+print(pNum);
+print("\n\n");
+
+print(num);
+print("\n\n");

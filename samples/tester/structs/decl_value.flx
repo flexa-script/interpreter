@@ -1,0 +1,14 @@
+// struct Element {
+//   var has_value : bool;
+//   var value : any;
+// };
+
+var elementdv : Element = Element {
+  has_value = true,
+  value = 10
+};
+
+//element.has_value = true;
+//element.value = 10;
+
+print(elementdv.value);

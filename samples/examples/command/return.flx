@@ -1,0 +1,12 @@
+// return
+
+def foo() : int {
+    if (1==10){
+        return 10;
+    }else if(1==1){
+        return 5;
+    }
+    return 0;
+}
+
+print(foo());

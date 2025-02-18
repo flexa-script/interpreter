@@ -1,0 +1,231 @@
+(**
+ * Author: Carlos Machado
+ * Ref.: https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form
+ *)
+
+program               = [ namespace_def ] { program_statement }
+
+namespace_def         = "namespace" identifier ";"
+
+program_statement     = using_stm ";"
+                      | enum_stm ";"
+                      | inc_namespace_stm ";"
+                      | exc_namespace_stm ";"
+                      | function_decl
+                      | statement
+
+statement             = struct_decl ";"
+                      | variable_decl ";"
+                      | constant_decl ";"
+                      | unpacked_decl ";"
+                      | assignment ";"
+                      | if_statement
+                      | switch_statement
+                      | while_statement
+                      | for_statement
+                      | foreach_statement
+                      | try_statement
+                      | do_while_statement ";"
+                      | return_statement ";"
+                      | throw_statement ";"
+                      | exit_statement ";"
+                      | "continue" ";"
+                      | "break" ";"
+                      | expression ";"
+
+using_stm             = "using" path_identifier
+
+enum_stm              = "enum" "{" { identifier } "}"
+
+inc_namespace_stm     = "include" "namespace" identifier
+
+exc_namespace_stm     = "exclude" "namespace" identifier
+
+block                 = "{" { statement } "}"
+
+function_decl         = "fun" identifier "(" [ formal_params ] ")" [ ":" def_type ] block
+
+function_expr         = "fun" "(" [ formal_params ] ")" [ ":" def_type ] block
+
+struct_decl           = "struct" identifier "{" { struct_vars } "}"
+
+struct_vars           = struct_var { struct_var }
+
+struct_var            = "var" identifier ":" type ";"
+
+formal_params         = formal_param { "," formal_param }
+
+formal_param          = var_identifier [ ":" type ]
+
+while_statement       = "while" "(" expression ")" block
+
+do_while_statement    = "do" block "while" "(" expression ")"
+
+for_statement         = "for" "(" [ expression ] ";" [ expression ] ";" [ expression ] ")" block
+
+foreach_statement     = "foreach" "(" ( variable_decl | unpacked_decl ) "in" expression ")" block
+
+try_statement         = "try" block "catch" "(" ( variable_decl | unpacked_decl | "..." ) ")" block
+
+if_statement          = if_def { elif_statement } [ else_statement ]
+
+if_def                = "if" "(" expression ")" block
+
+elif_statement        = "else" if_def
+
+else_statement        = "else" block
+
+switch_statement      = "switch" "(" expression ")" switch_block
+
+switch_block          = "{" { switch_case } [ switch_default ] "}"
+
+switch_case           = "case" expression ":" case_block
+
+switch_default        = "default" ":" case_block
+
+case_block            = block | { statement }
+
+return_statement      = "return" [ expression ]
+
+exit_statement      = "exit" "(" expression ")"
+
+throw_statement       = "throw" expression
+
+variable_decl         = "var" formal_param [ "=" expression ]
+
+constant_decl         = "const" formal_param "=" expression
+
+unpacked_decl         = "var" "[" formal_param { "," formal_param } "]"
+
+assignment            = var_identifier assignment_op expression
+
+expression            = ternary_expression
+
+ternary_expression    = in_expression
+                      | in_expression "?" ternary_expression ":" ternary_expression
+
+in_expression         = or_expression
+                      | or_expression "in" or_expression
+
+or_expression         = and_expression
+                      | or_expression "or" and_expression
+
+and_expression        = bit_or_expression
+                      | and_expression "and" bit_or_expression
+
+bit_or_expression     = bit_xor_expression
+                      | bit_or_expression "|" bit_xor_expression
+
+bit_xor_expression    = bit_and_expression
+                      | bit_xor_expression "^" bit_and_expression
+
+bit_and_expression    = equality_expression 
+                      | bit_and_expression "&" equality_expression
+
+equality_expression   = relational_expression 
+                      | equality_expression equality_op relational_expression
+
+relational_expression = spaceship_expression  
+                      | relational_expression relational_op spaceship_expression 
+
+spaceship_expression  = bit_shift_expression 
+                      | spaceship_expression  "<=>" bit_shift_expression
+
+bit_shift_expression  = simple_expression 
+                      | bit_shift_expression shift_op simple_expression
+
+simple_expression     = term 
+                      | simple_expression additive_op term
+
+term                  = exponentiation 
+                      | term multiplicative_op exponentiation
+
+exponentiation        = factor
+                      | factor "**" factor
+
+factor                = literal
+                      | var_identifier
+                      | function_call
+                      | function_expr
+                      | sub_expression
+                      | r_unary
+                      | l_unary
+                      | "this"
+
+assignment_op         = "=" | "+=" | "-=" | "*=" | "/=" | "/%=" | "%="
+                      | "**=" | "|=" | "^=" | "&=" | "<<=" | ">>="
+
+shift_op              = "<<" | ">>"
+
+equality_op           = "==" | "!="
+
+relational_op         = "<" | ">" | "<=" | ">="
+
+additive_op           = "+" | "-"
+
+multiplicative_op     = "*" | "/" | "/%" | "%"
+
+l_unary               = ( "+" | "-" | "not" | "~" | "ref" | "unref" ) { expression }
+
+r_unary               = { expression } ( "++" | "--" )
+
+sub_expression        = "(" expression ")"
+
+function_call         = identifier "(" [actual_params] ")"
+
+actual_params         = expression { "," expression }
+
+identifier            = ( "_" | letter ) { "_" | letter | digit }
+
+var_identifier        = identifier [ array_def ]
+
+expr_identifier       = path_identifier [ array_def ]
+
+array_def             = "[" { int_literal } "]" { array_def }
+
+path_identifier       = identifier { "." identifier }
+
+literal               = bool_literal
+                      | int_literal
+                      | float_literal
+                      | char_literal
+                      | string_literal
+                      | array_constructor
+                      | struct_constructor
+                      | null_literal
+
+bool_literal          = "true" | "false"
+
+int_literal           = digit { digit }
+
+float_literal         = digit { digit } "." { digit } [ "f" ]
+                      | "." digit { digit } [ "f" ]
+
+char_literal          = "'" printable "'"
+
+string_literal        = "\"" { printable } "\""
+
+array_constructor     = "{" expression { "," expression } "}"
+
+struct_constructor    = identifier "{" { struct_assign { "," struct_assign } } "}"
+
+struct_assign         = identifier "=" expression
+
+null_literal          = "null"
+
+def_type              = type | "void"
+
+type                  = "bool" | "int" | "float" | "char" | "string" | "function" | identifier
+
+printable             = digit | letter  | " " | "!" | "\"" | "#" | "$"  | "%" | "&"
+                      | "'" | "(" | ")" | "*" | "+" | ","  | "-" | "."  | "/" | ":"
+                      | ";" | "<" | "=" | ">" | "?" | "@"  | "[" | "\\" | "]" | "^"
+                      | "_" | "`" | "{" | "|" | "}" | "~"
+
+letter                = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K"
+                      | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V"
+                      | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g"
+                      | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r"
+                      | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+
+digit                 = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"

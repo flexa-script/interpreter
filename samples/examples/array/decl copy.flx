@@ -1,0 +1,22 @@
+var test3[10];
+
+var test4[3][3] : int;
+
+var test1[] = {
+  1, 2, 3, 4, 5, 6, 7
+};
+
+var test2[][] = {
+  { 1, 2, 3 },
+  { 1, 2, 3 },
+  { 1, 2, 3 }
+};
+
+print(test3);
+print('\n');
+print(test4);
+print('\n');
+print(test1);
+print('\n');
+print(test2);
+print('\n');

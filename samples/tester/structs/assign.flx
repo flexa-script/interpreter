@@ -1,0 +1,82 @@
+fun element_create(value : any) : Element {
+  var newElement : Element = Element {};
+  newElement.has_value = true;
+  newElement.value = value;
+  return newElement;
+}
+
+fun element_print(element : Element) {
+  print("Element {\n");
+  print("  has_value: " + string(element.has_value));
+  print(",\n  value: " + string(element.value));
+  print("\n}\n");
+}
+
+var element1 : Element;
+var element2 : Element;
+var element3 : Element = Element {};
+
+var element11 : Element;
+var element22 : Element;
+var element33 : Element;
+
+element1 = element_create(10);
+
+element2 = Element {};
+element2.has_value = true;
+element2.value = 55;
+
+element11 = element1;
+element22 = element2;
+element33 = element3;
+
+element_print(element1);
+element_print(element11);
+element_print(element2);
+element_print(element22);
+element_print(element3);
+element_print(element33);
+
+var _element1 : Element;
+var _element2 : Element;
+var _element3 : Element;
+
+var _element11 : Element;
+var _element22 : Element;
+var _element33 : Element;
+
+_element1 = element_create(9);
+
+_element2 = Element {};
+_element2.has_value = true;
+_element2.value = 99;
+
+_element3 = Element {
+  has_value = true,
+  value = 999
+};
+
+_element11 = _element1;
+_element22 = _element2;
+_element33 = _element3;
+
+print(_element1);
+print('\n');
+print(_element11);
+
+print('\n');
+print('\n');
+
+print(_element2);
+print('\n');
+print(_element22);
+
+print('\n');
+print('\n');
+
+print(_element3);
+print('\n');
+print(_element33);
+
+print('\n');
+print('\n');

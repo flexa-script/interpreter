@@ -1,0 +1,11 @@
+fun aaa() {
+	print("aaa");
+}
+
+aaa();
+
+var f = fun () {
+	println('f');
+};
+
+f();

@@ -1,0 +1,8 @@
+def foo(msg, ...args) {
+	print(msg, ": ");
+	foreach (var a in args) {
+		print(a, ' ');
+	}
+}
+
+foo("this is a normal parameters and then", 10, 'a', 99, "asdasd");

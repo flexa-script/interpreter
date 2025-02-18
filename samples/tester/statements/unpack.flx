@@ -1,0 +1,75 @@
+using flx.std.structs;
+
+struct Foo_unp {
+	var name: string;
+	var age: int;
+};
+
+var f = Foo_unp{name="Carlos",age=29};
+
+println("foreach struct as flx::Pair");
+foreach(var i: flx::Pair in f){
+  println("", i.key, ":", i.value);
+}
+
+var u = Foo_unp{name="Nati",age=34};
+
+println("foreach struct as unpack declaration");
+foreach(var [key, value] in u){
+  println("", key, ":", value);
+}
+
+
+try {
+	var a = 10/0;
+} catch (var ex: flx::Exception) {
+	println("generated error: " + ex.error);
+}
+
+try {
+	var a = 10/0;
+} catch (var [error]) {
+	println("generated unpacked error: " + error);
+}
+
+try {
+	var a = 10/0;
+} catch (...) {
+	println("error ignored");
+}
+
+try {
+  throw "flx::Exception error";
+} catch (var ex: flx::Exception) {
+	println(ex.error);
+}
+
+try {
+  throw "generated unpacked error";
+} catch (var [error]) {
+	println(error);
+}
+
+try {
+  throw "error ignored";
+} catch (...) {
+	println("error ignored");
+}
+
+try {
+  throw flx::Exception{error="flx::Exception struct error"};
+} catch (var ex: flx::Exception) {
+	println(ex.error);
+}
+
+try {
+  throw flx::Exception{error="generated unpacked struct error"};
+} catch (var [error]) {
+	println(error);
+}
+
+try {
+  throw flx::Exception{error="ignored struct error"};
+} catch (...) {
+	println("error ignored");
+}

@@ -1,0 +1,5 @@
+using flx.std.testing;
+
+include namespace flx;
+
+var usw: StopWatch = StopWatch{};

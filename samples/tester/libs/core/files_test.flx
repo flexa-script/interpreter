@@ -1,0 +1,11 @@
+using flx.core.files;
+
+var file: flx::File = flx::open(cwd + "\\libs\\core\\doc.txt", flx::MODE_READ);
+
+println("readed text: ", flx::read(file));
+flx::close(file);
+
+var file2: flx::File = flx::open(cwd + "\\libs\\core\\doc2.txt", flx::MODE_WRITE);
+
+flx::write(file2, "this was write using flx files lib");
+flx::close(file2);

@@ -1,0 +1,16 @@
+0x02	PUSH_NAMESPACE       	
+0x13	STRUCT_START         	Foo
+0x16	SET_TYPE             	9
+0x14	STRUCT_SET_VAR       	
+0x15	STRUCT_END           	
+0x16	SET_TYPE             	9
+0x18	SET_TYPE_NAME        	
+0x11	CREATE_STRUCT        	Foo
+0x0d	PUSH_STRING          	bar
+0x12	SET_FIELD            	bar
+0x1f	STORE_VAR            	foo
+0x1e	LOAD_VAR             	foo
+0x26	CALL_PARAM_COUNT     	
+0x28	CALL                 	println
+0x01	POP_NAMESPACE        	
+0x59	HALT                 	
