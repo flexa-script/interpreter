@@ -1,5 +1,5 @@
-#ifndef SEMANTIC_SCOPE_HPP
-#define SEMANTIC_SCOPE_HPP
+#ifndef SCOPE_HPP
+#define SCOPE_HPP
 
 #include <map>
 #include <unordered_map>
@@ -50,4 +50,4 @@ namespace visitor {
 	};
 }
 
-#endif // !SEMANTIC_SCOPE_HPP
+#endif // !SCOPE_HPP

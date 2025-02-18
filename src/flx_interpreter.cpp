@@ -15,7 +15,7 @@
 
 FlexaInterpreter::FlexaInterpreter(const FlexaCliArgs& args)
 	: project_root(utils::PathUtils::normalize_path_sep(args.workspace_path)),
-	cp_root(utils::PathUtils::normalize_path_sep((args.libs_path.empty() ? utils::PathUtils::get_current_path() : args.libs_path) + "\\libs")),
+	libs_root(utils::PathUtils::normalize_path_sep((args.libs_path.empty() ? utils::PathUtils::get_current_path() : args.libs_path) + "\\libs")),
 	args(args) {}
 
 int FlexaInterpreter::execute() {
@@ -35,8 +35,8 @@ FlexaSource FlexaInterpreter::load_program(const std::string& source) {
 	if (std::filesystem::exists(project_root + current_file_path)) {
 		current_full_path = project_root + current_file_path;
 	}
-	else if (std::filesystem::exists(cp_root + current_file_path)) {
-		current_full_path = cp_root + current_file_path;
+	else if (std::filesystem::exists(libs_root + current_file_path)) {
+		current_full_path = libs_root + current_file_path;
 	}
 	else {
 		throw std::runtime_error("file not found: '" + current_file_path + "'");

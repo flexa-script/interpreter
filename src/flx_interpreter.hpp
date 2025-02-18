@@ -1,12 +1,12 @@
-#ifndef CPINTERPRETER_HPP
-#define CPINTERPRETER_HPP
+#ifndef FLX_INTERPRETER_HPP
+#define FLX_INTERPRETER_HPP
 
 #include "flx_utils.hpp"
 #include "semantic_analysis.hpp"
 
 class FlexaInterpreter {
 private:
-	std::string cp_root;
+	std::string libs_root;
 	std::string project_root;
 	FlexaCliArgs args;
 
@@ -26,4 +26,4 @@ private:
 
 };
 
-#endif // !CPINTERPRETER_HPP
+#endif // !FLX_INTERPRETER_HPP

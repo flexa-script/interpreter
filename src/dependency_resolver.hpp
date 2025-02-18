@@ -1,5 +1,5 @@
-#ifndef LINKER_HPP
-#define LINKER_HPP
+#ifndef DEPENDENCY_RESOLVER_HPP
+#define DEPENDENCY_RESOLVER_HPP
 
 #include "ast.hpp"
 #include "flx_utils.hpp"
@@ -79,4 +79,4 @@ namespace visitor {
 
 }
 
-#endif // !LINKER_HPP
+#endif // !DEPENDENCY_RESOLVER_HPP

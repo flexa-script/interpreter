@@ -1,5 +1,5 @@
-#ifndef BSLUTILS_HPP
-#define BSLUTILS_HPP
+#ifndef FLX_UTILS_HPP
+#define FLX_UTILS_HPP
 
 #include <iostream>
 #include <string>
@@ -33,4 +33,4 @@ extern void throw_if_not_parameter(int argc, size_t i, std::string parameter);
 
 extern FlexaCliArgs parse_args(int argc, const char* argv[]);
 
-#endif // !BSLUTILS_HPP
+#endif // !FLX_UTILS_HPP

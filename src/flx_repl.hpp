@@ -1,5 +1,5 @@
-#ifndef CPREPL_HPP
-#define CPREPL_HPP
+#ifndef FLX_REPL_HPP
+#define FLX_REPL_HPP
 
 #include <iostream>
 #include <fstream>
@@ -31,4 +31,4 @@ public:
 	static int execute(const FlexaCliArgs& args);
 };
 
-#endif // !CPREPL_HPP
+#endif // !FLX_REPL_HPP
