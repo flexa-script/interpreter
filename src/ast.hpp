@@ -316,7 +316,7 @@ namespace parser {
 	public:
 		T val;
 
-		ASTLiteralNode(T val, unsigned int row, unsigned int col) : ASTExprNode(col, row), val(val) {};
+		ASTLiteralNode(T val, unsigned int row, unsigned int col) : ASTExprNode(row, col), val(val) {};
 
 		void accept(Visitor*) override;
 		virtual long long hash(Visitor*) override;
