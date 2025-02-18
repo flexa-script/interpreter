@@ -11,6 +11,7 @@ namespace lexer {
     class Lexer {
     public:
         Lexer(const std::string& name, const std::string& source);
+        Lexer(const std::string& name, const std::string& source, unsigned int start_row, unsigned int start_col);
         ~Lexer();
 
         Token next_token();
@@ -21,7 +22,7 @@ namespace lexer {
         char next_char;
         unsigned int current_token = 0;
         long long current_index = 0;
-        unsigned int current_row = 0;
+        unsigned int current_row = 1;
         unsigned int start_col = 0;
         unsigned int current_col = 0;
         std::string source;

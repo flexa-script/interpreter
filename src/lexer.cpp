@@ -10,12 +10,15 @@ Lexer::Lexer(const std::string& name, const std::string& source)
 	tokenize();
 }
 
+Lexer::Lexer(const std::string& name, const std::string& source, unsigned int start_row, unsigned int start_col)
+	: source(source), name(name), current_row(start_row), current_col(start_col) {
+	tokenize();
+}
+
 Lexer::~Lexer() = default;
 
 void Lexer::tokenize() {
 	current_index = -1;
-	current_row = 1;
-	current_col = 0;
 
 	advance();
 
@@ -136,6 +139,11 @@ size_t Lexer::find_mlv_closer(const std::string expr) {
 void Lexer::process_multiline_string() {
 	std::string str;
 	bool spec = false;
+	
+	if (next_char != '\n') {
+		throw std::runtime_error(msg_header() + "expected newline after '`'");
+	}
+	advance();
 
 	str = '"';
 	advance();
@@ -144,25 +152,36 @@ void Lexer::process_multiline_string() {
 		if (!spec) {
 			if (current_char == '\\') {
 				spec = true;
-				str += current_char;
+				if (next_char != '\n') {
+					str += current_char;
+				}
 			}
 			else if (current_char == '`') {
 				break;
 			}
 			else if (current_char == '$'
 				&& next_char == '{') {
+				// it's an interpolation, so closes the current string
 				str += '"';
 				tokens.push_back(Token(LexTokenType::TOK_STRING_LITERAL, str, current_row, start_col));
+
+				// skips ${ advancing to the start of the interpolation
 				advance();
 				advance();
+
+				// get subexpression
 				auto new_idx = current_index;
 				auto sub_src = source.substr(current_index);
 				auto lidx = find_mlv_closer(sub_src);
 				new_idx += lidx;
-				auto sub_lex = Lexer("", sub_src.substr(0, lidx));
+				sub_src = sub_src.substr(0, lidx);
+				// process the interpolation
+				auto sub_lex = Lexer(name, sub_src, current_row, current_col);
+				// encapsulate the interpolation in a string cast and concatenate to previous string
 				tokens.push_back(Token(TOK_ADDITIVE_OP, "+", current_row, start_col));
 				tokens.push_back(Token(TOK_STRING_TYPE, "string", current_row, start_col));
 				tokens.push_back(Token(TOK_LEFT_BRACKET, "(", current_row, start_col));
+				// add tokens from sub_lex to current tokens
 				for (auto t : sub_lex.tokens) {
 					if (t.type != TOK_EOF) {
 						tokens.push_back(t);
@@ -170,9 +189,11 @@ void Lexer::process_multiline_string() {
 				}
 				tokens.push_back(Token(TOK_RIGHT_BRACKET, ")", current_row, start_col));
 				tokens.push_back(Token(TOK_ADDITIVE_OP, "+", current_row, start_col));
+				// advance current index to the end of the interpolation
 				while (current_index < new_idx) {
 					advance();
 				}
+				// reset str to the new string
 				str = '"';
 			}
 			else {
@@ -180,11 +201,18 @@ void Lexer::process_multiline_string() {
 			}
 		}
 		else {
-			str += current_char;
+			if (current_char != '\n') {
+				str += current_char;
+			}
 			spec = false;
 		}
 		advance();
 	} while (has_next());
+
+	// optional newline, if present, remove it
+	if (before_char == '\n') {
+		str = str.substr(0, str.size() - 1);
+	}
 
 	str += '"';
 

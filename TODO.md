@@ -70,7 +70,7 @@
 - [X] Implements expressions:
     - [X] multiline string ``
         - [X] interpolated expression inside `This is a expression ${10 + 5} inside`
-        - [ ] add: single \ to ignore new line at end of line `text\(\n)` (`\n` is invisible)
+        - [X] add: single \ to ignore new line at end of line `text\(\n)` (`\n` is invisible)
     - [X] `+` operator to join arrays
     - [X] expression operators:
         - [X] basic operations
@@ -124,6 +124,7 @@
 - [ ] Can't executes returned function from another function eg: `here_is_returning_a_function()();`
 - [ ] Fix HTTP core lib
 - [ ] Check behaviour of rest arrays and why join and print haven't the same signature
+- [ ] Fix: shouldn't call from flx namespace if it's not included
 - [X] Fix function parameters root container, is generating mem leak
 - [X] Namespaces must be included in file, not in namespace level
 - [X] Review value copy and equal (mainly cause of pointers)
