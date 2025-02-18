@@ -9,14 +9,14 @@ int main(int argc, const char* argv[]) {
 
 	auto args = parse_args(argc, argv);
 
-	if (argc == 1) {
-		return FlexaRepl::execute(args);
-	}
-
 	if (args.debug) {
 #ifndef __FLX_DEBUG__
 #define __FLX_DEBUG__
 #endif // !__FLX_DEBUG__
+	}
+
+	if (argc == 1) {
+		return FlexaRepl::execute(args);
 	}
 
 	auto interpreter = FlexaInterpreter(args);
