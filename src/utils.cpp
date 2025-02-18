@@ -120,7 +120,11 @@ namespace utils {
 
 	std::string PathUtils::normalize_path_sep(const std::string& path) {
 		std::string sep(std::string{ std::filesystem::path::preferred_separator });
-		return StringUtils::replace(StringUtils::replace(path, "\\", sep), "/", sep);
+		auto ret_str = StringUtils::replace(path, "/", sep);
+		ret_str = StringUtils::replace(ret_str, "\\", sep);
+		ret_str = StringUtils::replace(ret_str, sep + sep, sep);
+
+		return ret_str;
 	}
 
 	// UUID

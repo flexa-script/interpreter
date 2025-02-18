@@ -15,7 +15,7 @@
 
 FlexaInterpreter::FlexaInterpreter(const FlexaCliArgs& args)
 	: project_root(utils::PathUtils::normalize_path_sep(args.workspace_path)),
-	cp_root(utils::PathUtils::normalize_path_sep(utils::PathUtils::get_current_path() + "libs")),
+	cp_root(utils::PathUtils::normalize_path_sep((args.libs_path.empty() ? utils::PathUtils::get_current_path() : args.libs_path) + "\\libs")),
 	args(args) {}
 
 int FlexaInterpreter::execute() {

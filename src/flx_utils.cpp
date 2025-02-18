@@ -91,6 +91,12 @@ FlexaCliArgs parse_args(int argc, const char* argv[]) {
 			args.source_files.push_back(argv[i]);
 			continue;
 		}
+		if (arg == "-l" || arg == "--libs") {
+			++i;
+			throw_if_not_parameter(argc, i, arg);
+			args.libs_path = argv[i];
+			continue;
+		}
 		--i;
 		// no more optional parameters
 		break;

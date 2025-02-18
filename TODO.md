@@ -6,7 +6,7 @@
 - [X] Send rest arguments to flexa program
 - [X] Implements library support:
     - [ ] Implements `using flx.core.*;` support
-- [ ] Implements interpreter parameter to says where are sdt libs
+- [X] Implements interpreter parameter to says where are sdt libs
 - [X] Implements 'this' token to get current context name
 - [X] Implements any type
 - [X] Implements array type
@@ -14,7 +14,7 @@
     <!-- - [ ] Add `items[] = item;` as append support? -->
 - [X] Implements struct
     - [X] Implements unpacked declaration statement to unpack struct values `foreach (var [key, value] in struct_var)`
-    - [ ] Adds code error to Exception struct
+    - [X] Adds code error to Exception struct
     - [X] Implements struct array-like constructoror
     - [X] Add struct iterating over in foreach
 <!-- - [ ] Super structs???
