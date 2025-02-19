@@ -1,9 +1,3 @@
-using structs.definition;
-using variables.declaration;
-using variables.assignment;
-using types._typeof;
-
-// old tests
 using structs._foreach;
 using structs.reference;
 using structs.array;
@@ -89,7 +83,7 @@ using uncategorized.tests;
 using libs.core.datetime_test;
 using libs.core.files_test;
 // using libs.core.http_test; // not working
-using libs.core.input_test;
+using libs.core.console_test;
 using libs.core.sound_test;
 using libs.core.graphics_test;
-using libs.core.console_test;
+using libs.core.input_test;

@@ -1,0 +1,7 @@
+using structs.definition;
+using variables.declaration;
+using variables.assignment;
+using types._typeof;
+
+// will be replaced with asserted tests
+using old_tests;

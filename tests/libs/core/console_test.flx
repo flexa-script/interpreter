@@ -14,14 +14,15 @@ for(var k = 0; k < 16; k++) {
   }
 }
 
+set_console_font("Consolas", 0, 16);
 set_console_color(0, 7);
 print("[0,7] Testing color default\n");
-set_console_color(1, 7);
-print("[1,7] Testing color default\n");
-set_console_color(2, 7);
-print("[2,7] Testing color default\n");
-set_console_color(CL_BRIGHT_WHITE, CL_BLACK);
-print("[2,7] Testing color default\n");
+// set_console_color(1, 7);
+// print("[1,7] Testing color default\n");
+// set_console_color(2, 7);
+// print("[2,7] Testing color default\n");
+// set_console_color(CL_BRIGHT_WHITE, CL_BLACK);
+// print("[2,7] Testing color default\n");
 
 // show_console(false);
 // set_console_cursor_position(0, 0);
