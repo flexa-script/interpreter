@@ -44,7 +44,8 @@ void DependencyResolver::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	}
 }
 
-void DependencyResolver::visit(std::shared_ptr<ASTNamespaceManagerNode>) {}
+void DependencyResolver::visit(std::shared_ptr<ASTIncludeNamespaceNode>) {}
+void DependencyResolver::visit(std::shared_ptr<ASTExcludeNamespaceNode>) {}
 
 void DependencyResolver::visit(std::shared_ptr<ASTDeclarationNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTUnpackedDeclarationNode>) {}

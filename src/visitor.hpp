@@ -16,7 +16,8 @@ namespace parser {
 	class ASTProgramNode;
 
 	class ASTUsingNode;
-	class ASTNamespaceManagerNode;
+	class ASTIncludeNamespaceNode;
+	class ASTExcludeNamespaceNode;
 	class ASTDeclarationNode;
 	class ASTUnpackedDeclarationNode;
 	class ASTAssignmentNode;
@@ -82,7 +83,8 @@ namespace visitor {
 
 		virtual void visit(std::shared_ptr<ASTProgramNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTUsingNode>) = 0;
-		virtual void visit(std::shared_ptr<ASTNamespaceManagerNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTIncludeNamespaceNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTExcludeNamespaceNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTDeclarationNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTUnpackedDeclarationNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTAssignmentNode>) = 0;

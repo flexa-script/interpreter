@@ -85,10 +85,23 @@ namespace parser {
 
 	class ASTNamespaceManagerNode : public ASTStatementNode {
 	public:
-		std::string image;
 		std::string name_space;
 
-		ASTNamespaceManagerNode(const std::string& image, const std::string& name_space, unsigned int col, unsigned int row);
+		ASTNamespaceManagerNode(const std::string& name_space, unsigned int col, unsigned int row);
+
+		void accept(Visitor*) override = 0;
+	};
+
+	class ASTIncludeNamespaceNode : public ASTNamespaceManagerNode {
+	public:
+		ASTIncludeNamespaceNode(const std::string& name_space, unsigned int col, unsigned int row);
+
+		void accept(Visitor*) override;
+	};
+
+	class ASTExcludeNamespaceNode : public ASTNamespaceManagerNode {
+	public:
+		ASTExcludeNamespaceNode(const std::string& name_space, unsigned int col, unsigned int row);
 
 		void accept(Visitor*) override;
 	};

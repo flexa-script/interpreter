@@ -79,6 +79,12 @@
     <Filter Include="Source Files\modules\flx.core\graphics">
       <UniqueIdentifier>{5b80f9bc-6442-4c5c-bf2e-56ba94ace750}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\core\visitor\utilities">
+      <UniqueIdentifier>{746cfb69-f96e-406a-b30b-e34e32272ce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core\visitor\utilities">
+      <UniqueIdentifier>{ce50e3ca-23af-4107-bc4f-f8f96d0c52d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lexer.hpp">
@@ -132,17 +138,8 @@
     <ClInclude Include="dependency_resolver.hpp">
       <Filter>Header Files\core\visitor</Filter>
     </ClInclude>
-    <ClInclude Include="meta_visitor.hpp">
-      <Filter>Header Files\core\visitor</Filter>
-    </ClInclude>
-    <ClInclude Include="namespace_manager.hpp">
-      <Filter>Header Files\core\visitor</Filter>
-    </ClInclude>
     <ClInclude Include="vm.hpp">
       <Filter>Header Files\core\vm</Filter>
-    </ClInclude>
-    <ClInclude Include="scope.hpp">
-      <Filter>Header Files\core\visitor</Filter>
     </ClInclude>
     <ClInclude Include="md_sound.hpp">
       <Filter>Header Files\modules\flx.core</Filter>
@@ -188,6 +185,15 @@
     </ClInclude>
     <ClInclude Include="md_datetime.hpp">
       <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
+    <ClInclude Include="meta_visitor.hpp">
+      <Filter>Header Files\core\visitor\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="namespace_manager.hpp">
+      <Filter>Header Files\core\visitor\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="scope.hpp">
+      <Filter>Header Files\core\visitor\utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -248,15 +254,6 @@
     <ClCompile Include="dependency_resolver.cpp">
       <Filter>Source Files\core\visitor</Filter>
     </ClCompile>
-    <ClCompile Include="meta_visitor.cpp">
-      <Filter>Source Files\core\visitor</Filter>
-    </ClCompile>
-    <ClCompile Include="namespace_manager.cpp">
-      <Filter>Source Files\core\visitor</Filter>
-    </ClCompile>
-    <ClCompile Include="scope.cpp">
-      <Filter>Source Files\core\visitor</Filter>
-    </ClCompile>
     <ClCompile Include="vm.cpp">
       <Filter>Source Files\core\vm</Filter>
     </ClCompile>
@@ -307,6 +304,15 @@
     </ClCompile>
     <ClCompile Include="watch.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="meta_visitor.cpp">
+      <Filter>Source Files\core\visitor\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="scope.cpp">
+      <Filter>Source Files\core\visitor\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="namespace_manager.cpp">
+      <Filter>Source Files\core\visitor\utilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

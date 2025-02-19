@@ -54,7 +54,8 @@ namespace visitor {
 
 		void visit(std::shared_ptr<ASTProgramNode>) override;
 		void visit(std::shared_ptr<ASTUsingNode>) override;
-		void visit(std::shared_ptr<ASTNamespaceManagerNode>) override;
+		void visit(std::shared_ptr<ASTIncludeNamespaceNode>) override;
+		void visit(std::shared_ptr<ASTExcludeNamespaceNode>) override;
 		void visit(std::shared_ptr<ASTDeclarationNode>) override;
 		void visit(std::shared_ptr<ASTUnpackedDeclarationNode>) override;
 		void visit(std::shared_ptr<ASTAssignmentNode>) override;

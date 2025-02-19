@@ -91,29 +91,32 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	}
 }
 
-void SemanticAnalyser::visit(std::shared_ptr<ASTNamespaceManagerNode> astnode) {
+void SemanticAnalyser::visit(std::shared_ptr<ASTIncludeNamespaceNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	const auto& prg_name = current_program.top()->name;
 
-	if (!utils::CollectionUtils::contains(nmspaces, astnode->name_space)) {
-		throw std::runtime_error("namespace '" + astnode->name_space + "' not found");
-	}
-	if (astnode->name_space == default_namespace) {
-		throw std::runtime_error("namespace '" + astnode->name_space + "' is not valid ");
-	}
+	validate_namespace(astnode->name_space);
 
-	if (astnode->image == "include") {
-		if (std::find(program_nmspaces[prg_name].begin(), program_nmspaces[prg_name].end(), astnode->name_space) == program_nmspaces[prg_name].end()) {
-			program_nmspaces[prg_name].push_back(astnode->name_space);
-		}
+	if (std::find(program_nmspaces[prg_name].begin(), program_nmspaces[prg_name].end(), astnode->name_space) == program_nmspaces[prg_name].end()) {
+		program_nmspaces[prg_name].push_back(astnode->name_space);
 	}
 	else {
-		size_t pos = std::distance(program_nmspaces[prg_name].begin(),
-			std::find(program_nmspaces[prg_name].begin(),
-				program_nmspaces[prg_name].end(), astnode->name_space));
-		program_nmspaces[prg_name].erase(program_nmspaces[prg_name].begin() + pos);
+		throw std::runtime_error("namespace '" + astnode->name_space + "' is not included in '" + prg_name + "'");
 	}
+}
+
+void SemanticAnalyser::visit(std::shared_ptr<ASTExcludeNamespaceNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	const auto& prg_name = current_program.top()->name;
+
+	validate_namespace(astnode->name_space);
+
+	size_t pos = std::distance(program_nmspaces[prg_name].begin(),
+		std::find(program_nmspaces[prg_name].begin(),
+			program_nmspaces[prg_name].end(), astnode->name_space));
+	program_nmspaces[prg_name].erase(program_nmspaces[prg_name].begin() + pos);
 }
 
 void SemanticAnalyser::visit(std::shared_ptr<ASTEnumNode> astnode) {
@@ -1289,6 +1292,15 @@ bool SemanticAnalyser::namespace_exists(const std::string& name_space) {
 	return scopes.find(name_space) != scopes.end();
 }
 
+
+void SemanticAnalyser::validate_namespace(const std::string& name_space) const {
+	if (!utils::CollectionUtils::contains(nmspaces, name_space)) {
+		throw std::runtime_error("namespace '" + name_space + "' not found");
+	}
+	if (name_space == default_namespace) {
+		throw std::runtime_error("namespace '" + name_space + "' is default included");
+	}
+}
 TypeDefinition SemanticAnalyser::do_operation(const std::string& op, TypeDefinition lvar, TypeDefinition lvalue, TypeDefinition* rvar, TypeDefinition rvalue, bool is_expr) {
 	Type l_var_type = lvar.type;
 	lvalue = is_undefined(lvalue.type) ? lvar : lvalue;

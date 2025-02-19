@@ -25,8 +25,14 @@ ASTBuiltinCallNode::ASTBuiltinCallNode(std::string identifier, unsigned int row,
 ASTUsingNode::ASTUsingNode(const std::vector<std::string>& library, unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col), library(library) {}
 
-ASTNamespaceManagerNode::ASTNamespaceManagerNode(const std::string& image, const std::string& name_space, unsigned int row, unsigned int col)
-	: ASTStatementNode(row, col), image(image), name_space(name_space) {}
+ASTNamespaceManagerNode::ASTNamespaceManagerNode(const std::string& name_space, unsigned int row, unsigned int col)
+	: ASTStatementNode(row, col), name_space(name_space) {}
+
+ASTIncludeNamespaceNode::ASTIncludeNamespaceNode(const std::string& name_space, unsigned int row, unsigned int col)
+	: ASTNamespaceManagerNode(name_space, row, col) {}
+
+ASTExcludeNamespaceNode::ASTExcludeNamespaceNode(const std::string& name_space, unsigned int row, unsigned int col)
+	: ASTNamespaceManagerNode(name_space, row, col) {}
 
 ASTDeclarationNode::ASTDeclarationNode(const std::string& identifier, Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
 	const std::string& type_name, const std::string& type_name_space, std::shared_ptr<ASTExprNode> expr, bool is_const, unsigned int row, unsigned int col)
@@ -289,8 +295,12 @@ void ASTUnpackedDeclarationNode::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTUnpackedDeclarationNode>(shared_from_this()));
 }
 
-void ASTNamespaceManagerNode::accept(Visitor* v) {
-	v->visit(std::dynamic_pointer_cast<ASTNamespaceManagerNode>(shared_from_this()));
+void ASTIncludeNamespaceNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTIncludeNamespaceNode>(shared_from_this()));
+}
+
+void ASTExcludeNamespaceNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTExcludeNamespaceNode>(shared_from_this()));
 }
 
 void ASTAssignmentNode::accept(Visitor* v) {

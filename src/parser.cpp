@@ -114,7 +114,7 @@ std::shared_ptr<ASTNode> Parser::parse_block_statement() {
 }
 
 std::shared_ptr<ASTNamespaceManagerNode> Parser::parse_namespace_manager_statement() {
-	std::string image = current_token.value;
+	auto type = current_token.type;
 	std::string name_space = "";
 	unsigned int row = current_token.row;
 	unsigned int col = current_token.col;
@@ -124,7 +124,11 @@ std::shared_ptr<ASTNamespaceManagerNode> Parser::parse_namespace_manager_stateme
 	name_space = current_token.value;
 	consume_token(TOK_SEMICOLON);
 
-	return std::make_shared<ASTNamespaceManagerNode>(image, name_space, row, col);
+	if (type == TOK_INCLUDE) {
+		return std::make_shared<ASTIncludeNamespaceNode>(name_space, row, col);
+	}
+
+	return std::make_shared<ASTExcludeNamespaceNode>(name_space, row, col);
 }
 
 std::shared_ptr<ASTExprNode> Parser::parse_statement_expression() {

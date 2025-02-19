@@ -51,6 +51,7 @@ namespace visitor {
 		void check_is_struct_exists(Type type, const std::string& name_space, const std::string& identifier);
 
 		bool namespace_exists(const std::string& name_space);
+		void validate_namespace(const std::string& name_space) const;
 
 		void set_curr_pos(unsigned int row, unsigned int col) override;
 		std::string msg_header() override;
@@ -64,7 +65,8 @@ namespace visitor {
 
 		void visit(std::shared_ptr<ASTProgramNode>) override;
 		void visit(std::shared_ptr<ASTUsingNode>) override;
-		void visit(std::shared_ptr<ASTNamespaceManagerNode>) override;
+		void visit(std::shared_ptr<ASTIncludeNamespaceNode>) override;
+		void visit(std::shared_ptr<ASTExcludeNamespaceNode>) override;
 		void visit(std::shared_ptr<ASTDeclarationNode>) override;
 		void visit(std::shared_ptr<ASTUnpackedDeclarationNode>) override;
 		void visit(std::shared_ptr<ASTAssignmentNode>) override;

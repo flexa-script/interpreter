@@ -97,32 +97,35 @@ void Interpreter::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	}
 }
 
-void Interpreter::visit(std::shared_ptr<ASTNamespaceManagerNode> astnode) {
+void Interpreter::visit(std::shared_ptr<ASTIncludeNamespaceNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	const auto& current_program_name = current_program.top()->name;
 
-	if (astnode->image == "include") {
-		if (std::find(
+	if (std::find(
+		program_nmspaces[current_program_name].begin(),
+		program_nmspaces[current_program_name].end(),
+		astnode->name_space
+	) == program_nmspaces[current_program_name].end()) {
+
+		program_nmspaces[current_program_name].push_back(astnode->name_space);
+	}
+}
+
+void Interpreter::visit(std::shared_ptr<ASTExcludeNamespaceNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	const auto& current_program_name = current_program.top()->name;
+
+	size_t pos = std::distance(
+		program_nmspaces[current_program_name].begin(),
+		std::find(
 			program_nmspaces[current_program_name].begin(),
 			program_nmspaces[current_program_name].end(),
 			astnode->name_space
-		) == program_nmspaces[current_program_name].end()) {
-
-			program_nmspaces[current_program_name].push_back(astnode->name_space);
-		}
-	}
-	else {
-		size_t pos = std::distance(
-			program_nmspaces[current_program_name].begin(),
-			std::find(
-				program_nmspaces[current_program_name].begin(),
-				program_nmspaces[current_program_name].end(),
-				astnode->name_space
-			)
-		);
-		program_nmspaces[current_program_name].erase(program_nmspaces[current_program_name].begin() + pos);
-	}
+		)
+	);
+	program_nmspaces[current_program_name].erase(program_nmspaces[current_program_name].begin() + pos);
 }
 
 void Interpreter::visit(std::shared_ptr<ASTEnumNode> astnode) {

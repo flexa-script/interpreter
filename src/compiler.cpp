@@ -60,13 +60,12 @@ void Compiler::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	}
 }
 
-void Compiler::visit(std::shared_ptr<ASTNamespaceManagerNode> astnode) {
-	if (astnode->image == "include") {
-		add_instruction(OpCode::OP_INCLUDE_NAMESPACE, flx_string(astnode->name_space));
-	}
-	else {
-		add_instruction(OpCode::OP_EXCLUDE_NAMESPACE, flx_string(astnode->name_space));
-	}
+void Compiler::visit(std::shared_ptr<ASTIncludeNamespaceNode> astnode) {
+	add_instruction(OpCode::OP_INCLUDE_NAMESPACE, flx_string(astnode->name_space));
+}
+
+void Compiler::visit(std::shared_ptr<ASTExcludeNamespaceNode> astnode) {
+	add_instruction(OpCode::OP_EXCLUDE_NAMESPACE, flx_string(astnode->name_space));
 }
 
 void Compiler::visit(std::shared_ptr<ASTEnumNode> astnode) {
