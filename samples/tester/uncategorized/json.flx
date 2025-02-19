@@ -1,18 +1,18 @@
 // using flx.std.structs;
 
-struct Bar {
+struct Bar_json {
 	var x: int;
 	var j: bool;
 };
 
-struct Foo {
+struct Foo_json {
 	var name: string;
 	var age: int;
 	// var bar: bool;
-	var bar: Bar;
+	var bar: Bar_json;
 };
 
-var f = Foo{name="Carlos",age=29,bar=Bar{x=10,j=false}};
+var f = Foo_json{name="Carlos",age=29,bar=Bar_json{x=10,j=false}};
 
 fun substr(str, s, n = null){
 	// print("called " + this, '\n');
@@ -32,7 +32,7 @@ fun to_json(f){
 	foreach (var it in f) {
 		println(it);
 		json += '"' + it.key + "\":";
-		if(typeof(it.value)=="Bar"){
+		if(typeof(it.value)=="Bar_json"){
 			json += to_json(it.value);
 		}
 		else{

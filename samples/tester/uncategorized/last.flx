@@ -1,10 +1,10 @@
-struct Foo {
+struct Foo_last {
     var foo;
     var bar: any;
 };
 
-var str = Foo{bar="hello", foo=Foo{bar=10}};
-var str2 = Foo{bar="hello2", foo=str};
+var str = Foo_last{bar="hello", foo=Foo_last{bar=10}};
+var str2 = Foo_last{bar="hello2", foo=str};
 
 // println(str);
 // println(str.bar);
@@ -34,7 +34,7 @@ var str2 = Foo{bar="hello2", foo=str};
 
 // println("\n\nassign:");
 
-str2 = Foo{bar="hello_new", foo=666};
+str2 = Foo_last{bar="hello_new", foo=666};
 println(str2);
 str2.bar = "assinged";
 println(str2.bar);

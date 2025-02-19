@@ -19,17 +19,17 @@ fun testb(a, [bar, qux], b) {
   println(b);
 }
 
-fun test([bar, qux]) {
+fun testu([bar, qux]) {
   println(bar);
   println(qux);
 }
 
-struct Foo {
+struct Foo_tests {
 	var bar: int;
 	var qux: string;
 };
 
-var foo = Foo {
+var foo = Foo_tests {
 	bar=5,
 	qux="word"
 };
@@ -49,7 +49,7 @@ testr(foo, 20);
 println("- testb -");
 testb(10, foo, 20);
 println("- test -");
-test(foo);
+testu(foo);
 println("-------------------");
 
 
@@ -108,29 +108,29 @@ catch (var [error]) {
 
 
 // 2024-08-04 --------------------------------------------------------------------------
-fun foo(){
+fun foo_tests(){
   println("foo: ", this);
 }
 
-fun bar(){
+fun bar_tests(){
   println("bar: ", this);
 }
 
-foo();
-bar();
+foo_tests();
+bar_tests();
 
-var qux = foo;
+var qux_tests = foo_tests;
 
-foo();
-bar();
-qux();
+foo_tests();
+bar_tests();
+qux_tests();
 
-var bar = foo;
+var bar_tests = foo_tests;
 
-bar();
+bar_tests();
 
 fun aaa(foo: function){
-  foo();
+  foo_tests();
 }
 
 aaa(fun () {

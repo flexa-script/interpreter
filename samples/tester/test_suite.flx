@@ -76,6 +76,16 @@ using arrays.reassign_undecl;
 using arrays.reassign_undef;
 using arrays.reassign;
 
+using uncategorized.and_precedence;
+using uncategorized.expr_eval;
+using uncategorized.func_param;
+using uncategorized.json;
+using uncategorized.last;
+using uncategorized.pointer;
+using uncategorized.problems;
+using uncategorized.super;
+using uncategorized.tests;
+
 using libs.core.datetime_test;
 using libs.core.files_test;
 // using libs.core.http_test; // not working
