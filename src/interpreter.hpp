@@ -62,7 +62,6 @@ namespace visitor {
 
 		void check_build_array(RuntimeValue* new_value, std::vector<std::shared_ptr<ASTExprNode>> dim);
 		flx_array build_array(const std::vector<std::shared_ptr<ASTExprNode>>& dim, RuntimeValue* init_value, long long i);
-		flx_array build_undefined_array(const std::vector<std::shared_ptr<ASTExprNode>>& dim, long long i);
 
 		RuntimeValue* set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<Identifier>& identifier_vector, RuntimeValue* new_value);
 		RuntimeValue* access_value(RuntimeValue* value, const std::vector<Identifier>& identifier_vector, size_t i = 0);

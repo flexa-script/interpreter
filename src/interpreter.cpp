@@ -156,6 +156,9 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 		new_value = alocate_value(new RuntimeValue(current_expression_value));
 	}
 
+	// chack and fill array if necessary
+	check_build_array(new_value, astnode->dim);
+
 	// creates variable
 	auto new_var = std::make_shared<RuntimeVariable>(astnode->identifier, astnode->type,
 		astnode->array_type, astnode->dim,
@@ -167,12 +170,9 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 	if ((!TypeDefinition::is_any_or_match_type(*new_var, *new_value, evaluate_access_vector_ptr) ||
 		is_array(new_var->type) && !is_any(new_var->array_type)
 		&& !TypeDefinition::match_type(*new_var, *new_value, evaluate_access_vector_ptr, false, true))
-		&& astnode->expr && !is_undefined(new_value->type)) {
+		&& astnode->expr && !is_undefined(new_value->type) && !is_array(new_value->type)) {
 		ExceptionHandler::throw_declaration_type_err(astnode->identifier, *new_var, *new_value, evaluate_access_vector_ptr);
 	}
-
-	// chack and fill array if necessary
-	check_build_array(new_value, astnode->dim);
 
 	// normalize string and number types
 	RuntimeOperations::normalize_type(new_var.get(), new_value);
@@ -1722,26 +1722,17 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 }
 
 void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<std::shared_ptr<ASTExprNode>> dim) {
-	if (is_array(new_value->type) && dim.size() > 0) {
-		auto arr = new_value->get_arr();
-		bool has_array = false;
-		flx_array rarr = flx_array();
+	auto arr = new_value->get_arr();
+	auto arrsize = arr.size();
 
-		if (arr.size() == 1) {
-			has_array = true;
-			rarr = build_array(dim, arr[0], dim.size() - 1);
-		}
-		else if (arr.size() == 0) {
-			has_array = true;
-			rarr = build_undefined_array(dim, dim.size() - 1);
-		}
+	if (is_array(new_value->type) && dim.size() > 0 && arrsize >= 0 && arrsize <= 1) {
+		auto val = arrsize == 1 ? arr[0] : alocate_value(new RuntimeValue(Type::T_VOID));
 
-		if (has_array) {
-			new_value->set(rarr, current_expression_array_type.type,
-				current_expression_array_type.dim,
-				current_expression_array_type.type_name,
-				current_expression_array_type.type_name_space);
-		}
+		flx_array rarr = build_array(dim, val, dim.size() - 1);
+
+		new_value->set(rarr, current_expression_array_type.type, dim,
+			current_expression_array_type.type_name,
+			current_expression_array_type.type_name_space);
 	}
 }
 
@@ -1789,34 +1780,6 @@ flx_array Interpreter::build_array(const std::vector<std::shared_ptr<ASTExprNode
 			current_expression_array_type.type_name, current_expression_array_type.type_name_space));
 
 		return build_array(dim, val, i);
-	}
-
-	return raw_arr;
-}
-
-flx_array Interpreter::build_undefined_array(const std::vector<std::shared_ptr<ASTExprNode>>& dim, long long i) {
-	flx_array raw_arr;
-
-	if (dim.size() - 1 == i) {
-		current_expression_array_type = TypeDefinition();
-	}
-
-	size_t size = 0;
-	if (dim.size() == 0) {
-		size = 1;
-	}
-	else {
-		auto crr_acc = dim[i];
-		std::dynamic_pointer_cast<ASTExprNode>(crr_acc)->accept(this);
-		size = current_expression_value->get_i();
-	}
-
-	raw_arr = flx_array(size);
-
-	--i;
-
-	if (i >= 0) {
-		return build_undefined_array(dim, i);
 	}
 
 	return raw_arr;

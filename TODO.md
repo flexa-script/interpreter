@@ -124,6 +124,7 @@
 - [ ] Can't executes returned function from another function eg: `here_is_returning_a_function()();`
 - [ ] Fix HTTP core lib
 - [ ] Check behaviour of rest arrays and why join and print haven't the same signature
+    - Print seems not differentiating `print({0,1,2})` from `print(0, 1, 2)`
 - [ ] Fix: shouldn't call from flx namespace if it's not included
 - [X] Fix function parameters root container, is generating mem leak
 - [X] Namespaces must be included in file, not in namespace level
