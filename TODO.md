@@ -117,7 +117,9 @@
     - [X] 2048
 
 ## Refactoring
-- [ ] Split ASTTypingNode to more specific responsabilities
+- [ ] Split ASTTypingNode to more specific responsabilities:
+    - [ ] is_array, is_struct and is_any will became builtins
+    - [ ] refid, typeid and typeof will have exclusive ast nodes
 - [X] Split ASTNamespaceManagerNode to ASTIncludeNamespaceNode and ASTExcludeNamespaceNode
 
 ## Known bugs
