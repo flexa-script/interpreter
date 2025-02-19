@@ -587,6 +587,7 @@ void RuntimeValue::set(flx_array arr, Type array_type, std::vector<std::shared_p
 	unset();
 	this->arr = new flx_array(arr);
 	type = Type::T_ARRAY;
+	this->dim = dim;
 	this->array_type = array_type;
 	this->type_name = type_name;
 	this->type_name_space = type_name_space;
