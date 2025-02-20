@@ -9,7 +9,7 @@ Token::Token()
 	: type(LexTokenType::TOK_ERROR), value(""), row(0), col(0) {}
 
 const std::string& Token::token_image(LexTokenType type) {
-	return TOKEN_IMAGE[type];
+	return TOKEN_IMAGE.at(type);
 }
 
 // assignment

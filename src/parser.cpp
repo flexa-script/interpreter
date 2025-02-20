@@ -124,11 +124,16 @@ std::shared_ptr<ASTNamespaceManagerNode> Parser::parse_namespace_manager_stateme
 	name_space = current_token.value;
 	consume_token(TOK_SEMICOLON);
 
-	if (type == TOK_INCLUDE) {
+	switch (type)
+	{
+	case lexer::TOK_INCLUDE:
 		return std::make_shared<ASTIncludeNamespaceNode>(name_space, row, col);
+	case lexer::TOK_EXCLUDE:
+		return std::make_shared<ASTExcludeNamespaceNode>(name_space, row, col);
+	default:
+		throw std::runtime_error(msg_header() + "invalid token '" + Token::token_image(type) + "'");
 	}
 
-	return std::make_shared<ASTExcludeNamespaceNode>(name_space, row, col);
 }
 
 std::shared_ptr<ASTExprNode> Parser::parse_statement_expression() {
@@ -1041,7 +1046,7 @@ std::shared_ptr<ASTExprNode> Parser::parse_factor() {
 	case TOK_TYPEOF:
 	case TOK_TYPEID:
 	case TOK_REFID:
-		return parse_typing_node();
+		return parse_call_operator_node();
 
 	case TOK_IDENTIFIER:
 		return parse_identifier_expression();
@@ -1505,8 +1510,8 @@ std::vector<std::shared_ptr<ASTExprNode>> Parser::parse_actual_params() {
 	return parameters;
 }
 
-std::shared_ptr<ASTTypingNode> Parser::parse_typing_node() {
-	std::string image = current_token.value;
+std::shared_ptr<ASTCallOperatorNode> Parser::parse_call_operator_node() {
+	auto type = current_token.type;
 	unsigned int row = current_token.row;
 	unsigned int col = current_token.col;
 	std::shared_ptr<ASTExprNode> expr = nullptr;
@@ -1532,7 +1537,17 @@ std::shared_ptr<ASTTypingNode> Parser::parse_typing_node() {
 
 	consume_token(TOK_RIGHT_BRACKET);
 
-	return std::make_shared<ASTTypingNode>(image, expr, row, col);
+	switch (type)
+	{
+	case lexer::TOK_TYPEOF:
+		return std::make_shared<ASTTypeOfNode>(expr, row, col);
+	case lexer::TOK_TYPEID:
+		return std::make_shared<ASTTypeIdNode>(expr, row, col);
+	case lexer::TOK_REFID:
+		return std::make_shared<ASTRefIdNode>(expr, row, col);
+	default:
+		throw std::runtime_error(msg_header() + "invalid token '" + Token::token_image(type) + "'");
+	}
 }
 
 std::shared_ptr<ASTArrayConstructorNode> Parser::parse_array_constructor_node() {

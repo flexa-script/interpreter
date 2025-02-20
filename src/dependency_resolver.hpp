@@ -61,7 +61,9 @@ namespace visitor {
 		void visit(std::shared_ptr<ASTTypeCastNode>) override;
 		void visit(std::shared_ptr<ASTNullNode>) override;
 		void visit(std::shared_ptr<ASTThisNode>) override;
-		void visit(std::shared_ptr<ASTTypingNode>) override;
+		void visit(std::shared_ptr<ASTTypeOfNode>) override;
+		void visit(std::shared_ptr<ASTTypeIdNode>) override;
+		void visit(std::shared_ptr<ASTRefIdNode>) override;
 		void visit(std::shared_ptr<ASTValueNode>) override;
 		void visit(std::shared_ptr<ASTBuiltinCallNode>) override;
 

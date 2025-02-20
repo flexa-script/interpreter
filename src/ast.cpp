@@ -150,8 +150,17 @@ ASTFunctionCallNode::ASTFunctionCallNode(const std::string& name_space,
 ASTTypeCastNode::ASTTypeCastNode(Type type, std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
 	: ASTExprNode(row, col), type(type), expr(expr) {}
 
-ASTTypingNode::ASTTypingNode(const std::string& image, std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
-	: ASTExprNode(row, col), image(image), expr(expr) {}
+ASTCallOperatorNode::ASTCallOperatorNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
+	: ASTExprNode(row, col), expr(expr) {}
+
+ASTTypeOfNode::ASTTypeOfNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
+	: ASTCallOperatorNode(expr, row, col) {}
+
+ASTTypeIdNode::ASTTypeIdNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
+	: ASTCallOperatorNode(expr, row, col) {}
+
+ASTRefIdNode::ASTRefIdNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
+	: ASTCallOperatorNode(expr, row, col) {}
 
 ASTLambdaFunction::ASTLambdaFunction(std::shared_ptr<ASTFunctionDefinitionNode> fun, unsigned int row, unsigned int col)
 	: ASTExprNode(row, col), fun(fun) {}
@@ -237,11 +246,23 @@ long long ASTIdentifierNode::hash(Visitor* v) {
 	return v->hash(std::dynamic_pointer_cast<ASTIdentifierNode>(shared_from_this()));
 }
 
-void ASTTypingNode::accept(Visitor* v) {
-	v->visit(std::dynamic_pointer_cast<ASTTypingNode>(shared_from_this()));
+void ASTTypeOfNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTTypeOfNode>(shared_from_this()));
 }
 
-long long ASTTypingNode::hash(Visitor* v) { return 0; }
+long long ASTTypeOfNode::hash(Visitor* v) { return 0; }
+
+void ASTTypeIdNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTTypeIdNode>(shared_from_this()));
+}
+
+long long ASTTypeIdNode::hash(Visitor* v) { return 0; }
+
+void ASTRefIdNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTRefIdNode>(shared_from_this()));
+}
+
+long long ASTRefIdNode::hash(Visitor* v) { return 0; }
 
 void ASTUnaryExprNode::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTUnaryExprNode>(shared_from_this()));

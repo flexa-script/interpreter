@@ -117,10 +117,14 @@
     - [X] 2048
 
 ## Refactoring
-- [ ] Split ASTTypingNode to more specific responsabilities:
+- [X] Split ASTTypingNode to more specific responsabilities:
     - [X] is_array, is_struct and is_any will became builtins
-    - [ ] refid, typeid and typeof will have exclusive ast nodes
+    - [X] refid, typeid and typeof will have exclusive ast nodes
 - [X] Split ASTNamespaceManagerNode to ASTIncludeNamespaceNode and ASTExcludeNamespaceNode
+- [ ] Remove namespace queue due to program be available
+- [ ] Change types as string to expression token types
+    - Create a special type for this?
+    - Actually types are considered strings, change typeof return?
 
 ## Known bugs
 - [ ] Can't executes returned function from another function eg: `here_is_returning_a_function()();`

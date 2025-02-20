@@ -1552,28 +1552,36 @@ void Interpreter::visit(std::shared_ptr<ASTThisNode> astnode) {
 	current_expression_value = alocate_value(new RuntimeValue(flx_string(current_this_name.top())));
 }
 
-void Interpreter::visit(std::shared_ptr<ASTTypingNode> astnode) {
+void Interpreter::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	astnode->expr->accept(this);
 
-	if (astnode->image == "refid") {
-		current_expression_value = alocate_value(new RuntimeValue(flx_int(current_expression_value)));
-		return;
-	}
+	auto str_type = RuntimeOperations::build_str_type(current_expression_value, evaluate_access_vector_ptr);
+
+	auto value = alocate_value(new RuntimeValue(Type::T_STRING));
+	value->set(flx_string(str_type));
+	current_expression_value = value;
+}
+
+void Interpreter::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
 
 	auto str_type = RuntimeOperations::build_str_type(current_expression_value, evaluate_access_vector_ptr);
 
-	if (astnode->image == "typeid") {
-		auto value = alocate_value(new RuntimeValue(Type::T_INT));
-		value->set(flx_int(utils::StringUtils::hashcode(str_type)));
-		current_expression_value = value;
-	}
-	else {
-		auto value = alocate_value(new RuntimeValue(Type::T_STRING));
-		value->set(flx_string(str_type));
-		current_expression_value = value;
-	}
+	auto value = alocate_value(new RuntimeValue(Type::T_INT));
+	value->set(flx_int(utils::StringUtils::hashcode(str_type)));
+	current_expression_value = value;
+}
+
+void Interpreter::visit(std::shared_ptr<ASTRefIdNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	current_expression_value = alocate_value(new RuntimeValue(flx_int(current_expression_value)));
 }
 
 RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<parser::Identifier>& identifier_vector, RuntimeValue* new_value) {

@@ -54,7 +54,9 @@ namespace parser {
 	class ASTTypeCastNode;
 	class ASTNullNode;
 	class ASTThisNode;
-	class ASTTypingNode;
+	class ASTTypeOfNode;
+	class ASTTypeIdNode;
+	class ASTRefIdNode;
 	class ASTValueNode;
 	class ASTBuiltinCallNode;
 }
@@ -123,7 +125,9 @@ namespace visitor {
 		virtual void visit(std::shared_ptr<ASTTypeCastNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTNullNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTThisNode>) = 0;
-		virtual void visit(std::shared_ptr<ASTTypingNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTTypeOfNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTTypeIdNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTRefIdNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTValueNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTBuiltinCallNode>) = 0;
 

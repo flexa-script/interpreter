@@ -478,12 +478,35 @@ namespace parser {
 		virtual long long hash(Visitor*) override;
 	};
 
-	class ASTTypingNode : public ASTExprNode {
+	class ASTCallOperatorNode : public ASTExprNode {
 	public:
-		std::string image;
 		std::shared_ptr<ASTExprNode> expr;
 
-		ASTTypingNode(const std::string& image, std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col);
+		ASTCallOperatorNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col);
+
+		void accept(Visitor*) override = 0;
+		virtual long long hash(Visitor*) override = 0;
+	};
+
+	class ASTTypeOfNode : public ASTCallOperatorNode {
+	public:
+		ASTTypeOfNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col);
+
+		void accept(Visitor*) override;
+		virtual long long hash(Visitor*) override;
+	};
+
+	class ASTTypeIdNode : public ASTCallOperatorNode {
+	public:
+		ASTTypeIdNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col);
+
+		void accept(Visitor*) override;
+		virtual long long hash(Visitor*) override;
+	};
+
+	class ASTRefIdNode : public ASTCallOperatorNode {
+	public:
+		ASTRefIdNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col);
 
 		void accept(Visitor*) override;
 		virtual long long hash(Visitor*) override;

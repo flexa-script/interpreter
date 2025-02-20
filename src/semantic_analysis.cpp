@@ -1243,7 +1243,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTThisNode> astnode) {
 	current_expression.type = Type::T_STRING;
 }
 
-void SemanticAnalyser::visit(std::shared_ptr<ASTTypingNode> astnode) {
+void SemanticAnalyser::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	astnode->expr->accept(this);
@@ -1253,12 +1253,33 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTypingNode> astnode) {
 	}
 
 	current_expression = SemanticValue();
-	if (astnode->image == "typeid" || astnode->image == "refid") {
-		current_expression.type = Type::T_INT;
+	current_expression.type = Type::T_STRING;
+}
+
+void SemanticAnalyser::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	if (is_undefined(current_expression.type)) {
+		throw std::runtime_error("undefined expression");
 	}
-	else if (astnode->image == "typeof") {
-		current_expression.type = Type::T_STRING;
+
+	current_expression = SemanticValue();
+	current_expression.type = Type::T_INT;
+}
+
+void SemanticAnalyser::visit(std::shared_ptr<ASTRefIdNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	if (is_undefined(current_expression.type)) {
+		throw std::runtime_error("undefined expression");
 	}
+
+	current_expression = SemanticValue();
+	current_expression.type = Type::T_INT;
 }
 
 void SemanticAnalyser::declare_function_parameter(std::shared_ptr<Scope> scope, const VariableDefinition& param) {

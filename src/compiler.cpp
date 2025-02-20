@@ -587,31 +587,22 @@ void Compiler::visit(std::shared_ptr<ASTThisNode> astnode) {
 	add_instruction(OpCode::OP_PUSH_NAMESPACE_STACK, nullptr);
 }
 
-void Compiler::visit(std::shared_ptr<ASTTypingNode> astnode) {
+void Compiler::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 	astnode->expr->accept(this);
 
-	if (astnode->image == "typeid") {
-		add_instruction(OpCode::OP_TYPEID, nullptr);
-	}
-	else if (astnode->image == "refid") {
-		add_instruction(OpCode::OP_REFID, nullptr);
-		}
-	else if (astnode->image == "typeof") {
-		add_instruction(OpCode::OP_TYPEOF, nullptr);
-	}
-	else {
-		auto type = Type::T_UNDEFINED;
-		if (astnode->image == "is_any") {
-			type = Type::T_ANY;
-		}
-		else if (astnode->image == "is_array") {
-			type = Type::T_ARRAY;
-		}
-		else if (astnode->image == "is_struct") {
-			type = Type::T_STRUCT;
-		}
-		add_instruction(OpCode::OP_IS_TYPE, uint8_t(type));
-	}
+	add_instruction(OpCode::OP_TYPEOF, nullptr);
+}
+
+void Compiler::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
+	astnode->expr->accept(this);
+
+	add_instruction(OpCode::OP_TYPEID, nullptr);
+}
+
+void Compiler::visit(std::shared_ptr<ASTRefIdNode> astnode) {
+	astnode->expr->accept(this);
+
+	add_instruction(OpCode::OP_REFID, nullptr);
 }
 
 void Compiler::visit(std::shared_ptr<ASTValueNode> astnode) {}

@@ -348,7 +348,7 @@ Token Lexer::process_identifier() {
 	}
 
 	for (size_t i = 0; i < TOKEN_IMAGE.size(); ++i) {
-		if (identifier == TOKEN_IMAGE[i]) {
+		if (identifier == TOKEN_IMAGE.at((LexTokenType)i)) {
 			type = (LexTokenType)i;
 			break;
 		}
