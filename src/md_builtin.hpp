@@ -16,7 +16,10 @@ namespace modules {
 		READCH,
 		LEN,
 		SLEEP,
-		SYSTEM
+		SYSTEM,
+		IS_ANY,
+		IS_ARRAY,
+		IS_STRUCT
 	};
 
 	extern std::string BUILTIN_NAMES[];

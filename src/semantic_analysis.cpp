@@ -1259,9 +1259,6 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTypingNode> astnode) {
 	else if (astnode->image == "typeof") {
 		current_expression.type = Type::T_STRING;
 	}
-	else {
-		current_expression.type = Type::T_BOOL;
-	}
 }
 
 void SemanticAnalyser::declare_function_parameter(std::shared_ptr<Scope> scope, const VariableDefinition& param) {

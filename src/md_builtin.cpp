@@ -25,7 +25,10 @@ std::string modules::BUILTIN_NAMES[] = {
 	"readch",
 	"len",
 	"sleep",
-	"system"
+	"system",
+	"is_any",
+	"is_array",
+	"is_struct"
 };
 
 ModuleBuiltin::ModuleBuiltin() {
@@ -56,6 +59,15 @@ void ModuleBuiltin::register_functions(visitor::SemanticAnalyser* visitor) {
 
 	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::SYSTEM], func_decls[BUILTIN_NAMES[BuintinFuncs::SYSTEM]]);
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::SYSTEM]] = nullptr;
+
+	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_ANY], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_ANY]]);
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ANY]] = nullptr;
+
+	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_ARRAY], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_ARRAY]]);
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ARRAY]] = nullptr;
+
+	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_STRUCT], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_STRUCT]]);
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_STRUCT]] = nullptr;
 
 }
 
@@ -143,6 +155,48 @@ void ModuleBuiltin::register_functions(visitor::Interpreter* visitor) {
 
 		};
 
+	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_ANY], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_ANY]]);
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ANY]] = [this, visitor]() {
+
+		visitor->current_expression_value = visitor->alocate_value(
+			new RuntimeValue(
+				flx_bool(
+					visitor->current_expression_value->ref.lock()
+					&& (
+						is_any(visitor->current_expression_value->ref.lock()->type) || is_any(visitor->current_expression_value->ref.lock()->array_type)
+					)
+				)
+			)
+		);
+
+		};
+
+	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_ARRAY], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_ARRAY]]);
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ARRAY]] = [this, visitor]() {
+
+		visitor->current_expression_value = visitor->alocate_value(
+			new RuntimeValue(
+				flx_bool(
+					is_array(visitor->current_expression_value->type) || visitor->current_expression_value->dim.size() > 0
+				)
+			)
+		);
+
+		};
+
+	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_STRUCT], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_STRUCT]]);
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_STRUCT]] = [this, visitor]() {
+
+		visitor->current_expression_value = visitor->alocate_value(
+			new RuntimeValue(
+				flx_bool(
+					is_struct(visitor->current_expression_value->type)
+				)
+			)
+		);
+
+		};
+
 }
 
 void ModuleBuiltin::register_functions(visitor::Compiler* visitor) {
@@ -153,6 +207,9 @@ void ModuleBuiltin::register_functions(visitor::Compiler* visitor) {
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::LEN]] = nullptr;
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::SLEEP]] = nullptr;
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::SYSTEM]] = nullptr;
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ANY]] = nullptr;
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ARRAY]] = nullptr;
+	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_STRUCT]] = nullptr;
 }
 
 void ModuleBuiltin::register_functions(VirtualMachine* vm) {
@@ -227,6 +284,22 @@ void ModuleBuiltin::register_functions(VirtualMachine* vm) {
 
 		};
 
+	vm->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_ANY], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_ANY]]);
+	vm->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ANY]] = [this, vm]() {
+
+		};
+
+	vm->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_ARRAY], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_ARRAY]]);
+	vm->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_ARRAY]] = [this, vm]() {
+
+		};
+
+	vm->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::IS_STRUCT], func_decls[BUILTIN_NAMES[BuintinFuncs::IS_STRUCT]]);
+	vm->builtin_functions[BUILTIN_NAMES[BuintinFuncs::IS_STRUCT]] = [this, vm]() {
+
+		};
+
+
 }
 
 void ModuleBuiltin::build_decls() {
@@ -286,4 +359,25 @@ void ModuleBuiltin::build_decls() {
 	func_decls.emplace(BUILTIN_NAMES[BuintinFuncs::SYSTEM], FunctionDefinition(BUILTIN_NAMES[BuintinFuncs::SYSTEM], Type::T_VOID, parameters,
 		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
 		std::make_shared<ASTBuiltinCallNode>(BUILTIN_NAMES[BuintinFuncs::SYSTEM], 0, 0)}, 0, 0)));
+
+	parameters = std::vector<TypeDefinition*>();
+	variable = new VariableDefinition("expr", Type::T_ANY);
+	parameters.push_back(variable);
+	func_decls.emplace(BUILTIN_NAMES[BuintinFuncs::IS_ANY], FunctionDefinition(BUILTIN_NAMES[BuintinFuncs::IS_ANY], Type::T_BOOL, parameters,
+		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
+		std::make_shared<ASTBuiltinCallNode>(BUILTIN_NAMES[BuintinFuncs::IS_ANY], 0, 0)}, 0, 0)));
+
+	parameters = std::vector<TypeDefinition*>();
+	variable = new VariableDefinition("expr", Type::T_ANY);
+	parameters.push_back(variable);
+	func_decls.emplace(BUILTIN_NAMES[BuintinFuncs::IS_ARRAY], FunctionDefinition(BUILTIN_NAMES[BuintinFuncs::IS_ARRAY], Type::T_BOOL, parameters,
+		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
+		std::make_shared<ASTBuiltinCallNode>(BUILTIN_NAMES[BuintinFuncs::IS_ARRAY], 0, 0)}, 0, 0)));
+
+	parameters = std::vector<TypeDefinition*>();
+	variable = new VariableDefinition("expr", Type::T_ANY);
+	parameters.push_back(variable);
+	func_decls.emplace(BUILTIN_NAMES[BuintinFuncs::IS_STRUCT], FunctionDefinition(BUILTIN_NAMES[BuintinFuncs::IS_STRUCT], Type::T_BOOL, parameters,
+		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
+		std::make_shared<ASTBuiltinCallNode>(BUILTIN_NAMES[BuintinFuncs::IS_STRUCT], 0, 0)}, 0, 0)));
 }

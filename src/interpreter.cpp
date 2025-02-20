@@ -1562,26 +1562,6 @@ void Interpreter::visit(std::shared_ptr<ASTTypingNode> astnode) {
 		return;
 	}
 
-	if (astnode->image == "is_any") {
-		auto value = alocate_value(new RuntimeValue(flx_bool(
-			(current_expression_value->ref.lock()
-				&& (is_any(current_expression_value->ref.lock()->type))
-				|| is_any(current_expression_value->ref.lock()->array_type)))));
-
-		current_expression_value = value;
-		return;
-	}
-	else if (astnode->image == "is_array") {
-		auto value = alocate_value(new RuntimeValue(flx_bool(is_array(current_expression_value->type) || current_expression_value->dim.size() > 0)));
-		current_expression_value = value;
-		return;
-	}
-	else if (astnode->image == "is_struct") {
-		auto value = alocate_value(new RuntimeValue(flx_bool(is_struct(current_expression_value->type))));
-		current_expression_value = value;
-		return;
-	}
-
 	auto str_type = RuntimeOperations::build_str_type(current_expression_value, evaluate_access_vector_ptr);
 
 	if (astnode->image == "typeid") {

@@ -1041,9 +1041,6 @@ std::shared_ptr<ASTExprNode> Parser::parse_factor() {
 	case TOK_TYPEOF:
 	case TOK_TYPEID:
 	case TOK_REFID:
-	case TOK_IS_ANY:
-	case TOK_IS_ARRAY:
-	case TOK_IS_STRUCT:
 		return parse_typing_node();
 
 	case TOK_IDENTIFIER:

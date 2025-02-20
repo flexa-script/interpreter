@@ -10,12 +10,6 @@ assert_equals("type of string", "string", typeof(string));
 
 end_test();
 
-// start_test("TYPE / COMPLEX TYPE / VARIABLE");
-
-// assert_true("is array", is_array());
-
-// end_test();
-
 start_test("TYPE / TYPEOF / VARIABLE / UNTYPED");
 
 assert_equals("type of false boolean as undeclared any", typeof(false), typeof(vd_dbf));
