@@ -46,7 +46,7 @@ namespace visitor {
 		bool has_string_access = false;
 		bool exception = false;
 
-		std::vector<std::shared_ptr<ASTExprNode>> current_expression_array_dim;
+		std::vector<unsigned int> current_expression_array_dim;
 		int current_expression_array_dim_max = 0;
 		TypeDefinition current_expression_array_type;
 		bool is_max = false;
@@ -60,8 +60,8 @@ namespace visitor {
 		std::vector<unsigned int> evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector);
 		std::vector<unsigned int> calculate_array_dim_size(const flx_array& arr);
 
-		void check_build_array(RuntimeValue* new_value, std::vector<std::shared_ptr<ASTExprNode>> dim);
-		flx_array build_array(const std::vector<std::shared_ptr<ASTExprNode>>& dim, RuntimeValue* init_value, long long i);
+		void check_build_array(RuntimeValue* new_value, std::vector<unsigned int> dim);
+		flx_array build_array(const std::vector<unsigned int>& dim, RuntimeValue* init_value, long long i);
 
 		RuntimeValue* set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<Identifier>& identifier_vector, RuntimeValue* new_value);
 		RuntimeValue* access_value(RuntimeValue* value, const std::vector<Identifier>& identifier_vector, size_t i = 0);

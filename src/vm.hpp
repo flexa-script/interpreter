@@ -45,7 +45,7 @@ namespace vm {
 		std::string set_type_name;
 		std::string set_type_name_space;
 		Type set_array_type;
-		std::vector<std::shared_ptr<ASTExprNode>> set_array_dim;
+		std::vector<unsigned int> set_array_dim;
 		std::shared_ptr<ASTExprNode> set_default_value;
 		bool set_is_rest;
 

@@ -39,7 +39,7 @@ ASTDeclarationNode::ASTDeclarationNode(const std::string& identifier, Type type,
 	: ASTStatementNode(row, col), TypeDefinition(type, array_type, dim, type_name, type_name_space),
 	identifier(identifier), expr(expr), is_const(is_const) {}
 
-ASTUnpackedDeclarationNode::ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+ASTUnpackedDeclarationNode::ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<unsigned int>& dim,
 	const std::string& type_name, const std::string& type_name_space, const std::vector<std::shared_ptr<ASTDeclarationNode>>& declarations,
 	std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col), TypeDefinition(type, array_type, dim, type_name, type_name_space),
@@ -107,7 +107,7 @@ ASTStructDefinitionNode::ASTStructDefinitionNode(const std::string& identifier, 
 	: ASTStatementNode(row, col), identifier(identifier), variables(variables) {}
 
 ASTFunctionDefinitionNode::ASTFunctionDefinitionNode(const std::string& identifier, const std::vector<TypeDefinition*>& parameters,
-	Type type, const std::string& type_name, const std::string& type_name_space, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+	Type type, const std::string& type_name, const std::string& type_name_space, Type array_type, const std::vector<unsigned int>& dim,
 	std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col), TypeDefinition(type, array_type, dim, type_name, type_name_space),
 	identifier(identifier), parameters(parameters), block(block) {}

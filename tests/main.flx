@@ -1,7 +1,7 @@
 using utils;
 using flx.std.testing;
 
-// include namespace flx; // shouldn't call from flx namespace if it's commented
+include namespace flx;
 
 var gsw: StopWatch = StopWatch{};
 

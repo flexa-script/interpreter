@@ -121,17 +121,18 @@
     - [X] is_array, is_struct and is_any will became builtins
     - [X] refid, typeid and typeof will have exclusive ast nodes
 - [X] Split ASTNamespaceManagerNode to ASTIncludeNamespaceNode and ASTExcludeNamespaceNode
-- [ ] Remove namespace queue due to program be available
+- [ ] Remove namespace queue due to program be available in nodes
 - [ ] Change types as string to expression token types
-    - Create a special type for this?
-    - Actually types are considered strings, change typeof return?
+    - Create a special type for types?
+    - Currently types are considered strings, change typeof return?
 
 ## Known bugs
 - [ ] Can't executes returned function from another function eg: `here_is_returning_a_function()();`
 - [ ] Fix HTTP core lib
 - [ ] Check behaviour of rest arrays and why join and print haven't the same signature
     - Print seems not differentiating `print({0,1,2})` from `print(0, 1, 2)`
-- [ ] Fix: shouldn't call from flx namespace if it's not included
+    - Semantic analysis seems to indentifying arr from `fun fun(arr[]: int)` as rest
+- [X] Fix: shouldn't call from flx namespace if it's not included
 - [X] Fix function parameters root container, is generating mem leak
 - [X] Namespaces must be included in file, not in namespace level
 - [X] Review value copy and equal (mainly cause of pointers)

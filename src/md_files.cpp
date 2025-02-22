@@ -125,7 +125,7 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 					arr[i] = val;
 				}
 			}
-			rval->set(arr, Type::T_CHAR, std::vector<std::shared_ptr<ASTExprNode>>());
+			rval->set(arr, Type::T_CHAR, std::vector<unsigned int>{(unsigned int)arr.size()});
 
 			delete[] buffer;
 

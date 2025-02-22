@@ -78,11 +78,15 @@ public:
 	std::string type_name;
 	std::string type_name_space;
 	Type array_type;
-	std::vector<std::shared_ptr<ASTExprNode>> dim;
+	std::vector<std::shared_ptr<ASTExprNode>> expr_dim;
+	std::vector<unsigned int> dim;
 	bool use_ref;
 
 	TypeDefinition(Type type, Type array_type,
-		const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+		const std::vector<std::shared_ptr<ASTExprNode>>& expr_dim,
+		const std::string& type_name, const std::string& type_name_space);
+
+	TypeDefinition(Type type, Type array_type, const std::vector<unsigned int>& dim,
 		const std::string& type_name, const std::string& type_name_space);
 
 	TypeDefinition(Type type);
@@ -91,7 +95,7 @@ public:
 
 	static TypeDefinition get_basic(Type type);
 	static TypeDefinition get_array(Type array_type,
-		const std::vector<std::shared_ptr<ASTExprNode>>& dim = std::vector<std::shared_ptr<ASTExprNode>>());
+		const std::vector<unsigned int>& dim = std::vector<unsigned int>());
 	static TypeDefinition get_struct(const std::string& type_name,
 		const std::string& type_name_space);
 
@@ -125,10 +129,15 @@ public:
 		std::shared_ptr<ASTExprNode> default_value, bool is_rest, unsigned int row, unsigned int col);
 
 	VariableDefinition(const std::string& identifier, Type type,
+		const std::string& type_name, const std::string& type_name_space,
+		Type array_type, const std::vector<unsigned int>& dim,
+		std::shared_ptr<ASTExprNode> default_value, bool is_rest, unsigned int row, unsigned int col);
+
+	VariableDefinition(const std::string& identifier, Type type,
 		std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, unsigned int row = 0, unsigned int col = 0);
 
 	VariableDefinition(const std::string& identifier,
-		Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+		Type array_type, const std::vector<unsigned int>& dim,
 		const std::string& type_name = "", const std::string& type_name_space = "",
 		std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, unsigned int row = 0, unsigned int col = 0);
 
@@ -141,7 +150,7 @@ public:
 	std::vector<VariableDefinition> variables;
 	std::shared_ptr<ASTExprNode> assign_value;
 
-	UnpackedVariableDefinition(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim, const std::string& type_name,
+	UnpackedVariableDefinition(Type type, Type array_type, const std::vector<unsigned int>& dim, const std::string& type_name,
 		const std::string& type_name_space, const std::vector<VariableDefinition>& variables);
 
 	UnpackedVariableDefinition(TypeDefinition type_definition, const std::vector<VariableDefinition>& variables);
@@ -156,7 +165,7 @@ public:
 	bool is_var = false;
 
 	FunctionDefinition(const std::string& identifier, Type type, const std::string& type_name,
-		const std::string& type_name_space, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+		const std::string& type_name_space, Type array_type, const std::vector<unsigned int>& dim,
 		const std::vector<TypeDefinition*>& parameters,
 		std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col);
 
@@ -164,7 +173,7 @@ public:
 		const std::vector<TypeDefinition*>& parameters, std::shared_ptr<ASTBlockNode> block);
 
 	FunctionDefinition(const std::string& identifier, Type type, const std::string& type_name,
-		const std::string& type_name_space, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim);
+		const std::string& type_name_space, Type array_type, const std::vector<unsigned int>& dim);
 
 	FunctionDefinition(const std::string& identifier, unsigned int row, unsigned int col);
 
@@ -190,7 +199,7 @@ class Variable : public TypeDefinition {
 public:
 	std::string identifier;
 
-	Variable(const std::string& identifier, Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+	Variable(const std::string& identifier, Type type, Type array_type, const std::vector<unsigned int>& dim,
 		const std::string& type_name, const std::string& type_name_space);
 
 	Variable(TypeDefinition value);
@@ -204,7 +213,7 @@ class Value : public TypeDefinition {
 public:
 	std::weak_ptr<Variable> ref;
 
-	Value(Type type, Type array_type, std::vector<std::shared_ptr<ASTExprNode>> dim,
+	Value(Type type, Type array_type, std::vector<unsigned int> dim,
 		const std::string& type_name, const std::string& type_name_space);
 	Value(TypeDefinition type);
 	Value();
@@ -218,7 +227,7 @@ public:
 	bool is_sub;
 
 	// complete constructor
-	SemanticValue(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+	SemanticValue(Type type, Type array_type, const std::vector<unsigned int>& dim,
 		const std::string& type_name, const std::string& type_name_space, long long hash,
 		bool is_const, unsigned int row, unsigned int col);
 
@@ -243,8 +252,9 @@ public:
 	std::shared_ptr<SemanticValue> value;
 	bool is_const;
 
-	SemanticVariable(const std::string& identifier, Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
-		const std::string& type_name, const std::string& type_name_space, bool is_const, unsigned int row, unsigned int col);
+	SemanticVariable(const std::string& identifier, Type type, Type array_type, const std::vector<unsigned int>& dim,
+		const std::string& type_name, const std::string& type_name_space,
+		bool is_const, unsigned int row, unsigned int col);
 
 	SemanticVariable(const std::string& identifier, Type type, bool is_const, unsigned int row, unsigned int col);
 
@@ -254,7 +264,7 @@ public:
 	std::shared_ptr<SemanticValue> get_value();
 
 	Type def_type(Type type);
-	Type def_array_type(Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim);
+	Type def_array_type(Type array_type, const std::vector<unsigned int>& dim);
 
 	void reset_ref() override;
 };
@@ -273,7 +283,7 @@ private:
 public:
 	RuntimeValue* value_ref = nullptr;
 
-	RuntimeValue(Type type, Type array_type, std::vector<std::shared_ptr<ASTExprNode>> dim,
+	RuntimeValue(Type type, Type array_type, std::vector<unsigned int> dim,
 		const std::string& type_name, const std::string& type_name_space,
 		unsigned int row, unsigned int col);
 	RuntimeValue(flx_bool);
@@ -282,11 +292,11 @@ public:
 	RuntimeValue(flx_char);
 	RuntimeValue(flx_string);
 	RuntimeValue(flx_array);
-	RuntimeValue(flx_array, Type array_type, std::vector<std::shared_ptr<ASTExprNode>> dim, std::string type_name = "", std::string type_name_space = "");
+	RuntimeValue(flx_array, Type array_type, std::vector<unsigned int> dim, std::string type_name = "", std::string type_name_space = "");
 	RuntimeValue(flx_struct, std::string type_name, std::string type_name_space);
 	RuntimeValue(flx_function);
 	RuntimeValue(Type type);
-	RuntimeValue(Type array_type, std::vector<std::shared_ptr<ASTExprNode>> dim, std::string type_name = "", std::string type_name_space = "");
+	RuntimeValue(Type array_type, std::vector<unsigned int> dim, std::string type_name = "", std::string type_name_space = "");
 	RuntimeValue(std::string type_name, std::string type_name_space);
 	RuntimeValue(RuntimeValue*);
 	RuntimeValue(TypeDefinition type);
@@ -299,7 +309,7 @@ public:
 	void set(flx_char);
 	void set(flx_string);
 	void set(flx_array);
-	void set(flx_array, Type array_type, std::vector<std::shared_ptr<ASTExprNode>> dim, std::string type_name = "", std::string type_name_space = "");
+	void set(flx_array, Type array_type, std::vector<unsigned int> dim, std::string type_name = "", std::string type_name_space = "");
 	void set(flx_struct, std::string type_name, std::string type_name_space);
 	void set(flx_function);
 	void set_sub(std::string identifier, RuntimeValue* sub_value);
@@ -335,7 +345,6 @@ public:
 
 	long double value_hash() const;
 
-	void copy_array(flx_array arr);
 	void copy_from(RuntimeValue* value);
 
 	virtual std::vector<GCObject*> get_references() override;
@@ -348,7 +357,7 @@ class RuntimeVariable : public Variable, public GCObject, public std::enable_sha
 public:
 	RuntimeValue* value;
 
-	RuntimeVariable(const std::string& identifier, Type type, Type array_type, std::vector<std::shared_ptr<ASTExprNode>> dim,
+	RuntimeVariable(const std::string& identifier, Type type, Type array_type, std::vector<unsigned int> dim,
 		const std::string& type_name, const std::string& type_name_space);
 	RuntimeVariable(const std::string& identifier, TypeDefinition value);
 	RuntimeVariable();
@@ -358,7 +367,7 @@ public:
 	RuntimeValue* get_value();
 
 	Type def_type(Type type);
-	Type def_array_type(Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim);
+	Type def_array_type(Type array_type, const std::vector<unsigned int>& dim);
 
 	void reset_ref() override;
 

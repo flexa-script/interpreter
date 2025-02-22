@@ -914,7 +914,7 @@ void VirtualMachine::cleanup_type_set() {
 	set_type_name = "";
 	set_type_name_space = "";
 	set_array_type = Type::T_UNDEFINED;
-	set_array_dim = std::vector<std::shared_ptr<ASTExprNode>>();
+	set_array_dim = std::vector<unsigned int>();
 	set_default_value = nullptr;
 	set_is_rest = false;
 }

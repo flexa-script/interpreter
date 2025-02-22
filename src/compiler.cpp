@@ -190,15 +190,15 @@ void Compiler::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 		// at this point, vm will jump to OP_FUN_END
 		auto id = add_instruction(OpCode::OP_JUMP, nullptr);
 
-		for (auto& param : astnode->parameters) {
-			const auto& var = *dynamic_cast<VariableDefinition*>(param);
-			if (var.default_value) {
-				auto param_dcl = std::make_unique<ASTDeclarationNode>(var.identifier, var.type, var.array_type,
-					var.dim, var.type_name, var.type_name_space, static_cast<std::shared_ptr<ASTExprNode>>(var.default_value), false,
-					astnode->row, astnode->col);
-				param_dcl->accept(this);
-			}
-		}
+		//for (auto& param : astnode->parameters) {
+		//	const auto& var = *dynamic_cast<VariableDefinition*>(param);
+		//	if (var.default_value) {
+		//		auto param_dcl = std::make_unique<ASTDeclarationNode>(var.identifier, var.type, var.array_type,
+		//			var.dim, var.type_name, var.type_name_space, static_cast<std::shared_ptr<ASTExprNode>>(var.default_value), false,
+		//			astnode->row, astnode->col);
+		//		param_dcl->accept(this);
+		//	}
+		//}
 
 		astnode->block->accept(this);
 
@@ -616,12 +616,13 @@ void Compiler::type_definition_operations(TypeDefinition type) {
 		add_instruction(OpCode::OP_SET_TYPE, uint8_t(Type::T_ARRAY));
 
 		for (const auto& s : type.dim) {
-			if (s) {
-				s->accept(this);
-			}
-			else {
-				add_instruction(OpCode::OP_PUSH_INT, flx_int(0));
-			}
+			//if (s) {
+			//	s->accept(this);
+			//}
+			//else {
+			//	add_instruction(OpCode::OP_PUSH_INT, flx_int(0));
+			//}
+			add_instruction(OpCode::OP_PUSH_INT, flx_int(s));
 			add_instruction(OpCode::OP_SET_ARRAY_SIZE, nullptr);
 		}
 

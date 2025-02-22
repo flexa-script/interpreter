@@ -333,7 +333,7 @@ void ModuleBuiltin::build_decls() {
 		std::make_shared<ASTBuiltinCallNode>(BUILTIN_NAMES[BuintinFuncs::READCH], 0, 0)}, 0, 0)));
 
 	parameters = std::vector<TypeDefinition*>();
-	variable = new VariableDefinition("it", Type::T_ANY, std::vector<std::shared_ptr<ASTExprNode>>());
+	variable = new VariableDefinition("it", Type::T_ANY, std::vector<unsigned int>());
 	parameters.push_back(variable);
 	func_decls.emplace(BUILTIN_NAMES[BuintinFuncs::LEN] + "A", FunctionDefinition(BUILTIN_NAMES[BuintinFuncs::LEN] + "A", Type::T_INT, parameters,
 		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{

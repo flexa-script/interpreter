@@ -125,7 +125,7 @@ namespace parser {
 		std::vector<std::shared_ptr<ASTDeclarationNode>> declarations;
 		std::shared_ptr<ASTExprNode> expr;
 
-		ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+		ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<unsigned int>& dim,
 			const std::string& type_name, const std::string& type_name_space,
 			const std::vector<std::shared_ptr<ASTDeclarationNode>>& declarations, std::shared_ptr<ASTExprNode> expr,
 			unsigned int row, unsigned int col);
@@ -318,7 +318,7 @@ namespace parser {
 		std::shared_ptr<ASTBlockNode> block;
 
 		ASTFunctionDefinitionNode(const std::string& identifier, const std::vector<TypeDefinition*>& parameters,
-			Type type, const std::string& type_name, const std::string& type_name_space, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
+			Type type, const std::string& type_name, const std::string& type_name_space, Type array_type, const std::vector<unsigned int>& dim,
 			std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col);
 
 		void accept(Visitor*) override;
