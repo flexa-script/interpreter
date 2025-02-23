@@ -10,7 +10,7 @@
 #include "visitor.hpp"
 #include "ast.hpp"
 #include "scope.hpp"
-#include "meta_visitor.hpp"
+#include "scope_manager.hpp"
 #include "gc.hpp"
 
 using namespace visitor;
@@ -18,7 +18,7 @@ using namespace parser;
 using namespace gc;
 
 namespace visitor {
-	class Interpreter : public Visitor, public MetaVisitor {
+	class Interpreter : public Visitor, public ScopeManager {
 	public:
 		std::map<std::string, std::function<void()>> builtin_functions;
 		RuntimeValue* current_expression_value;

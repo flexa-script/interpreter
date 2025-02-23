@@ -82,7 +82,7 @@
     <ClInclude Include="interpreter.hpp" />
     <ClInclude Include="lexer.hpp" />
     <ClInclude Include="dependency_resolver.hpp" />
-    <ClInclude Include="meta_visitor.hpp" />
+    <ClInclude Include="scope_manager.hpp" />
     <ClInclude Include="module.hpp" />
     <ClInclude Include="namespace_manager.hpp" />
     <ClInclude Include="parser.hpp" />
@@ -120,7 +120,7 @@
     <ClCompile Include="lexer.cpp" />
     <ClCompile Include="dependency_resolver.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="meta_visitor.cpp" />
+    <ClCompile Include="scope_manager.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="namespace_manager.cpp" />
     <ClCompile Include="parser.cpp" />

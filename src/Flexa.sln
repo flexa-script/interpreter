@@ -15,8 +15,8 @@ Global
 		Debug Lib|x86 = Debug Lib|x86
 		Debug Project|x64 = Debug Project|x64
 		Debug Project|x86 = Debug Project|x86
-		Debug Tester|x64 = Debug Tester|x64
-		Debug Tester|x86 = Debug Tester|x86
+		Debug Tests|x64 = Debug Tests|x64
+		Debug Tests|x86 = Debug Tests|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
@@ -39,10 +39,10 @@ Global
 		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Project|x64.Build.0 = Debug Project|x64
 		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Project|x86.ActiveCfg = Debug File|Win32
 		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Project|x86.Build.0 = Debug File|Win32
-		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tester|x64.ActiveCfg = Debug Tester|x64
-		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tester|x64.Build.0 = Debug Tester|x64
-		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tester|x86.ActiveCfg = Debug Tester|Win32
-		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tester|x86.Build.0 = Debug Tester|Win32
+		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tests|x64.ActiveCfg = Debug Tester|x64
+		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tests|x64.Build.0 = Debug Tester|x64
+		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tests|x86.ActiveCfg = Debug Tester|Win32
+		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug Tests|x86.Build.0 = Debug Tester|Win32
 		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug|x64.ActiveCfg = Debug|x64
 		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug|x64.Build.0 = Debug|x64
 		{D292DE5C-798A-448D-B31A-F2131378B39A}.Debug|x86.ActiveCfg = Debug|Win32

@@ -10,14 +10,14 @@
 
 #include "ast.hpp"
 #include "scope.hpp"
-#include "meta_visitor.hpp"
+#include "scope_manager.hpp"
 
 using namespace visitor;
 using namespace parser;
 
 namespace visitor {
 
-	class SemanticAnalyser : public Visitor, public MetaVisitor {
+	class SemanticAnalyser : public Visitor, public ScopeManager {
 	public:
 		std::map<std::string, std::shared_ptr<ASTExprNode>> builtin_functions;
 

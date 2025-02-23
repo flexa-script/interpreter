@@ -1,9 +1,9 @@
-#include "meta_visitor.hpp"
+#include "scope_manager.hpp"
 #include "utils.hpp"
 
 using namespace visitor;
 
-void MetaVisitor::validates_reference_type_assignment(TypeDefinition owner, Value* value) {
+void ScopeManager::validates_reference_type_assignment(TypeDefinition owner, Value* value) {
 	if (is_string(owner.type) && is_char(value->type)
 		&& value->use_ref && value->ref.lock() && !is_any(value->ref.lock()->type)) {
 		throw std::runtime_error("cannot reference char to string variable");
@@ -14,7 +14,7 @@ void MetaVisitor::validates_reference_type_assignment(TypeDefinition owner, Valu
 	}
 }
 
-StructureDefinition MetaVisitor::find_inner_most_struct(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier) {
+StructureDefinition ScopeManager::find_inner_most_struct(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier) {
 	std::shared_ptr<Scope> scope = get_inner_most_struct_definition_scope(program, name_space, identifier);
 	if (!scope) {
 		throw std::runtime_error("struct '" + identifier + "' not found");
@@ -22,7 +22,7 @@ StructureDefinition MetaVisitor::find_inner_most_struct(std::shared_ptr<ASTProgr
 	return scope->find_declared_structure_definition(identifier);
 }
 
-std::shared_ptr<Variable> MetaVisitor::find_inner_most_variable(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier) {
+std::shared_ptr<Variable> ScopeManager::find_inner_most_variable(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier) {
 	std::shared_ptr<Scope> scope = get_inner_most_variable_scope(program, name_space, identifier);
 	if (!scope) {
 		throw std::runtime_error("variable '" + identifier + "' not found");
@@ -30,7 +30,7 @@ std::shared_ptr<Variable> MetaVisitor::find_inner_most_variable(std::shared_ptr<
 	return scope->find_declared_variable(identifier);
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_variable_scope_aux(const std::string& name_space, const std::string& identifier, std::vector<std::string>& visited) {
+std::shared_ptr<Scope> ScopeManager::get_inner_most_variable_scope_aux(const std::string& name_space, const std::string& identifier, std::vector<std::string>& visited) {
 	if (name_space.empty()) {
 		return nullptr;
 	}
@@ -47,7 +47,7 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_variable_scope_aux(const std:
 	return scopes[name_space][i];
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_variable_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier, std::vector<std::string> vp, std::vector<std::string> vf) {
+std::shared_ptr<Scope> ScopeManager::get_inner_most_variable_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier, std::vector<std::string> vp, std::vector<std::string> vf) {
 	if (utils::CollectionUtils::contains(vp, program->name)) {
 		return nullptr;
 	}
@@ -80,7 +80,7 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_variable_scope(std::shared_pt
 	return nullptr;
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_struct_definition_scope_aux(const std::string& name_space, const std::string& identifier, std::vector<std::string>& visited) {
+std::shared_ptr<Scope> ScopeManager::get_inner_most_struct_definition_scope_aux(const std::string& name_space, const std::string& identifier, std::vector<std::string>& visited) {
 	if (name_space.empty()) {
 		return nullptr;
 	}
@@ -97,7 +97,7 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_struct_definition_scope_aux(c
 	return scopes[name_space][i];
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_struct_definition_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier, std::vector<std::string> vp, std::vector<std::string> vf) {
+std::shared_ptr<Scope> ScopeManager::get_inner_most_struct_definition_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier, std::vector<std::string> vp, std::vector<std::string> vf) {
 	if (utils::CollectionUtils::contains(vp, program->name)) {
 		return nullptr;
 	}
@@ -130,7 +130,7 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_struct_definition_scope(std::
 	return nullptr;
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_functions_scope_aux(const std::string& name_space, const std::string& identifier, std::vector<std::string>& visited) {
+std::shared_ptr<Scope> ScopeManager::get_inner_most_functions_scope_aux(const std::string& name_space, const std::string& identifier, std::vector<std::string>& visited) {
 	if (name_space.empty()) {
 		return nullptr;
 	}
@@ -147,7 +147,7 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_functions_scope_aux(const std
 	return scopes[name_space][i];
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_functions_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier,
+std::shared_ptr<Scope> ScopeManager::get_inner_most_functions_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier,
 	std::vector<std::string> vp, std::vector<std::string> vf) {
 	if (utils::CollectionUtils::contains(vp, program->name)) {
 		return nullptr;
@@ -181,7 +181,7 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_functions_scope(std::shared_p
 	return nullptr;
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_function_scope_aux(const std::string& name_space, const std::string& identifier,
+std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope_aux(const std::string& name_space, const std::string& identifier,
 	const std::vector<TypeDefinition*>* signature, dim_eval_func_t evaluate_access_vector_ptr, bool strict, std::vector<std::string>& visited) {
 	if (name_space.empty()) {
 		return nullptr;
@@ -199,7 +199,7 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_function_scope_aux(const std:
 	return scopes[name_space][i];
 }
 
-std::shared_ptr<Scope> MetaVisitor::get_inner_most_function_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier,
+std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier,
 	const std::vector<TypeDefinition*>* signature, dim_eval_func_t evaluate_access_vector_ptr, bool strict, std::vector<std::string> vp, std::vector<std::string> vf) {
 	if (utils::CollectionUtils::contains(vp, program->name)) {
 		return nullptr;

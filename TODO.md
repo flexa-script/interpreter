@@ -10,8 +10,6 @@
 - [X] Implements 'this' token to get current context name
 - [X] Implements any type
 - [X] Implements array type
-    <!-- - [ ] Change `var arr[]: any;` to `var arr: any[];`? -->
-    <!-- - [ ] Add `items[] = item;` as append support? -->
 - [X] Implements struct
     - [X] Implements unpacked declaration statement to unpack struct values `foreach (var [key, value] in struct_var)`
     - [X] Adds code error to Exception struct
@@ -123,10 +121,12 @@
 - [X] Split ASTNamespaceManagerNode to ASTIncludeNamespaceNode and ASTExcludeNamespaceNode
 - [X] Remove namespace queue due to program be available in nodes
 - [ ] Adds single file load with full path
-- [ ] Change MetaVisitor to ScopeManager
+- [X] Change MetaVisitor to ScopeManager
 - [ ] Change types as string to expression token types
     - Create a special type for types?
     - Currently types are considered strings, change typeof return?
+- [ ] Change `var arr[]: any;` to `var arr: any[];`
+    - `var arr[];` to `var arr: [];`
 
 ## Known bugs
 - [ ] Can't executes returned function from another function eg: `here_is_returning_a_function()();`

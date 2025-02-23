@@ -8,7 +8,6 @@
 
 #include "scope.hpp"
 #include "types.hpp"
-#include "namespace_manager.hpp"
 
 namespace parser {
 	class ASTProgramNode;
@@ -21,13 +20,13 @@ using namespace parser;
 
 namespace visitor {
 
-	class MetaVisitor {
+	class ScopeManager {
 	public:
 		std::unordered_map<std::string, std::vector<std::shared_ptr<visitor::Scope>>> scopes;
 		std::map<std::string, std::vector<std::string>> program_nmspaces;
 
-		MetaVisitor() = default;
-		virtual ~MetaVisitor() = default;
+		ScopeManager() = default;
+		virtual ~ScopeManager() = default;
 
 		void validates_reference_type_assignment(TypeDefinition owner, Value* value);
 

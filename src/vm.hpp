@@ -12,7 +12,8 @@
 #include "types.hpp"
 #include "visitor.hpp"
 #include "ast.hpp"
-#include "meta_visitor.hpp"
+#include "namespace_manager.hpp"
+#include "scope_manager.hpp"
 #include "gc.hpp"
 
 using namespace gc;
@@ -22,7 +23,7 @@ namespace vm {
 	using namespace visitor;
 	using namespace parser;
 
-	class VirtualMachine : public MetaVisitor, public NamespaceManager {
+	class VirtualMachine : public ScopeManager, public NamespaceManager {
 	public:
 		std::shared_ptr<std::vector<RuntimeValue*>> value_stack;
 		size_t param_count = 0;
