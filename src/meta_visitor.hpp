@@ -21,10 +21,9 @@ using namespace parser;
 
 namespace visitor {
 
-	class MetaVisitor : public NamespaceManager {
+	class MetaVisitor {
 	public:
 		std::unordered_map<std::string, std::vector<std::shared_ptr<visitor::Scope>>> scopes;
-		std::stack<std::string> current_namespace;
 		std::map<std::string, std::vector<std::string>> program_nmspaces;
 
 		MetaVisitor() = default;
@@ -53,9 +52,6 @@ namespace visitor {
 			const std::vector<TypeDefinition*>* signature, dim_eval_func_t evaluate_access_vector_ptr, bool strict = true,
 			std::vector<std::string> vp = std::vector<std::string>(), std::vector<std::string> vf = std::vector<std::string>());
 
-		bool push_namespace(const std::string name_space);
-		void pop_namespace(bool pop);
-		const std::string& get_namespace() const;
 	};
 }
 

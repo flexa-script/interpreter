@@ -11,7 +11,7 @@ DependencyResolver::DependencyResolver(std::shared_ptr<ASTProgramNode> main_prog
 	libs(std::vector<std::string>()), lib_names(std::vector<std::string>()) {};
 
 void DependencyResolver::start() {
-	visit(current_program.top());
+	visit(current_program_stack.top());
 }
 
 void DependencyResolver::visit(std::shared_ptr<ASTProgramNode> astnode) {
@@ -38,9 +38,9 @@ void DependencyResolver::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	// if wasn't parsed yet
 	if (!utils::CollectionUtils::contains(libs, libname)) {
 		libs.push_back(libname);
-		current_program.push(program);
+		current_program_stack.push(program);
 		start();
-		current_program.pop();
+		current_program_stack.pop();
 	}
 }
 

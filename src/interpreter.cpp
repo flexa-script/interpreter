@@ -22,7 +22,6 @@ Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<AS
 	current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 	gc.add_ptr_root(&current_expression_value);
 
-	push_namespace(default_namespace);
 	current_this_name.push(default_namespace);
 	scopes[default_namespace].push_back(global_scope);
 
@@ -32,8 +31,8 @@ Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<AS
 }
 
 void Interpreter::start() {
-	current_this_name.push(current_program.top()->name);
-	visit(current_program.top());
+	current_this_name.push(current_program_stack.top()->name);
+	visit(current_program_stack.top());
 	current_this_name.pop();
 }
 
@@ -80,9 +79,7 @@ void Interpreter::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	if (!utils::CollectionUtils::contains(parsed_libs, libname)) {
 		parsed_libs.push_back(libname);
 
-		current_program.push(program);
-
-		auto pop = push_namespace(program->name_space);
+		current_program_stack.push(program);
 
 		scopes[program->name_space].push_back(std::make_shared<Scope>(program));
 
@@ -92,15 +89,14 @@ void Interpreter::visit(std::shared_ptr<ASTUsingNode> astnode) {
 
 		start();
 
-		current_program.pop();
-		pop_namespace(pop);
+		current_program_stack.pop();
 	}
 }
 
 void Interpreter::visit(std::shared_ptr<ASTIncludeNamespaceNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
-	const auto& current_program_name = current_program.top()->name;
+	const auto& current_program_name = current_program_stack.top()->name;
 
 	if (std::find(
 		program_nmspaces[current_program_name].begin(),
@@ -114,8 +110,7 @@ void Interpreter::visit(std::shared_ptr<ASTIncludeNamespaceNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTExcludeNamespaceNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-
-	const auto& current_program_name = current_program.top()->name;
+	const auto& current_program_name = current_program_stack.top()->name;
 
 	size_t pos = std::distance(
 		program_nmspaces[current_program_name].begin(),
@@ -130,8 +125,8 @@ void Interpreter::visit(std::shared_ptr<ASTExcludeNamespaceNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTEnumNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
+	const auto& name_space = current_program_stack.top()->name_space;
 
-	const auto& name_space = get_namespace();
 	for (size_t i = 0; i < astnode->identifiers.size(); ++i) {
 		auto var = std::make_shared<RuntimeVariable>(astnode->identifiers[i], Type::T_INT, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "");
 		gc.add_var_root(var);
@@ -142,7 +137,7 @@ void Interpreter::visit(std::shared_ptr<ASTEnumNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	const auto& name_space = get_namespace();
+	const auto& name_space = current_program_stack.top()->name_space;
 
 	// evaluate assignment expression
 	if (astnode->expr) {
@@ -217,12 +212,10 @@ void Interpreter::visit(std::shared_ptr<ASTUnpackedDeclarationNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	auto pop = push_namespace(astnode->name_space);
-	const auto& prg = current_program.top();
+	const auto& current_program = current_program_stack.top();
 
 	// finds assignment variable
-	auto name_space = get_namespace();
-	std::shared_ptr<RuntimeVariable> variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(prg, name_space, astnode->identifier));
+	std::shared_ptr<RuntimeVariable> variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, astnode->name_space, astnode->identifier));
 	RuntimeValue* value = access_value(variable->get_value(), astnode->identifier_vector);
 
 	// evaluate assignment expression
@@ -257,6 +250,9 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	}
 	// handle sub value assignment
 	else {
+		/**
+		 * I don't know why I did this, but probably it's wrong, it's not necessary to dereference the variable value ptr
+		 */
 		//// if isn't a sub value access, we derreference the variable value ptr
 		//if (astnode->identifier_vector.size() == 1 && astnode->identifier_vector[0].access_vector.size() == 0) {
 		//	variable->set_value(alocate_value(new RuntimeValue(variable->get_value())));
@@ -278,18 +274,17 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 			}
 
 			RuntimeOperations::normalize_type(variable.get(), new_value);
+
 			// do value/sub value operation
 			RuntimeOperations::do_operation(astnode->op, value, new_value, evaluate_access_vector_ptr, false, pos);
 		}
 	}
 
-	pop_namespace(pop);
 }
 
 void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-
-	auto name_space = get_namespace();
+	const auto& name_space = current_program_stack.top()->name_space;
 
 	if (astnode->expr) {
 		// gets the current function return
@@ -337,9 +332,7 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	auto pop = push_namespace(astnode->name_space);
-	const auto& caller_program = current_program.top();
-	std::string name_space = get_namespace();
+	const auto& current_program = current_program_stack.top();
 	std::string identifier = astnode->identifier;
 	std::vector<Identifier> identifier_vector = astnode->identifier_vector;
 	bool strict = true;
@@ -363,31 +356,29 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		signature.push_back(pvalue);
 	}
 
-	std::shared_ptr<Scope> func_scope = get_inner_most_function_scope(caller_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+	std::shared_ptr<Scope> func_scope = get_inner_most_function_scope(current_program, astnode->name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
 	if (func_scope) {
-		current_program.push(func_scope->owner);
+		current_program_stack.push(func_scope->owner);
 		pop_program = true;
-		name_space = func_scope->owner->name_space;
 	}
 	else {
 		strict = false;
-		func_scope = get_inner_most_function_scope(caller_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+		func_scope = get_inner_most_function_scope(current_program, astnode->name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
 		if (func_scope) {
-			current_program.push(func_scope->owner);
+			current_program_stack.push(func_scope->owner);
 			pop_program = true;
-			name_space = func_scope->owner->name_space;
 		}
 		else {
-			auto var_scope = get_inner_most_variable_scope(caller_program, name_space, identifier);
+			auto var_scope = get_inner_most_variable_scope(current_program, astnode->name_space, identifier);
 			if (!var_scope) {
 				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
 				throw std::runtime_error("function '" + func_name + "' was never declared");
 			}
 			auto var = std::dynamic_pointer_cast<RuntimeVariable>(var_scope->find_declared_variable(identifier));
-			name_space = var->value->get_fun().first;
+			astnode->name_space = var->value->get_fun().first;
 			identifier = var->value->get_fun().second;
 			identifier_vector = std::vector<Identifier>{ Identifier(identifier) };
-			func_scope = get_inner_most_function_scope(caller_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+			func_scope = get_inner_most_function_scope(current_program, astnode->name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
 			if (!func_scope) {
 				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
 				throw std::runtime_error("function '" + func_name + "' was never declared");
@@ -396,11 +387,6 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	}
 
 	auto& declfun = func_scope->find_declared_function(identifier, &signature, evaluate_access_vector_ptr, strict);
-
-	if (!pop) {
-		// function actualy is in another namespace
-		pop = push_namespace(name_space);
-	}
 
 	current_function.push(declfun);
 	current_function_defined_parameters.push(declfun.parameters);
@@ -420,10 +406,9 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	gc.remove_root_container(function_arguments);
 
 	if (pop_program) {
-		current_program.pop();
+		current_program_stack.pop();
 	}
 
-	pop_namespace(pop);
 }
 
 void Interpreter::visit(std::shared_ptr<ASTBuiltinCallNode> astnode) {
@@ -434,8 +419,8 @@ void Interpreter::visit(std::shared_ptr<ASTBuiltinCallNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	auto pop = push_namespace(astnode->type_name_space);
-	const auto& name_space = get_namespace();
+	const auto& current_program = current_program_stack.top();
+	auto name_space = astnode->type_name_space.empty() ? current_program->name_space : astnode->type_name_space;
 
 	try {
 		// if its already declared, it's a block definition
@@ -456,16 +441,22 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 			astnode->array_type, astnode->dim, astnode->parameters, block, astnode->row, astnode->row));
 	}
 
-	pop_namespace(pop);
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLambdaFunction> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	const auto& name_space = get_namespace();
+	const auto& name_space = current_program_stack.top()->name_space;
 
 	// generate an random identifier and evaluates
 	auto& fun = astnode->fun;
-	fun->identifier = utils::UUID::generate();
+
+	// what if...
+	auto fun_name = utils::UUID::generate();
+	while (scopes[name_space].back()->already_declared_function_name(fun_name)) {
+		fun_name = utils::UUID::generate();
+	}
+
+	fun->identifier = fun_name;
 	fun->accept(this);
 
 	current_expression_value = alocate_value(new RuntimeValue(flx_function(name_space, fun->identifier)));
@@ -473,12 +464,11 @@ void Interpreter::visit(std::shared_ptr<ASTLambdaFunction> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTBlockNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-
-	const auto& name_space = get_namespace();
-	const auto& prg = current_program.top();
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
 
 	// the one use function_call_name
-	scopes[name_space].push_back(std::make_shared<Scope>(prg, function_call_name));
+	scopes[name_space].push_back(std::make_shared<Scope>(current_program, function_call_name));
 	function_call_name = "";
 
 	// declare all parameters in block if its a function
@@ -537,13 +527,12 @@ void Interpreter::visit(std::shared_ptr<ASTBreakNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-
-	const auto& name_space = get_namespace();
-	const auto& prg = current_program.top();
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
 
 	++is_switch; // use increment due to nested cases
 
-	scopes[name_space].push_back(std::make_shared<Scope>(prg));
+	scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
 	// if it has case blocks we evaluate condition,
 	// if it's not, we don't need do nothing and save cpu
@@ -661,12 +650,11 @@ void Interpreter::visit(std::shared_ptr<ASTIfNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-
-	const auto& name_space = get_namespace();
-	const auto& prg = current_program.top();
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
 
 	++is_loop;
-	scopes[name_space].push_back(std::make_shared<Scope>(prg));
+	scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
 	// the first statement executes once at start
 	if (astnode->dci[0]) {
@@ -725,9 +713,8 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-
-	const auto& name_space = get_namespace();
-	const auto& prg = current_program.top();
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
 
 	++is_loop;
 
@@ -735,7 +722,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	astnode->collection->accept(this);
 
 	// adds a meta scope, to store current collection value
-	scopes[name_space].push_back(std::make_shared<Scope>(prg));
+	scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
 	// get as declaration node
 	auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl);
@@ -870,12 +857,11 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTTryCatchNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-
-	const auto& name_space = get_namespace();
-	const auto& prg = current_program.top();
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
 
 	try {
-		scopes[name_space].push_back(std::make_shared<Scope>(prg));
+		scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
 		astnode->try_block->accept(this);
 
@@ -886,7 +872,7 @@ void Interpreter::visit(std::shared_ptr<ASTTryCatchNode> astnode) {
 		scopes[name_space].pop_back();
 		gc.collect();
 
-		scopes[name_space].push_back(std::make_shared<Scope>(prg));
+		scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
 		auto error = std::make_shared<ASTLiteralNode<flx_string>>(ex.what(), astnode->row, astnode->col);
 
@@ -952,8 +938,6 @@ void Interpreter::visit(std::shared_ptr<ASTEllipsisNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTWhileNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
-	const auto& name_space = get_namespace();
-
 	++is_loop;
 
 	for (;;) {
@@ -994,8 +978,6 @@ void Interpreter::visit(std::shared_ptr<ASTWhileNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTDoWhileNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
-	const auto& name_space = get_namespace();
-
 	++is_loop;
 
 	do {
@@ -1032,7 +1014,13 @@ void Interpreter::visit(std::shared_ptr<ASTDoWhileNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTStructDefinitionNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	scopes[get_namespace()].back()->declare_structure_definition(
+	const auto& name_space = current_program_stack.top()->name_space;
+
+	for (auto& var : astnode->variables) {
+		var.second.dim = evaluate_access_vector(var.second.expr_dim);
+	}
+
+	scopes[name_space].back()->declare_structure_definition(
 		StructureDefinition(astnode->identifier, astnode->variables, astnode->row, astnode->col)
 	);
 }
@@ -1146,11 +1134,9 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	auto pop = push_namespace(astnode->name_space);
-	const auto& prg = current_program.top();
+	const auto& current_program = current_program_stack.top();
 
-	auto name_space = get_namespace();
-	auto type_struct = find_inner_most_struct(prg, name_space, astnode->type_name);
+	auto type_struct = find_inner_most_struct(current_program, astnode->name_space, astnode->type_name);
 
 	auto str = flx_struct();
 
@@ -1173,11 +1159,6 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 		if (!current_expression_value->use_ref) {
 			str_value = alocate_value(new RuntimeValue(str_value));
 		}
-
-		//std::vector<unsigned int> dim;
-		//if (var_type_struct.dim.size() > 0) {
-		//	dim = evaluate_access_vector(var_type_struct.dim);
-		//}
 
 		check_build_array(str_value, evaluate_access_vector(var_type_struct.expr_dim));
 
@@ -1202,21 +1183,15 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 
 	current_expression_value = alocate_value(new RuntimeValue(str, astnode->type_name, astnode->name_space));
 
-	pop_namespace(pop);
 }
 
 void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	auto pop = push_namespace(astnode->name_space);
-	auto name_space = get_namespace();
-	const auto& prg = current_program.top();
-
-	//if (astnode->identifier == "size") {
-	//	int x = 0;
-	//}
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
 
 	try {
-		auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(prg, name_space, astnode->identifier));
+		auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, astnode->name_space, astnode->identifier));
 		auto sub_val = access_value(variable->get_value(), astnode->identifier_vector);
 		sub_val->reset_ref();
 
@@ -1258,9 +1233,9 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 		}
 
 		if (is_undefined(type)) {
-			std::shared_ptr<Scope> curr_scope = get_inner_most_struct_definition_scope(prg, name_space, astnode->identifier);
+			std::shared_ptr<Scope> curr_scope = get_inner_most_struct_definition_scope(current_program, astnode->name_space, astnode->identifier);
 			if (!curr_scope) {
-				curr_scope = get_inner_most_function_scope(prg, name_space, astnode->identifier, nullptr, evaluate_access_vector_ptr);
+				curr_scope = get_inner_most_function_scope(current_program, astnode->name_space, astnode->identifier, nullptr, evaluate_access_vector_ptr);
 				if (!curr_scope) {
 					throw std::runtime_error("identifier '" + astnode->identifier + "' was not declared");
 				}
@@ -1289,7 +1264,6 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 		}
 	}
 
-	pop_namespace(pop);
 }
 
 void Interpreter::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
@@ -1860,19 +1834,17 @@ long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode)
 }
 
 long long Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
-	auto pop = push_namespace(astnode->name_space);
-	const auto& prg = current_program.top();
-	const auto& name_space = get_namespace();
-	auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(prg, name_space, astnode->identifier_vector[0].identifier));
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
+	auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, name_space, astnode->identifier_vector[0].identifier));
 	auto value = access_value(variable->get_value(), astnode->identifier_vector);
-	pop_namespace(pop);
 
 	return hash(value);
 }
 
 void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value) {
 	if (is_function(value->type)) {
-		const auto& prg = current_program.top();
+		const auto& prg = current_program_stack.top();
 		const auto& name_space = value->get_fun().first;
 		auto funcs = get_inner_most_functions_scope(prg, name_space, value->get_fun().second)->find_declared_functions(value->get_fun().second);
 		for (auto& it = funcs.first; it != funcs.second; ++it) {
@@ -2007,5 +1979,5 @@ void Interpreter::set_curr_pos(unsigned int row, unsigned int col) {
 }
 
 std::string Interpreter::msg_header() {
-	return "(IERR) " + current_program.top()->name + '[' + std::to_string(curr_row) + ':' + std::to_string(curr_col) + "]: ";
+	return "(IERR) " + current_program_stack.top()->name + '[' + std::to_string(curr_row) + ':' + std::to_string(curr_col) + "]: ";
 }

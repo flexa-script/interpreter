@@ -73,7 +73,7 @@ namespace visitor {
 	public:
 		std::map<std::string, std::shared_ptr<ASTProgramNode>> programs;
 		std::shared_ptr<ASTProgramNode> main_program;
-		std::stack<std::shared_ptr<ASTProgramNode>> current_program;
+		std::stack<std::shared_ptr<ASTProgramNode>> current_program_stack;
 		std::vector<std::string> parsed_libs;
 		int curr_row;
 		int curr_col;

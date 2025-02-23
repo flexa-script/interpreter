@@ -22,7 +22,7 @@ namespace vm {
 	using namespace visitor;
 	using namespace parser;
 
-	class VirtualMachine : public MetaVisitor {
+	class VirtualMachine : public MetaVisitor, public NamespaceManager {
 	public:
 		std::shared_ptr<std::vector<RuntimeValue*>> value_stack;
 		size_t param_count = 0;
@@ -103,6 +103,9 @@ namespace vm {
 		~VirtualMachine() = default;
 
 		void run();
+
+		bool push_namespace(const std::string name_space) override;
+		void pop_namespace(bool pop) override;
 	};
 
 }

@@ -21,7 +21,7 @@ Compiler::Compiler(std::shared_ptr<ASTProgramNode> main_program, std::map<std::s
 
 void Compiler::start() {
 	auto pop = push_namespace(flx_string(default_namespace));
-	visit(current_program.top());
+	visit(current_program_stack.top());
 	pop_namespace(pop);
 	add_instruction(OpCode::OP_HALT, nullptr);
 }
@@ -47,15 +47,15 @@ void Compiler::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	auto& program = programs[libname];
 
 	// add lib to current program
-	current_program.top()->libs.push_back(program);
+	current_program_stack.top()->libs.push_back(program);
 
 	// if can't parsed yet
 	if (!utils::CollectionUtils::contains(parsed_libs, libname)) {
-		current_program.push(program);
+		current_program_stack.push(program);
 		parsed_libs.push_back(libname);
 		auto pop = push_namespace(flx_string(program->name_space));
 		visit(program);
-		current_program.pop();
+		current_program_stack.pop();
 		pop_namespace(pop);
 	}
 }
@@ -723,5 +723,5 @@ void Compiler::set_curr_pos(unsigned int row, unsigned int col) {
 }
 
 std::string Compiler::msg_header() {
-	return "(CMP) " + current_program.top()->name + '[' + std::to_string(curr_row) + ':' + std::to_string(curr_col) + "]: ";
+	return "(CMP) " + current_program_stack.top()->name + '[' + std::to_string(curr_row) + ':' + std::to_string(curr_col) + "]: ";
 }

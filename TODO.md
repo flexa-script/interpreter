@@ -121,7 +121,9 @@
     - [X] is_array, is_struct and is_any will became builtins
     - [X] refid, typeid and typeof will have exclusive ast nodes
 - [X] Split ASTNamespaceManagerNode to ASTIncludeNamespaceNode and ASTExcludeNamespaceNode
-- [ ] Remove namespace queue due to program be available in nodes
+- [X] Remove namespace queue due to program be available in nodes
+- [ ] Adds single file load with full path
+- [ ] Change MetaVisitor to ScopeManager
 - [ ] Change types as string to expression token types
     - Create a special type for types?
     - Currently types are considered strings, change typeof return?

@@ -3,27 +3,6 @@
 
 using namespace visitor;
 
-const std::string& MetaVisitor::get_namespace() const {
-	if (current_namespace.empty()) {
-		return "";
-	}
-	return current_namespace.top();
-}
-
-bool MetaVisitor::push_namespace(const std::string name_space) {
-	if (!name_space.empty() && name_space != get_namespace()) {
-		current_namespace.push(name_space);
-		return true;
-	}
-	return false;
-}
-
-void MetaVisitor::pop_namespace(bool pop) {
-	if (pop) {
-		current_namespace.pop();
-	}
-}
-
 void MetaVisitor::validates_reference_type_assignment(TypeDefinition owner, Value* value) {
 	if (is_string(owner.type) && is_char(value->type)
 		&& value->use_ref && value->ref.lock() && !is_any(value->ref.lock()->type)) {
@@ -77,17 +56,17 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_variable_scope(std::shared_pt
 	std::shared_ptr<Scope> scope = nullptr;
 
 	// try find at given namespace
-	scope = get_inner_most_variable_scope_aux(name_space, identifier, vf);
-	if (scope) {
-		return scope;
-	}
-
-	// try find at program namespace
-	if (!program->name_space.empty()) {
-		scope = get_inner_most_variable_scope_aux(program->name_space, identifier, vf);
+	if (!name_space.empty()) {
+		scope = get_inner_most_variable_scope_aux(name_space, identifier, vf);
 		if (scope) {
 			return scope;
 		}
+	}
+
+	// try find at program namespace
+	scope = get_inner_most_variable_scope_aux(program->name_space, identifier, vf);
+	if (scope) {
+		return scope;
 	}
 
 	// try find at program included namespace
@@ -127,17 +106,17 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_struct_definition_scope(std::
 	std::shared_ptr<Scope> scope = nullptr;
 
 	// try find at given namespace
-	scope = get_inner_most_struct_definition_scope_aux(name_space, identifier, vf);
-	if (scope) {
-		return scope;
-	}
-
-	// try find at program namespace
-	if (!program->name_space.empty()) {
-		scope = get_inner_most_struct_definition_scope_aux(program->name_space, identifier, vf);
+	if (!name_space.empty()) {
+		scope = get_inner_most_struct_definition_scope_aux(name_space, identifier, vf);
 		if (scope) {
 			return scope;
 		}
+	}
+
+	// try find at program namespace
+	scope = get_inner_most_struct_definition_scope_aux(program->name_space, identifier, vf);
+	if (scope) {
+		return scope;
 	}
 
 	// try find at program included namespace
@@ -178,17 +157,17 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_functions_scope(std::shared_p
 	std::shared_ptr<Scope> scope = nullptr;
 
 	// try find at given namespace
-	scope = get_inner_most_functions_scope_aux(name_space, identifier, vf);
-	if (scope) {
-		return scope;
-	}
-
-	// try find at program namespace
-	if (!program->name_space.empty()) {
-		scope = get_inner_most_functions_scope_aux(program->name_space, identifier, vf);
+	if (!name_space.empty()) {
+		scope = get_inner_most_functions_scope_aux(name_space, identifier, vf);
 		if (scope) {
 			return scope;
 		}
+	}
+
+	// try find at program namespace
+	scope = get_inner_most_functions_scope_aux(program->name_space, identifier, vf);
+	if (scope) {
+		return scope;
 	}
 
 	// try find at program included namespace
@@ -230,17 +209,17 @@ std::shared_ptr<Scope> MetaVisitor::get_inner_most_function_scope(std::shared_pt
 	std::shared_ptr<Scope> scope = nullptr;
 
 	// try find at given namespace
-	scope = get_inner_most_function_scope_aux(name_space, identifier, signature, evaluate_access_vector_ptr, strict, vf);
-	if (scope) {
-		return scope;
-	}
-
-	// try find at program namespace
-	if (!program->name_space.empty()) {
-		scope = get_inner_most_function_scope_aux(program->name_space, identifier, signature, evaluate_access_vector_ptr, strict, vf);
+	if (!name_space.empty()) {
+		scope = get_inner_most_function_scope_aux(name_space, identifier, signature, evaluate_access_vector_ptr, strict, vf);
 		if (scope) {
 			return scope;
 		}
+	}
+
+	// try find at program namespace
+	scope = get_inner_most_function_scope_aux(program->name_space, identifier, signature, evaluate_access_vector_ptr, strict, vf);
+	if (scope) {
+		return scope;
 	}
 
 	// try find at program included namespace

@@ -926,3 +926,17 @@ std::vector<unsigned int> VirtualMachine::evaluate_access_vector(const std::vect
 	}
 	return access_vector;
 }
+
+bool VirtualMachine::push_namespace(const std::string name_space) {
+	if (!name_space.empty() && name_space != get_namespace()) {
+		current_namespace.push(name_space);
+		return true;
+	}
+	return false;
+}
+
+void VirtualMachine::pop_namespace(bool pop) {
+	if (pop) {
+		current_namespace.pop();
+	}
+}

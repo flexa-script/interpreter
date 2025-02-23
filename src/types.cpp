@@ -218,9 +218,8 @@ bool TypeDefinition::match_array_dim(TypeDefinition ltype, TypeDefinition rtype,
 	std::vector<unsigned int> var_dim = ltype.dim;
 	std::vector<unsigned int> expr_dim = rtype.dim;
 
-	if (expr_dim.size() == 1
-		|| var_dim.size() == 0
-		|| expr_dim.size() == 0) {
+	if ((var_dim.size() == 1 && var_dim[0] == 0) || (expr_dim.size() == 1 && expr_dim[0] == 0)
+		|| var_dim.size() == 0 || expr_dim.size() == 0) {
 		return true;
 	}
 
@@ -1108,8 +1107,6 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 	Type l_var_type = lval->ref.lock() ? lval->ref.lock()->type : lval->type;
 	Type l_var_array_type = lval->ref.lock() ? lval->ref.lock()->array_type : lval->array_type;
 	Type l_type = is_undefined(lval->type) ? l_var_type : lval->type;
-	Type r_var_type = rval->ref.lock() ? rval->ref.lock()->type : rval->type;
-	Type r_var_array_type = rval->ref.lock() ? rval->ref.lock()->array_type : rval->array_type;
 	Type r_type = rval->type;
 	bool has_string_access = str_pos >= 0;
 	RuntimeValue* res_value = nullptr;

@@ -168,7 +168,7 @@ void ModuleHTTP::register_functions(visitor::Interpreter* visitor) {
 		auto identifier_vector = std::vector<Identifier>{ Identifier("emplace") };
 		auto fcall = std::make_shared<ASTFunctionCallNode>(language_namespace, identifier_vector, std::vector<std::shared_ptr<ASTExprNode>>(), 0, 0);
 
-		const auto& prg = visitor->current_program.top();
+		const auto& prg = visitor->current_program_stack.top();
 		visitor->scopes[language_namespace].push_back(std::make_shared<Scope>(prg));
 		auto& curr_scope = visitor->scopes[language_namespace].back();
 		(std::make_shared<ASTDeclarationNode>("headers_value", Type::T_STRUCT, Type::T_UNDEFINED, std::vector<std::shared_ptr<ASTExprNode>>(),

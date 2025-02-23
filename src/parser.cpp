@@ -289,6 +289,10 @@ TypeDefinition Parser::parse_declaration_type_definition(Type ptype) {
 		type = Type::T_ANY;
 	}
 
+	if (type == Type::T_ARRAY && array_type == Type::T_UNDEFINED) {
+		array_type = Type::T_ANY;
+	}
+
 	return TypeDefinition(type, array_type, dim, type_name, type_name_space);
 }
 
