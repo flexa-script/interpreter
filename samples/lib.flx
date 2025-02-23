@@ -1,4 +1,0 @@
-
-fun foo(bar = 10){
-    print(bar);
-}
