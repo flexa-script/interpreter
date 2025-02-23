@@ -1901,9 +1901,10 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 				// is rest
 				if (decl->is_rest) {
 					rest_name = decl->identifier;
-					// if is last parameter and is array
+					// if is last parameter and is array and is not a single parameter
 					if (current_function_defined_parameters.top().size() - 1 == i
-						&& is_array(current_value->type)) {
+						&& is_array(current_value->type)
+						&& current_function_defined_parameters.top().size() > 1) {
 						for (size_t i = 0; i < vec.size(); ++i) {
 							vec.push_back(current_value->get_arr()[i]);
 						}
