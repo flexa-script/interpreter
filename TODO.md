@@ -125,7 +125,8 @@
 - [ ] Change types as string to expression token types
     - Create a special type for types?
     - Currently types are considered strings, change typeof return?
-- [ ] Change `var arr[]: any;` to `var arr: any[];`
+- [ ] Change array definition to match functions
+    - `var arr[]: any;` to `var arr: any[];`
     - `var arr[];` to `var arr: [];`
 
 ## Known bugs

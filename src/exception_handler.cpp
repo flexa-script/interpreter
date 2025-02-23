@@ -74,7 +74,11 @@ std::string ExceptionHandler::buid_type_str(const TypeDefinition& type_def, dim_
 	if (type_def.dim.size() > 0) {
 		auto& dim = type_def.dim;
 		for (size_t i = 0; i < dim.size(); ++i) {
-			ss += "[" + std::to_string(dim[i]) + "]";
+			ss += "[";
+			if (dim[i] > 0) {
+				ss += std::to_string(dim[i]);
+			}
+			ss += "]";
 		}
 	}
 
