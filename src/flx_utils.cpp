@@ -102,6 +102,19 @@ FlexaCliArgs parse_args(int argc, const char* argv[]) {
 		break;
 	}
 
+	// check if the first
+	auto ni = i + 1;
+	if (ni < argc && std::filesystem::is_regular_file(argv[ni]) && args.workspace_path.empty()) {
+		std::filesystem::path full_path(argv[ni]);
+		args.workspace_path = full_path.parent_path().string();
+		args.main_file = full_path.filename().string();
+	}
+	else {
+		std::filesystem::path w_path(args.workspace_path);
+		std::filesystem::path m_path(args.main_file);
+		args.program_args.push_back((w_path / m_path).string());
+	}
+
 	// parse flx arguments
 	while (++i < argc) {
 		args.program_args.push_back(argv[i]);
