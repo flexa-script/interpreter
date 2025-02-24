@@ -39,7 +39,7 @@ ASTDeclarationNode::ASTDeclarationNode(const std::string& identifier, Type type,
 	: ASTStatementNode(row, col), TypeDefinition(type, array_type, dim, type_name, type_name_space),
 	identifier(identifier), expr(expr), is_const(is_const) {}
 
-ASTUnpackedDeclarationNode::ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<unsigned int>& dim,
+ASTUnpackedDeclarationNode::ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
 	const std::string& type_name, const std::string& type_name_space, const std::vector<std::shared_ptr<ASTDeclarationNode>>& declarations,
 	std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col), TypeDefinition(type, array_type, dim, type_name, type_name_space),

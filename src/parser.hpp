@@ -29,15 +29,14 @@ namespace parser {
 	private:
 		// parse types and parameters
 		Type parse_type();
-		TypeDefinition parse_unpacked_type_definition();
-		TypeDefinition parse_function_type_definition();
-		TypeDefinition parse_declaration_type_definition(Type ptype = Type::T_UNDEFINED);
+		TypeDefinition parse_type_definition(Type default_type = Type::T_ANY);
 
 		// statement nodes
 		std::shared_ptr<ASTNode> parse_program_statement();
 		std::shared_ptr<ASTNamespaceManagerNode> parse_namespace_manager_statement();
 		std::shared_ptr<ASTUsingNode> parse_using_statement();
 		std::shared_ptr<ASTNode> parse_block_statement();
+		std::shared_ptr<ASTDeclarationNode> parse_no_value_declaration_statement();
 		std::shared_ptr<ASTDeclarationNode> parse_declaration_statement();
 		std::shared_ptr<ASTStatementNode> parse_unpacked_declaration_statement();
 		std::shared_ptr<ASTAssignmentNode> parse_assignment_statement(std::shared_ptr<ASTIdentifierNode> idnode);
@@ -106,7 +105,7 @@ namespace parser {
 		flx_char parse_char_literal();
 		flx_string parse_string_literal();
 		std::vector<std::shared_ptr<ASTExprNode>> parse_dimension_vector();
-		Identifier parse_identifier();
+		Identifier parse_identifier_accessor();
 		std::vector<Identifier> parse_identifier_vector();
 
 		void consume_token();

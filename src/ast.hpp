@@ -125,7 +125,7 @@ namespace parser {
 		std::vector<std::shared_ptr<ASTDeclarationNode>> declarations;
 		std::shared_ptr<ASTExprNode> expr;
 
-		ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<unsigned int>& dim,
+		ASTUnpackedDeclarationNode(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
 			const std::string& type_name, const std::string& type_name_space,
 			const std::vector<std::shared_ptr<ASTDeclarationNode>>& declarations, std::shared_ptr<ASTExprNode> expr,
 			unsigned int row, unsigned int col);

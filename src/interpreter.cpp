@@ -189,6 +189,13 @@ void Interpreter::visit(std::shared_ptr<ASTUnpackedDeclarationNode> astnode) {
 		var = std::dynamic_pointer_cast<ASTIdentifierNode>(astnode->expr);
 	}
 
+	if (var) {
+		var->accept(this);
+		if (!TypeDefinition::is_any_or_match_type(*astnode, *current_expression_value, evaluate_access_vector_ptr)) {
+			ExceptionHandler::throw_mismatched_type_err(*astnode, *current_expression_value, evaluate_access_vector_ptr);
+		}
+	}
+
 	for (auto& declaration : astnode->declarations) {
 		// if it's a variable, it'll "unpack" struct into declarations
 		if (var) {
@@ -253,11 +260,11 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 		/**
 		 * I don't know why I did this, but probably it's wrong, it's not necessary to dereference the variable value ptr
 		 */
-		//// if isn't a sub value access, we derreference the variable value ptr
-		//if (astnode->identifier_vector.size() == 1 && astnode->identifier_vector[0].access_vector.size() == 0) {
-		//	variable->set_value(alocate_value(new RuntimeValue(variable->get_value())));
-		//	value = variable->get_value();
-		//}
+		 //// if isn't a sub value access, we derreference the variable value ptr
+		 //if (astnode->identifier_vector.size() == 1 && astnode->identifier_vector[0].access_vector.size() == 0) {
+		 //	variable->set_value(alocate_value(new RuntimeValue(variable->get_value())));
+		 //	value = variable->get_value();
+		 //}
 
 		if (astnode->op == "=") {
 			validates_reference_type_assignment(*variable, new_value);
@@ -874,22 +881,19 @@ void Interpreter::visit(std::shared_ptr<ASTTryCatchNode> astnode) {
 
 		scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
-		auto error = std::make_shared<ASTLiteralNode<flx_string>>(ex.what(), astnode->row, astnode->col);
+		auto error_node = std::make_shared<ASTLiteralNode<flx_string>>(ex.what(), astnode->row, astnode->col);
+		auto code_node = std::make_shared<ASTLiteralNode<flx_int>>(0, astnode->row, astnode->col);
 
 		// another place we can use unpacked declaration
 		if (const auto idnode = std::dynamic_pointer_cast<ASTUnpackedDeclarationNode>(astnode->decl)) {
-			if (idnode->declarations.size() != 1) {
-				throw std::runtime_error("invalid number of values");
-			}
-			idnode->declarations[0]->expr = error;
+			idnode->declarations[0]->expr = error_node;
+			idnode->declarations[1]->expr = code_node;
 			idnode->accept(this);
 			idnode->declarations[0]->expr = nullptr;
+			idnode->declarations[1]->expr = nullptr;
 		}
 		else if (const auto idnode = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->decl)) {
-			std::map<std::string, std::shared_ptr<ASTExprNode>> values = {
-				{ "error", error },
-				{ "code", std::make_shared<ASTLiteralNode<flx_int>>(0, astnode->row, astnode->col) }
-			};
+			std::map<std::string, std::shared_ptr<ASTExprNode>> values = { { "error", error_node }, { "code", code_node } };
 			auto exnode = std::make_shared<ASTStructConstructorNode>("Exception", language_namespace, values, astnode->row, astnode->col);
 			idnode->expr = exnode;
 			idnode->accept(this);
