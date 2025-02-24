@@ -1,7 +1,7 @@
 struct Foo_last {
     var foo;
     var bar: any;
-};
+}
 
 var str = Foo_last{bar="hello", foo=Foo_last{bar=10}};
 var str2 = Foo_last{bar="hello2", foo=str};

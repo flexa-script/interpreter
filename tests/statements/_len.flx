@@ -1,7 +1,7 @@
 // len
 
-var strArray[] : string = {"is", "a", "test"};
-var arrValue[] : int = {1,2,3};
+var strArray : string[] = {"is", "a", "test"};
+var arrValue: int[] = {1,2,3};
 
 print(len(strArray));
 print("\n");

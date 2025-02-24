@@ -1,12 +1,12 @@
-var test3[10];
+var test3:[10];
 
-var test4[3][3] : int;
+var test4 : int[3][3];
 
-var test1[] = {
+var test1:[] = {
   1, 2, 3, 4, 5, 6, 7
 };
 
-var test2[][] = {
+var test2:[][] = {
   { 1, 2, 3 },
   { 1, 2, 3 },
   { 1, 2, 3 }

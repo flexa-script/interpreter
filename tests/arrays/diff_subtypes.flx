@@ -1,20 +1,20 @@
 fun arr_param1(arr) {
   println(this, "(arr)");
 }
-fun arr_param2(arr[]) {
+fun arr_param2(arr:[]) {
   println(this, "(arr[])");
 }
 fun arr_param3(arr: any) {
   println(this, "(arr: any)");
 }
-fun arr_param4(arr[]: any) {
+fun arr_param4(arr: any[]) {
   println(this, "(arr[]: any)");
 }
 
 var arr1 = {1, 2, 3, 4, 5, 6};
 var arr2: any = {1, 2, 3, 4, 5, 6};
-var arr3[] = {1, 2, 3, 4, 5, 6};
-var arr4[]: any = {1, 2, 3, 4, 5, 6};
+var arr3:[] = {1, 2, 3, 4, 5, 6};
+var arr4: any[] = {1, 2, 3, 4, 5, 6};
 
 println("func 1:");
 arr_param1(arr1);

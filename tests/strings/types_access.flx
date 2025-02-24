@@ -2,12 +2,12 @@
 
 var str : string = "foo";
 var strAny = "bar";
-var strArray[] : string = {"is", "a", "test"};
+var strArray : string[] = {"is", "a", "test"};
 var boolValue : bool = false;
 var intValue : int = 10;
 var floatValue : float = 9.9;
 var charValue : char = 'A';
-var arrValue[] : int = {1,2,3};
+var arrValue: int[] = {1,2,3};
 
 print("str\n");
 print(str);

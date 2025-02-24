@@ -1,6 +1,6 @@
 struct a{
 var b:int;
-};
+}
 fun test(aaa: a){
 	aaa = null;
 }

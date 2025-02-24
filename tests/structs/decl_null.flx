@@ -1,7 +1,7 @@
 struct Element_decl_null {
     var has_value;
     var value;
-};
+}
 
 var element : Element_decl_null = Element_decl_null{};
 

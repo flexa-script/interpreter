@@ -3,14 +3,14 @@
 struct Bar_json {
 	var x: int;
 	var j: bool;
-};
+}
 
 struct Foo_json {
 	var name: string;
 	var age: int;
 	// var bar: bool;
 	var bar: Bar_json;
-};
+}
 
 var f = Foo_json{name="Carlos",age=29,bar=Bar_json{x=10,j=false}};
 

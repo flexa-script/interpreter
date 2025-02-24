@@ -9,17 +9,17 @@ assert_true("is array", is_array({1, 2, 3}));
 var a = {1, 2, 3};
 assert_true("is undeclared any array", is_array(a));
 
-var b[]: int = {1, 2, 3};
+var b: int[] = {1, 2, 3};
 assert_true("is unsized int array", is_array(a));
 
-var c[3]: int = {1, 2, 3};
+var c: int[3] = {1, 2, 3};
 assert_true("is sized int array", is_array(a));
 
 struct A {
-    var a[]: int;
-    var b[3]: float;
+    var a: int[];
+    var b: float[3];
     var c;
-};
+}
 
 var d = A{a={1, 2, 3}, b={1.1, 2.2, 3.3}, c={'a', 0}};
 
@@ -47,7 +47,7 @@ struct S {
     var c: char;
     var d: string;
     var e: bool;
-};
+}
 
 var s = S{a=666, b=6.66, c='c', d="string", e=true};
 
@@ -115,7 +115,7 @@ struct T {
     var c: char;
     var d: string;
     var e: bool;
-};
+}
 
 var t = T{a=666, b=6.66, c='c', d="string", e=true};
 

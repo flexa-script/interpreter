@@ -15,7 +15,7 @@ fun func_test5(): int[3][3][3] {
     return { { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } }, { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } }, { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } } };
 }
 
-fun func_test6(a, b: int, c: any, d[3], e[3]: int, f[3][3], g[3][3]: int, h[3][3][3], i[3][3][3]: int) {
+fun func_test6(a, b: int, c: any, d:[3], e: int[3], f:[3][3], g: int[3], h:[3][3][3], i: int[3][3]) {
 }
 
 print(func_test3()[1]);

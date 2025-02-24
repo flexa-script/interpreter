@@ -28,7 +28,7 @@ print("\n");
 struct Foo_in {
 	var a: int;
 	var s: string;
-};
+}
 
 var str1: Foo_in = Foo_in{a=10, s="str"};
 var str1p = str1;

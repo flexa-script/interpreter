@@ -1,7 +1,7 @@
 // null-struct
 
-var test5[6] = {0,0,0,0,0,0};
-var test6[3] : char;
+var test5:[6] = {0,0,0,0,0,0};
+var test6 : char[3];
 
 test5[0] = 11;
 test5[2] = 22;

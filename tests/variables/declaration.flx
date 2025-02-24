@@ -28,39 +28,39 @@ end_test();
 
 start_test("DECLARATION / UNDEFINED / ARRAY");
 
-var vd_ua1[3];
-var vd_ua2[3][3];
-var vd_ua3[3][3][3];
+var vd_ua1:[3];
+var vd_ua2:[3][3];
+var vd_ua3:[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as undeclared any", true);
 
-var vd_uaa1[3]: any;
-var vd_uaa2[3][3]: any;
-var vd_uaa3[3][3][3]: any;
+var vd_uaa1: any[3];
+var vd_uaa2: any[3][3];
+var vd_uaa3: any[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as any", true);
 
-var vd_uab1[3]: bool;
-var vd_uab2[3][3]: bool;
-var vd_uab3[3][3][3]: bool;
+var vd_uab1: bool[3];
+var vd_uab2: bool[3][3];
+var vd_uab3: bool;
 assert_true("declared 1, 2 and 3 dimension arrays as bool", true);
 
-var vd_uai1[3]: int;
-var vd_uai2[3][3]: int;
-var vd_uai3[3][3][3]: int;
+var vd_uai1: int[3];
+var vd_uai2: int[3][3];
+var vd_uai3: int[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as int", true);
 
-var vd_uaf1[3]: float;
-var vd_uaf2[3][3]: float;
-var vd_uaf3[3][3][3]: float;
+var vd_uaf1: float[3];
+var vd_uaf2: float[3][3];
+var vd_uaf3: float[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as float", true);
 
-var vd_uac1[3]: char;
-var vd_uac2[3][3]: char;
-var vd_uac3[3][3][3]: char;
+var vd_uac1: char[3];
+var vd_uac2: char[3][3];
+var vd_uac3: char[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as char", true);
 
-var vd_uas1[3]: string;
-var vd_uas2[3][3]: string;
-var vd_uas3[3][3][3]: string;
+var vd_uas1: string[3];
+var vd_uas2: string[3][3];
+var vd_uas3: string[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as string", true);
 
 end_test();
@@ -74,14 +74,14 @@ assert_true("declared struct as Foo", true);
 var vd_ustr2: Bar;
 assert_true("declared struct as Bar", true);
 
-var vd_ustra11[3]: Foo;
-var vd_ustra12[3][3]: Foo;
-var vd_ustra13[3][3][3]: Foo;
+var vd_ustra11: Foo[3];
+var vd_ustra12: Foo[3][3];
+var vd_ustra13: Foo[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as Foo", true);
 
-var vd_ustra21[3]: Bar;
-var vd_ustra22[3][3]: Bar;
-var vd_ustra23[3][3][3]: Bar;
+var vd_ustra21: Bar[3];
+var vd_ustra22: Bar[3][3];
+var vd_ustra23: Bar[3][3][3];
 assert_true("declared 1, 2 and 3 dimension arrays as Bar", true);
 
 end_test();

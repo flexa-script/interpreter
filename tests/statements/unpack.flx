@@ -3,7 +3,7 @@ using flx.std.structs;
 struct Foo_unp {
 	var name: string;
 	var age: int;
-};
+}
 
 var f = Foo_unp{name="Carlos",age=29};
 
@@ -28,7 +28,7 @@ try {
 
 try {
 	var a = 10/0;
-} catch (var [error]) {
+} catch (var [error, code]) {
 	println("generated unpacked error: " + error);
 }
 
@@ -46,7 +46,7 @@ try {
 
 try {
   throw "generated unpacked error";
-} catch (var [error]) {
+} catch (var [error, code]) {
 	println(error);
 }
 
@@ -64,7 +64,7 @@ try {
 
 try {
   throw flx::Exception{error="generated unpacked struct error"};
-} catch (var [error]) {
+} catch (var [error, code]) {
 	println(error);
 }
 

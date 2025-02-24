@@ -2,11 +2,11 @@ struct ElementX {
   var has_value : bool;
   var value : any;
   var next : ElementX;
-};
+}
 
 struct MyList{
   var root : ElementX;
-};
+}
 
 var list : MyList = MyList{};
 

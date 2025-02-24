@@ -3,7 +3,7 @@
 struct Test {
     var foo: int;
     var bar: any;
-};
+}
 
 var was_bool = string(true);
 var was_int = string(10);

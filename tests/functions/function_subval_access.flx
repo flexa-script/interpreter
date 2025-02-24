@@ -1,7 +1,7 @@
 struct Foo3 {
 	var str: string;
 	var bar: int;
-};
+}
 fun foo3() {
 	return Foo3{str="asda", bar=10};
 }
