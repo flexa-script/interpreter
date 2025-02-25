@@ -274,11 +274,11 @@ namespace parser {
 
 	class ASTForEachNode : public ASTStatementNode {
 	public:
-		std::shared_ptr<ASTStatementNode> itdecl;
+		std::shared_ptr<ASTNode> itdecl;
 		std::shared_ptr<ASTNode> collection;
 		std::shared_ptr<ASTBlockNode> block;
 
-		ASTForEachNode(std::shared_ptr<ASTStatementNode> itdecl, std::shared_ptr<ASTNode> collection, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col);
+		ASTForEachNode(std::shared_ptr<ASTNode> itdecl, std::shared_ptr<ASTNode> collection, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col);
 
 		void accept(Visitor*) override;
 	};

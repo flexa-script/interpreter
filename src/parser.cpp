@@ -113,6 +113,19 @@ std::shared_ptr<ASTNode> Parser::parse_block_statement() {
 	}
 }
 
+std::shared_ptr<ASTNode> Parser::parse_decl_or_assign_statement() {
+	switch (current_token.type) {
+	case TOK_VAR:
+	case TOK_CONST:
+		consume_token();
+		return parse_param_statement();
+	case TOK_IDENTIFIER:
+		return parse_identifier_node();
+	default:
+		throw std::runtime_error(msg_header() + "expected declaration or variable");
+	}
+}
+
 std::shared_ptr<ASTNamespaceManagerNode> Parser::parse_namespace_manager_statement() {
 	auto type = current_token.type;
 	std::string name_space = "";
@@ -416,9 +429,8 @@ std::shared_ptr<ASTTryCatchNode> Parser::parse_try_catch_statement() {
 		decl = std::make_shared<ASTEllipsisNode>(row, col);
 	}
 	else {
-		check_current_token(TOK_VAR);
 		consume_semicolon.push(false);
-		decl = parse_unpacked_declaration_statement();
+		decl = parse_param_statement();
 		consume_semicolon.pop();
 	}
 	consume_token(TOK_RIGHT_BRACKET);
@@ -493,7 +505,7 @@ std::shared_ptr<ASTNode> Parser::parse_foreach_collection() {
 }
 
 std::shared_ptr<ASTForEachNode> Parser::parse_foreach_statement() {
-	std::shared_ptr<ASTStatementNode> itdecl;
+	std::shared_ptr<ASTNode> itdecl;
 	std::shared_ptr<ASTNode> collection;
 	std::shared_ptr<ASTBlockNode> block;
 	unsigned int row = current_token.row;
@@ -502,8 +514,7 @@ std::shared_ptr<ASTForEachNode> Parser::parse_foreach_statement() {
 	consume_token(TOK_LEFT_BRACKET);
 	consume_token();
 	consume_semicolon.push(false);
-	check_current_token(TOK_VAR);
-	itdecl = parse_unpacked_declaration_statement();
+	itdecl = parse_decl_or_assign_statement();
 	consume_token(TOK_IN);
 	consume_token();
 	collection = parse_foreach_collection();
@@ -1181,24 +1192,6 @@ std::shared_ptr<ASTAssignmentNode> Parser::parse_assignment_statement(std::share
 	return std::make_shared<ASTAssignmentNode>(identifier->identifier_vector, identifier->name_space, op, expr, identifier->row, identifier->col);
 }
 
-std::shared_ptr<ASTDeclarationNode> Parser::parse_no_value_declaration_statement() {
-	Type type = Type::T_UNDEFINED;
-	TypeDefinition type_def;
-	std::string identifier;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
-	bool is_const = current_token.type == TOK_CONST;
-
-	consume_token(TOK_IDENTIFIER);
-	identifier = current_token.value;
-
-	type_def = parse_type_definition();
-
-	check_consume_semicolon();
-
-	return std::make_shared<ASTDeclarationNode>(identifier, type_def.type, type_def.array_type, type_def.expr_dim, type_def.type_name, type_def.type_name_space, nullptr, is_const, row, col);
-}
-
 std::shared_ptr<ASTDeclarationNode> Parser::parse_declaration_statement() {
 	Type type = Type::T_UNDEFINED;
 	TypeDefinition type_def;
@@ -1227,6 +1220,20 @@ std::shared_ptr<ASTDeclarationNode> Parser::parse_declaration_statement() {
 	return std::make_shared<ASTDeclarationNode>(identifier, type_def.type, type_def.array_type, type_def.expr_dim, type_def.type_name, type_def.type_name_space, expr, is_const, row, col);
 }
 
+std::shared_ptr<ASTDeclarationNode> Parser::parse_param_declaration_statement() {
+	Type type = Type::T_UNDEFINED;
+	TypeDefinition type_def;
+	std::string identifier;
+	unsigned int row = current_token.row;
+	unsigned int col = current_token.col;
+
+	identifier = current_token.value;
+
+	type_def = parse_type_definition();
+
+	return std::make_shared<ASTDeclarationNode>(identifier, type_def.type, type_def.array_type, type_def.expr_dim, type_def.type_name, type_def.type_name_space, nullptr, false, row, col);
+}
+
 std::shared_ptr<ASTStatementNode> Parser::parse_unpacked_declaration_statement() {
 	if (current_token.type == TOK_CONST || next_token.type == TOK_IDENTIFIER) {
 		return parse_declaration_statement();
@@ -1242,7 +1249,8 @@ std::shared_ptr<ASTStatementNode> Parser::parse_unpacked_declaration_statement()
 
 		while (next_token.type == TOK_IDENTIFIER) {
 			consume_semicolon.push(false);
-			declarations.push_back(parse_no_value_declaration_statement());
+			consume_token(TOK_IDENTIFIER);
+			declarations.push_back(parse_param_declaration_statement());
 			consume_semicolon.pop();
 			if (next_token.type == TOK_COMMA) {
 				consume_token();
@@ -1266,6 +1274,41 @@ std::shared_ptr<ASTStatementNode> Parser::parse_unpacked_declaration_statement()
 
 		return std::make_shared<ASTUnpackedDeclarationNode>(type_def.type, type_def.array_type, type_def.expr_dim,
 			type_def.type_name, type_def.type_name_space, declarations, expr, row, col);
+	}
+	else {
+		throw std::runtime_error(msg_header() + "expected identifier or [");
+	}
+}
+
+std::shared_ptr<ASTStatementNode> Parser::parse_param_statement() {
+	if (current_token.type == TOK_IDENTIFIER) {
+		return parse_param_declaration_statement();
+	}
+	else if (current_token.type == TOK_LEFT_BRACE) {
+		TypeDefinition type_def;
+		std::vector<std::shared_ptr<ASTDeclarationNode>> declarations;
+		std::shared_ptr<ASTExprNode> expr;
+		unsigned int row = current_token.row;
+		unsigned int col = current_token.col;
+
+		while (next_token.type == TOK_IDENTIFIER) {
+			consume_token();
+			consume_semicolon.push(false);
+			declarations.push_back(parse_param_declaration_statement());
+			consume_semicolon.pop();
+			if (next_token.type == TOK_COMMA) {
+				consume_token();
+			}
+		}
+
+		consume_token(TOK_RIGHT_BRACE);
+
+		type_def = parse_type_definition();
+
+		check_consume_semicolon();
+
+		return std::make_shared<ASTUnpackedDeclarationNode>(type_def.type, type_def.array_type, type_def.expr_dim,
+			type_def.type_name, type_def.type_name_space, declarations, nullptr, row, col);
 	}
 	else {
 		throw std::runtime_error(msg_header() + "expected identifier or [");

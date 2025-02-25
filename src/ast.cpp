@@ -93,7 +93,7 @@ ASTEllipsisNode::ASTEllipsisNode(unsigned int row, unsigned int col)
 ASTForNode::ASTForNode(const std::array<std::shared_ptr<ASTNode>, 3>& dci, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col), dci(dci), block(block) {}
 
-ASTForEachNode::ASTForEachNode(std::shared_ptr<ASTStatementNode> itdecl, std::shared_ptr<ASTNode> collection, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)
+ASTForEachNode::ASTForEachNode(std::shared_ptr<ASTNode> itdecl, std::shared_ptr<ASTNode> collection, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col), itdecl(itdecl), collection(collection), block(block) {}
 
 ASTWhileNode::ASTWhileNode(std::shared_ptr<ASTExprNode> condition, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)

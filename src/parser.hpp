@@ -36,8 +36,9 @@ namespace parser {
 		std::shared_ptr<ASTNamespaceManagerNode> parse_namespace_manager_statement();
 		std::shared_ptr<ASTUsingNode> parse_using_statement();
 		std::shared_ptr<ASTNode> parse_block_statement();
-		std::shared_ptr<ASTDeclarationNode> parse_no_value_declaration_statement();
+		std::shared_ptr<ASTNode> parse_decl_or_assign_statement();
 		std::shared_ptr<ASTDeclarationNode> parse_declaration_statement();
+		std::shared_ptr<ASTDeclarationNode> parse_param_declaration_statement();
 		std::shared_ptr<ASTStatementNode> parse_unpacked_declaration_statement();
 		std::shared_ptr<ASTAssignmentNode> parse_assignment_statement(std::shared_ptr<ASTIdentifierNode> idnode);
 		std::shared_ptr<ASTUnaryExprNode> parse_increment_expression(std::shared_ptr<ASTIdentifierNode> idnode);
@@ -97,6 +98,7 @@ namespace parser {
 		VariableDefinition* parse_struct_var_def();
 		VariableDefinition* parse_formal_param();
 		VariableDefinition* parse_unpacked_formal_param();
+		std::shared_ptr<ASTStatementNode> parse_param_statement();
 		std::shared_ptr<ASTExprNode> parse_identifier_expression();
 		std::shared_ptr<ASTIdentifierNode> parse_identifier_node();
 		flx_bool parse_bool_literal();

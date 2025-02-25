@@ -128,8 +128,8 @@
 - [ ] Change types as string to expression token types
     - Create a special type for types?
     - Currently types are considered strings, change typeof return?
-- [ ] More concise syntax:
-    - [ ] Remove `var` from catch statement
+- [X] More concise syntax:
+    - [X] Remove `var` from catch statement
     - [X] Remove `;` from struct declaration to match function definition
     - [X] Remove `;` from enum declaration to match function definition
     - [X] Change array definition to match functions type

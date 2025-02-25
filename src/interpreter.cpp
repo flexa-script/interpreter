@@ -731,9 +731,6 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	// adds a meta scope, to store current collection value
 	scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
-	// get as declaration node
-	auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl);
-
 	switch (current_expression_value->type) {
 	case Type::T_ARRAY: {
 		// if the collection is an array
@@ -741,11 +738,20 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		for (size_t i = 0; i < colletion.size(); ++i) {
 			auto val = colletion[i];
 
-			// declare each valueat meta block
 			auto exnode = std::make_shared<ASTValueNode>(val, astnode->row, astnode->col);
-			itdecl->expr = exnode;
-			itdecl->accept(this);
-			itdecl->expr = nullptr;
+
+			// declare each value at meta block
+			if (auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl)) {
+				itdecl->expr = exnode;
+				itdecl->accept(this);
+				itdecl->expr = nullptr;
+
+			}
+			else if (auto itdecl = std::dynamic_pointer_cast<ASTIdentifierNode>(astnode->itdecl)) {
+				auto assign_node = std::make_shared<ASTAssignmentNode>(itdecl->identifier_vector, itdecl->name_space, "=", exnode, itdecl->row, itdecl->col);
+				assign_node->accept(this);
+
+			}
 
 			astnode->block->accept(this);
 
@@ -773,11 +779,20 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		// if the collection is a string
 		const auto& colletion = current_expression_value->get_s();
 		for (auto val : colletion) {
-			// declare each valueat meta block
 			auto exnode = std::make_shared<ASTValueNode>(alocate_value(new RuntimeValue(flx_char(val))), astnode->row, astnode->col);
-			itdecl->expr = exnode;
-			itdecl->accept(this);
-			itdecl->expr = nullptr;
+
+			// declare each value at meta block
+			if (auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl)) {
+				itdecl->expr = exnode;
+				itdecl->accept(this);
+				itdecl->expr = nullptr;
+
+			}
+			else if (auto itdecl = std::dynamic_pointer_cast<ASTIdentifierNode>(astnode->itdecl)) {
+				auto assign_node = std::make_shared<ASTAssignmentNode>(itdecl->identifier_vector, itdecl->name_space, "=", exnode, itdecl->row, itdecl->col);
+				assign_node->accept(this);
+
+			}
 
 			astnode->block->accept(this);
 
@@ -808,14 +823,20 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 			auto key = std::make_shared<ASTLiteralNode<flx_string>>(flx_string(val.first), astnode->row, astnode->col);
 			auto value = std::make_shared<ASTValueNode>(val.second, astnode->row, astnode->col);
 
-			// when handling structs, we have a second type of declaration: unpacked declaration
-			// so if itdecl is null, it's a unpacked [key, value]
-			if (itdecl) {
+			// when handling structs, we have a third type of declaration: unpacked declaration
+			if (auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl)) {
 				std::map<std::string, std::shared_ptr<ASTExprNode>> values = { { "key", key }, { "value", value } };
 				auto exnode = std::make_shared<ASTStructConstructorNode>("Pair", language_namespace, values, astnode->row, astnode->col);
 				itdecl->expr = exnode;
 				itdecl->accept(this);
 				itdecl->expr = nullptr;
+
+			}
+			else if (auto itdecl = std::dynamic_pointer_cast<ASTIdentifierNode>(astnode->itdecl)) {
+				std::map<std::string, std::shared_ptr<ASTExprNode>> values = { { "key", key }, { "value", value } };
+				auto exnode = std::make_shared<ASTStructConstructorNode>("Pair", language_namespace, values, astnode->row, astnode->col);
+				auto assign_node = std::make_shared<ASTAssignmentNode>(itdecl->identifier_vector, itdecl->name_space, "=", exnode, itdecl->row, itdecl->col);
+				assign_node->accept(this);
 
 			}
 			else if (const auto idnode = std::dynamic_pointer_cast<ASTUnpackedDeclarationNode>(astnode->itdecl)) {

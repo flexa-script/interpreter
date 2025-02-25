@@ -687,7 +687,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTForEachNode> astnode) {
 			value = new SemanticValue(Type::T_ANY, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
 		}
 		else if (col_value.dim.size() > 1) {
-			auto& dim = col_value.dim;
+			auto dim = col_value.dim;
 			if (dim.size() > 0) {
 				dim.erase(dim.begin());
 			}
@@ -718,8 +718,42 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		idnode->expr = nullptr;
 
 	}
+	else if (const auto idnode = std::dynamic_pointer_cast<ASTIdentifierNode>(astnode->itdecl)) {
+		if (!is_array(col_value.type)
+			&& !is_string(col_value.type)
+			&& !is_struct(col_value.type)
+			&& !is_any(col_value.type)) {
+			throw std::runtime_error("expected iterable in foreach");
+		}
+
+		SemanticValue* value;
+
+		if (is_struct(col_value.type)) {
+			value = new SemanticValue(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<unsigned int>(), "Pair", language_namespace, 0, false, astnode->row, astnode->col);
+		}
+		else if (is_string(col_value.type)) {
+			value = new SemanticValue(Type::T_CHAR, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+		}
+		else if (is_any(col_value.type)) {
+			value = new SemanticValue(Type::T_ANY, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+		}
+		else {
+			value = new SemanticValue(col_value.array_type, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+			if (!current_expression.type_name.empty()) {
+				value->type_name = current_expression.type_name;
+				value->type_name_space = current_expression.type_name_space;
+			}
+		}
+
+		auto exnode = std::make_shared<ASTValueNode>(value, astnode->row, astnode->col);
+
+		// creates an assignment node
+		auto assign_node = std::make_shared<ASTAssignmentNode>(idnode->identifier_vector, idnode->name_space, "=", exnode, idnode->row, idnode->col);
+		assign_node->accept(this);
+
+	}
 	else {
-		throw std::runtime_error("expected declaration");
+		throw std::runtime_error("expected declaration or identifier");
 	}
 
 	astnode->block->accept(this);
