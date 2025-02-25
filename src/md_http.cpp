@@ -153,28 +153,31 @@ void ModuleHTTP::register_functions(visitor::Interpreter* visitor) {
 		bool is_body = false;
 		std::string res_body;
 
-		// create response struct
-		flx_struct res_str;
-		auto status = utils::StringUtils::split(response_lines[0], ' ');
-		res_str["http_version"] = visitor->alocate_value(new RuntimeValue(flx_string(status[0])));
-		res_str["status"] = visitor->alocate_value(new RuntimeValue(flx_int(stoll(status[1]))));
-		res_str["status_description"] = visitor->alocate_value(new RuntimeValue(flx_string(status[2])));
 		// prepare flx instructions
+
+		// set new scope
+		const auto& current_program = visitor->current_program_stack.top();
+		visitor->scopes[language_namespace].push_back(std::make_shared<Scope>(current_program));
+		auto& curr_scope = visitor->scopes[language_namespace].back();
+
+		// dictionary struct
 		flx_struct res_headers_str;
 		res_headers_str["root"] = visitor->alocate_value(new RuntimeValue(Type::T_VOID));
 		res_headers_str["size"] = visitor->alocate_value(new RuntimeValue(flx_int(0)));
 		auto headers_value = visitor->alocate_value(new RuntimeValue(res_headers_str, "Dictionary", language_namespace));
+		// dict identifier
 		auto header_identifier = std::make_shared<ASTIdentifierNode>(std::vector<Identifier>{ Identifier("headers_value") }, language_namespace, 0, 0);
+		
+		// create dict expr
+		auto dict_expr = std::make_shared<ASTValueNode>(headers_value, 0, 0);
+
+		// declare dict
+		(std::make_shared<ASTDeclarationNode>("headers_value", Type::T_STRUCT, Type::T_UNDEFINED, std::vector<std::shared_ptr<ASTExprNode>>(),
+			"Dictionary", language_namespace, dict_expr, false, 0, 0))->accept(visitor);
+
+		// dictionary emplace function declaration
 		auto identifier_vector = std::vector<Identifier>{ Identifier("emplace") };
 		auto fcall = std::make_shared<ASTFunctionCallNode>(language_namespace, identifier_vector, std::vector<std::shared_ptr<ASTExprNode>>(), 0, 0);
-
-		const auto& prg = visitor->current_program_stack.top();
-		visitor->scopes[language_namespace].push_back(std::make_shared<Scope>(prg));
-		auto& curr_scope = visitor->scopes[language_namespace].back();
-		(std::make_shared<ASTDeclarationNode>("headers_value", Type::T_STRUCT, Type::T_UNDEFINED, std::vector<std::shared_ptr<ASTExprNode>>(),
-			"Dictionary", language_namespace, std::make_shared<ASTNullNode>(0, 0), false, 0, 0))->accept(visitor);
-		auto var = std::dynamic_pointer_cast<RuntimeVariable>(curr_scope->find_declared_variable("headers_value"));
-		var->set_value(headers_value);
 
 		for (size_t i = 1; i < response_lines.size(); ++i) {
 			auto& line = response_lines[i];
@@ -187,25 +190,39 @@ void ModuleHTTP::register_functions(visitor::Interpreter* visitor) {
 					continue;
 				}
 
+				// setup emplace parameters
 				auto header = utils::StringUtils::split(line, ": ");
 				auto parameters = std::vector<std::shared_ptr<ASTExprNode>> {
+					// dictionary
 					header_identifier,
+					// key
 					std::make_shared<ASTLiteralNode<flx_string>>(header[0], 0, 0),
+					// value
 					std::make_shared<ASTLiteralNode<flx_string>>(header[1], 0, 0)
 				};
+
+				// call emplace
 				fcall->parameters = parameters;
 				fcall->accept(visitor);
 
 			}
 		}
 
-		visitor->scopes[language_namespace].pop_back();
-
+		// create response struct
+		flx_struct res_str;
+		auto status = utils::StringUtils::split(response_lines[0], ' ');
+		res_str["http_version"] = visitor->alocate_value(new RuntimeValue(flx_string(status[0])));
+		res_str["status"] = visitor->alocate_value(new RuntimeValue(flx_int(stoll(status[1]))));
+		res_str["status_description"] = visitor->alocate_value(new RuntimeValue(flx_string(status[2])));
 		res_str["headers"] = headers_value;
 		res_str["data"] = visitor->alocate_value(new RuntimeValue(flx_string(res_body)));
 		res_str["raw"] = visitor->alocate_value(new RuntimeValue(flx_string(raw_response)));
 
 		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(res_str, "HttpResponse", language_namespace));
+
+		// remove scope
+		visitor->scopes[language_namespace].pop_back();
+		visitor->gc.collect();
 
 		};
 
