@@ -64,7 +64,7 @@ println(`
 try {
   var v : string[] = {"12", 34, '5', 6789f};
 }
-catch (var [error, code]) {
+catch ([error, code]) {
   println(error);
 }
 
@@ -203,4 +203,217 @@ aaa(fun () {
 // }
 
 
+struct S {
+  var a: int;
+}
 
+var str2 = S{a=10};
+
+foreach (var [key, value] in str2) {
+  println(key, ":", value);
+}
+
+foreach (var [key: string, value: int] in str2) {
+  println(key, ":", value);
+}
+
+try {
+	print("try\n");
+	print(10/0);
+} catch (...) {
+	print("catch\n");
+}
+
+try {
+	var a = 10/0;
+} catch ([error, code]) {
+	println("generated unpacked error: " + error);
+}
+
+try {
+	var a = 10/0;
+} catch ([error: string, code: int]) {
+	println("generated unpacked error: " + error);
+}
+
+
+// struct
+struct Struct {
+	var a1: any[][];
+	var a: any[];
+	var a2: any[3][3];
+	var a3: any[3];
+	var u: [];
+	var u2: [3];
+	var x: any;
+	var y;
+}
+
+// unpackeds (var, foreach, catch, function)
+var str1 = Struct {
+	a1 = {{1, 2, 3}, {1, 2, 3}, {1, 2, 3}},
+	a = {1, 2, 3},
+	a2 = {{1, 2, 3}, {1, 2, 3}, {1, 2, 3}},
+	a3 = {1, 2, 3},
+	u = {1, 2, 3},
+	u2 = {1, 2, 3},
+	x = {1, 2, 3},
+	y = {1, 2, 3}
+};
+println(str1.a[1]);
+println(str1.a1[0][1]);
+var str = Struct {
+	a1 = {{1, 2, 3}, {1, 2, 3}, {1, 2, 3}},
+	a = {1, 2, 3},
+	a2 = {{1, 2, 3}, {1, 2, 3}, {1, 2, 3}},
+	a3 = {1, 2, 3},
+	u = {1, 2, 3},
+	u2 = {1, 2, 3},
+	x = {1, 2, 3},
+	y = {1, 2, 3}
+};
+// variables
+var [x, y] = str;
+println(x);
+println(y);
+var [a: any[], u: any]: Struct = str;
+println(a);
+println(u);
+var [a1: any[][], a2: any[3][3]] = str;
+println(a1);
+println(a2);
+// foreach
+foreach (var [key, value] in str) {
+	println(key, ":", value);
+}
+foreach (var [key: string, value: any] in str) {
+	println(key, ":", value);
+}
+// catch
+try {
+	1/0;
+} catch ([error, code]) {
+	println("Error ", code, ": ", error);
+}
+try {
+	1/0;
+} catch ([error: string, code: int]) {
+	println("Error ", code, ": ", error);
+}
+// functions
+fun fu1(v1, [x, y]) {
+	println(v1);
+	println(x, y);
+}
+fun fu2(v1, [a: any[], u: any]: Struct) {
+	println(v1);
+	println(a, u);
+}
+fun fu7(v1, [a1: any[][], a2: any[3][3]]: Struct) {
+	println(v1);
+	println(a1, a2);
+}
+fun fu8(v1, [a1: any[][], a2: any[3][3]]) {
+	println(v1);
+	println(a1, a2);
+}
+fun fu3([x, y]) {
+	println("3");
+	println(x, y);
+}
+fun fu4([a: any[], u: any]: Struct) {
+	println("4");
+	println(a, u);
+}
+fun fu9([a1: any[][], a2: any[3][3]]: Struct) {
+	println("9");
+	println(a1, a2);
+}
+fun fu10([a1: any[][], a2: any[3][3]]) {
+	println("10");
+	println(a1, a2);
+}
+fun fu5([x, y], v1) {
+	println(v1);
+	println(x, y);
+}
+fun fu6([a: any[], u: any]: Struct, v1) {
+	println(v1);
+	println(a, u);
+}
+fun fu11([a1: any[][], a2: any[3][3]]: Struct, v1) {
+	println(v1);
+	println(a1, a2);
+}
+fun fu12([a1: any[][], a2: any[3][3]], v1) {
+	println(v1);
+	println(a1, a2);
+}
+fu1("1", str);
+fu2("2", str);
+fu7("7", str);
+fu8("8", str);
+fu3(str);
+fu4(str);
+fu9(str);
+fu10(str);
+fu5(str, "5");
+fu6(str, "6");
+fu11(str, "11");
+fu12(str, "12");
+
+// variables
+var aa: any[] = {1, 2, 3};
+var uu: [] = {1, 2, 3};
+var xx: any = {1, 2, 3};
+var yy = {1, 2, 3};
+println(xx);
+println(yy);
+println(aa);
+println(uu);
+
+// functions
+fun f1(): any[] { return {1, 2, 3}; }
+fun f2(): [] { return {1, 2, 3}; }
+fun f3(): any { return {1, 2, 3}; }
+fun f4() {}
+println(f1);
+println(f2);
+println(f3);
+
+
+struct Pair {
+  var key: string;
+  var value: any;
+}
+
+struct S2 {
+  var a: int;
+}
+
+var str22 = S2{a=10};
+
+var s;
+
+foreach (s in str22) {
+  println(s);
+}
+
+println(s);
+
+foreach (var b in str22) {
+  println(b);
+}
+
+for (s = 0; s < 10; s++) {
+  println(s);
+}
+
+println(s);
+
+var key;
+var value;
+
+foreach (var [key, value] in str22) {
+  println(key, ":", value);
+}

@@ -5,7 +5,7 @@ try {
 	print("executed try\n");
 	var a = 10/0;
 	print("after division");
-} catch (var ex: flx::Exception) {
+} catch (ex: flx::Exception) {
 	print("executed catch\n");
 	print("generated error: " + ex.error);
 }
@@ -15,7 +15,7 @@ var i = 0;
 try{
   i = 10 / 0;
   print(i);
-}catch(var ex: flx::Exception){
+}catch(ex: flx::Exception){
   print(ex.error);
 }
 print(i);

@@ -22,13 +22,13 @@ foreach(var [key, value] in u){
 
 try {
 	var a = 10/0;
-} catch (var ex: flx::Exception) {
+} catch (ex: flx::Exception) {
 	println("generated error: " + ex.error);
 }
 
 try {
 	var a = 10/0;
-} catch (var [error, code]) {
+} catch ([error, code]) {
 	println("generated unpacked error: " + error);
 }
 
@@ -40,13 +40,13 @@ try {
 
 try {
   throw "flx::Exception error";
-} catch (var ex: flx::Exception) {
+} catch (ex: flx::Exception) {
 	println(ex.error);
 }
 
 try {
   throw "generated unpacked error";
-} catch (var [error, code]) {
+} catch ([error, code]) {
 	println(error);
 }
 
@@ -58,13 +58,13 @@ try {
 
 try {
   throw flx::Exception{error="flx::Exception struct error"};
-} catch (var ex: flx::Exception) {
+} catch (ex: flx::Exception) {
 	println(ex.error);
 }
 
 try {
   throw flx::Exception{error="generated unpacked struct error"};
-} catch (var [error, code]) {
+} catch ([error, code]) {
 	println(error);
 }
 
