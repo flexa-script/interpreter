@@ -1,11 +1,12 @@
 #ifndef VIRTUAL_MACHINE_HPP
 #define VIRTUAL_MACHINE_HPP
 
-#include <memory>
-#include <map>
-#include <unordered_map>
+#include <string>
+#include <vector>
 #include <stack>
+#include <map>
 #include <functional>
+#include <memory>
 
 #include "scope.hpp"
 #include "bytecode.hpp"

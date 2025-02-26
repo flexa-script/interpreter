@@ -56,7 +56,7 @@ void Lexer::tokenize() {
 		}
 	}
 
-	tokens.push_back(Token(LexTokenType::TOK_EOF, "EOF", current_col, current_row));
+	tokens.push_back(Token(LexTokenType::TK_EOF, "EOF", current_col, current_row));
 }
 
 Token Lexer::process_comment() {
@@ -80,7 +80,7 @@ Token Lexer::process_comment() {
 	comment += current_char;
 	advance();
 
-	return Token(LexTokenType::TOK_COMMENT, comment, row, col);
+	return Token(LexTokenType::TK_COMMENT, comment, row, col);
 }
 
 Token Lexer::process_string() {
@@ -117,7 +117,7 @@ Token Lexer::process_string() {
 	str += current_char;
 	advance();
 
-	return Token(LexTokenType::TOK_STRING_LITERAL, str, current_row, start_col);
+	return Token(LexTokenType::TK_STRING_LITERAL, str, current_row, start_col);
 }
 
 size_t Lexer::find_mlv_closer(const std::string expr) {
@@ -163,7 +163,7 @@ void Lexer::process_multiline_string() {
 				&& next_char == '{') {
 				// it's an interpolation, so closes the current string
 				str += '"';
-				tokens.push_back(Token(LexTokenType::TOK_STRING_LITERAL, str, current_row, start_col));
+				tokens.push_back(Token(LexTokenType::TK_STRING_LITERAL, str, current_row, start_col));
 
 				// skips ${ advancing to the start of the interpolation
 				advance();
@@ -178,17 +178,17 @@ void Lexer::process_multiline_string() {
 				// process the interpolation
 				auto sub_lex = Lexer(name, sub_src, current_row, current_col);
 				// encapsulate the interpolation in a string cast and concatenate to previous string
-				tokens.push_back(Token(TOK_ADDITIVE_OP, "+", current_row, start_col));
-				tokens.push_back(Token(TOK_STRING_TYPE, "string", current_row, start_col));
-				tokens.push_back(Token(TOK_LEFT_BRACKET, "(", current_row, start_col));
+				tokens.push_back(Token(TK_ADDITIVE_OP, "+", current_row, start_col));
+				tokens.push_back(Token(TK_STRING_TYPE, "string", current_row, start_col));
+				tokens.push_back(Token(TK_LEFT_BRACKET, "(", current_row, start_col));
 				// add tokens from sub_lex to current tokens
 				for (auto t : sub_lex.tokens) {
-					if (t.type != TOK_EOF) {
+					if (t.type != TK_EOF) {
 						tokens.push_back(t);
 					}
 				}
-				tokens.push_back(Token(TOK_RIGHT_BRACKET, ")", current_row, start_col));
-				tokens.push_back(Token(TOK_ADDITIVE_OP, "+", current_row, start_col));
+				tokens.push_back(Token(TK_RIGHT_BRACKET, ")", current_row, start_col));
+				tokens.push_back(Token(TK_ADDITIVE_OP, "+", current_row, start_col));
 				// advance current index to the end of the interpolation
 				while (current_index < new_idx) {
 					advance();
@@ -216,7 +216,7 @@ void Lexer::process_multiline_string() {
 
 	str += '"';
 
-	tokens.push_back(Token(LexTokenType::TOK_STRING_LITERAL, str, current_row, start_col));
+	tokens.push_back(Token(LexTokenType::TK_STRING_LITERAL, str, current_row, start_col));
 
 	advance();
 }
@@ -238,7 +238,7 @@ Token Lexer::process_char() {
 	chr += current_char;
 	advance();
 
-	return Token(LexTokenType::TOK_CHAR_LITERAL, chr, current_row, start_col);
+	return Token(LexTokenType::TK_CHAR_LITERAL, chr, current_row, start_col);
 }
 
 Token Lexer::process_special_number() {
@@ -283,7 +283,7 @@ Token Lexer::process_special_number() {
 		advance();
 	}
 
-	return Token(TOK_INT_LITERAL, number, current_row, start_col);
+	return Token(TK_INT_LITERAL, number, current_row, start_col);
 }
 
 Token Lexer::process_number() {
@@ -325,14 +325,14 @@ Token Lexer::process_number() {
 	}
 
 	if (has_dot) {
-		type = TOK_FLOAT_LITERAL;
+		type = TK_FLOAT_LITERAL;
 	}
 	else if (std::tolower(current_char) == 'f') {
-		type = TOK_FLOAT_LITERAL;
+		type = TK_FLOAT_LITERAL;
 		advance();
 	}
 	else {
-		type = TOK_INT_LITERAL;
+		type = TK_INT_LITERAL;
 	}
 
 	return Token(type, number, current_row, start_col);
@@ -340,7 +340,7 @@ Token Lexer::process_number() {
 
 Token Lexer::process_identifier() {
 	std::string identifier;
-	LexTokenType type = LexTokenType::TOK_ERROR;
+	LexTokenType type = LexTokenType::TK_ERROR;
 
 	while (has_next() && (std::isalnum(current_char) || current_char == '_')) {
 		identifier += current_char;
@@ -354,12 +354,12 @@ Token Lexer::process_identifier() {
 		}
 	}
 
-	if (type == LexTokenType::TOK_ERROR) {
+	if (type == LexTokenType::TK_ERROR) {
 		if (identifier == "true" || identifier == "false") {
-			type = TOK_BOOL_LITERAL;
+			type = TK_BOOL_LITERAL;
 		}
 		else {
-			type = TOK_IDENTIFIER;
+			type = TK_IDENTIFIER;
 		}
 	}
 
@@ -395,11 +395,11 @@ Token Lexer::process_symbol() {
 			str_symbol += current_char;
 			advance();
 		}
-		type = is_unary ? TOK_INCREMENT_OP : TOK_ADDITIVE_OP;
+		type = is_unary ? TK_INCREMENT_OP : TK_ADDITIVE_OP;
 		break;
 
 	case '~':
-		type = TOK_NOT;
+		type = TK_NOT;
 		break;
 
 	case '*':
@@ -418,7 +418,7 @@ Token Lexer::process_symbol() {
 			str_symbol += current_char;
 			advance();
 		}
-		type = TOK_MULTIPLICATIVE_OP;
+		type = TK_MULTIPLICATIVE_OP;
 		break;
 
 	case '&':
@@ -426,7 +426,7 @@ Token Lexer::process_symbol() {
 			str_symbol += current_char;
 			advance();
 		}
-		type = TOK_BITWISE_AND;
+		type = TK_BITWISE_AND;
 		break;
 
 	case '^':
@@ -434,7 +434,7 @@ Token Lexer::process_symbol() {
 			str_symbol += current_char;
 			advance();
 		}
-		type = TOK_BITWISE_XOR;
+		type = TK_BITWISE_XOR;
 		break;
 
 	case '|':
@@ -442,7 +442,7 @@ Token Lexer::process_symbol() {
 			str_symbol += current_char;
 			advance();
 		}
-		type = TOK_BITWISE_OR;
+		type = TK_BITWISE_OR;
 		break;
 
 	case '<':
@@ -464,21 +464,21 @@ Token Lexer::process_symbol() {
 			if (current_char == '>' && left_c && !found) {
 				str_symbol += current_char;
 				advance();
-				type = TOK_THREE_WAY_OP;
+				type = TK_THREE_WAY_OP;
 				break;
 			}
 		}
-		type = found ? TOK_BITWISE_SHIFT : TOK_RELATIONAL_OP;
+		type = found ? TK_BITWISE_SHIFT : TK_RELATIONAL_OP;
 		break;
 
 	case '=':
 		if (current_char == '=') {
 			str_symbol += current_char;
 			advance();
-			type = TOK_EQUALITY_OP;
+			type = TK_EQUALITY_OP;
 		}
 		else {
-			type = TOK_EQUALS;
+			type = TK_EQUALS;
 		}
 		break;
 
@@ -488,49 +488,49 @@ Token Lexer::process_symbol() {
 		}
 		str_symbol += current_char;
 		advance();
-		type = TOK_EQUALITY_OP;
+		type = TK_EQUALITY_OP;
 		break;
 
 	case '{':
-		type = TOK_LEFT_CURLY;
+		type = TK_LEFT_CURLY;
 		break;
 
 	case '}':
-		type = TOK_RIGHT_CURLY;
+		type = TK_RIGHT_CURLY;
 		break;
 
 	case '[':
-		type = TOK_LEFT_BRACE;
+		type = TK_LEFT_BRACE;
 		break;
 
 	case ']':
-		type = TOK_RIGHT_BRACE;
+		type = TK_RIGHT_BRACE;
 		break;
 
 	case '(':
-		type = TOK_LEFT_BRACKET;
+		type = TK_LEFT_BRACKET;
 		break;
 
 	case ')':
-		type = TOK_RIGHT_BRACKET;
+		type = TK_RIGHT_BRACKET;
 		break;
 
 	case ',':
-		type = TOK_COMMA;
+		type = TK_COMMA;
 		break;
 
 	case ';':
-		type = TOK_SEMICOLON;
+		type = TK_SEMICOLON;
 		break;
 
 	case ':':
 		if (current_char == ':') {
 			str_symbol += current_char;
 			advance();
-			type = TOK_LIB_ACESSOR_OP;
+			type = TK_LIB_ACESSOR_OP;
 		}
 		else {
-			type = TOK_COLON;
+			type = TK_COLON;
 		}
 		break;
 
@@ -543,23 +543,23 @@ Token Lexer::process_symbol() {
 			}
 			str_symbol += current_char;
 			advance();
-			type = TOK_ELLIPSIS;
+			type = TK_ELLIPSIS;
 		}
 		else {
-			type = TOK_DOT;
+			type = TK_DOT;
 		}
 		break;
 
 	case '?':
-		type = TOK_QMARK;
+		type = TK_QMARK;
 		break;
 
 	case '$':
-		type = TOK_DSIGN;
+		type = TK_DSIGN;
 		break;
 
 	default:
-		type = TOK_ERROR;
+		type = TK_ERROR;
 	}
 
 	return Token(type, str_symbol, current_row, start_col);
@@ -594,7 +594,7 @@ Token Lexer::next_token() {
 	}
 	else {
 		std::string error = "final token surpassed";
-		return Token(TOK_ERROR, error);
+		return Token(TK_ERROR, error);
 	}
 }
 

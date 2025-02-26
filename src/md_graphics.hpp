@@ -1,8 +1,6 @@
 #ifndef MD_GRAPHICS_HPP
 #define MD_GRAPHICS_HPP
 
-#include <functional>
-
 #include "module.hpp"
 #include "graphics_utils.hpp"
 

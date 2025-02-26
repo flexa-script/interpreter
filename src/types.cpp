@@ -12,8 +12,6 @@
 #include "visitor.hpp"
 #include "token.hpp"
 
-#include <sstream> 
-
 using namespace visitor;
 using namespace lexer;
 

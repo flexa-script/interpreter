@@ -1,6 +1,10 @@
 #ifndef DEPENDENCY_RESOLVER_HPP
 #define DEPENDENCY_RESOLVER_HPP
 
+#include <string>
+#include <vector>
+#include <memory>
+
 #include "ast.hpp"
 #include "flx_utils.hpp"
 

@@ -3,8 +3,10 @@
 
 #include <string>
 #include <vector>
-#include <stack>
 #include <map>
+#include <unordered_map>
+#include <functional>
+#include <memory>
 
 #include "scope.hpp"
 #include "types.hpp"

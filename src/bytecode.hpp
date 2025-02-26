@@ -2,7 +2,8 @@
 #define BYTECODE_HPP
 
 #include <iostream>
-#include <cstdint>
+#include <string>
+#include <vector>
 
 #include "vm_constants.hpp"
 #include "types.hpp"

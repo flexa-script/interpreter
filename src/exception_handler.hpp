@@ -2,6 +2,9 @@
 #define EXCEPTION_HANDLER_HPP
 
 #include <string>
+#include <vector>
+#include <functional>
+#include <memory>
 
 #include "visitor.hpp"
 #include "ast.hpp"

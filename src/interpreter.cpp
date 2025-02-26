@@ -1,8 +1,3 @@
-#include <iostream>
-#include <algorithm> 
-#include <cmath>
-#include <compare>
-#include <functional>
 #include <filesystem>
 
 #include "interpreter.hpp"

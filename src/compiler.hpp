@@ -1,12 +1,11 @@
 #ifndef COMPILER_HPP
 #define COMPILER_HPP
 
-#include <memory>
-#include <map>
+#include <string>
 #include <vector>
 #include <stack>
-#include <xutility>
-#include <functional>
+#include <map>
+#include <memory>
 
 #include "bytecode.hpp"
 #include "ast.hpp"

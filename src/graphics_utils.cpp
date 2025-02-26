@@ -159,8 +159,7 @@ void Window::draw_text(int x, int y, const std::string& text, COLORREF color, Fo
 
 void Window::draw_image(Image* image, int x, int y) {
 	if (!image) {
-		std::cerr << "null image" << std::endl;
-		return;
+		throw std::runtime_error("null image");
 	}
 
 	HDC hdc_image = CreateCompatibleDC(hdc_back_buffer);

@@ -1,17 +1,13 @@
 #ifndef FLX_REPL_HPP
 #define FLX_REPL_HPP
 
-#include <iostream>
-#include <fstream>
-#include <regex>
-#include <iomanip>
+#include <string>
 
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "semantic_analysis.hpp"
 #include "interpreter.hpp"
 #include "flx_utils.hpp"
-
 
 #ifdef __unix__
 #define clear_screen() system("clear")

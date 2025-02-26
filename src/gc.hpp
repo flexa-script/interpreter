@@ -2,11 +2,6 @@
 #define GARBAGE_COLLECTOR_HPP
 
 #include <vector>
-#include <unordered_set>
-#include <memory>
-#include <ranges>
-#include <type_traits>
-#include <variant>
 
 #include "gcobject.hpp"
 #include "types.hpp"

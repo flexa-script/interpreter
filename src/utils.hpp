@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <list>
 
 namespace utils {
 	class StringUtils {

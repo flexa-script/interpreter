@@ -1,4 +1,3 @@
-#include <cwchar>
 #include <Windows.h>
 
 #include "md_console.hpp"

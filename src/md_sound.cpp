@@ -1,5 +1,4 @@
 #include <Windows.h>
-#include <mmsystem.h>
 
 #include "md_sound.hpp"
 

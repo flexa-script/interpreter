@@ -2,7 +2,6 @@
 #define GRAPHICS_UTILS_HPP
 
 #include <Windows.h>
-#include <unordered_map>
 #include <map>
 #include <string>
 

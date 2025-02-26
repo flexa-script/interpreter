@@ -6,7 +6,7 @@ Token::Token(LexTokenType type, const std::string& value, unsigned int row, unsi
 	: type(type), value(value), row(row), col(col) {}
 
 Token::Token()
-	: type(LexTokenType::TOK_ERROR), value(""), row(0), col(0) {}
+	: type(LexTokenType::TK_ERROR), value(""), row(0), col(0) {}
 
 const std::string& Token::token_image(LexTokenType type) {
 	return TOKEN_IMAGE.at(type);

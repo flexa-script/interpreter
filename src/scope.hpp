@@ -1,11 +1,11 @@
 #ifndef SCOPE_HPP
 #define SCOPE_HPP
 
+#include <string>
+#include <vector>
 #include <map>
 #include <unordered_map>
-#include <vector>
-#include <stack>
-#include <xutility>
+#include <memory>
 
 #include "types.hpp"
 #include "ast.hpp"

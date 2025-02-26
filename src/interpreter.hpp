@@ -1,10 +1,13 @@
 #ifndef INTERPRETER_HPP
 #define INTERPRETER_HPP
 
-#include <memory>
-#include <map>
+#include <string>
+#include <vector>
 #include <stack>
+#include <map>
+#include <unordered_map>
 #include <functional>
+#include <memory>
 
 #include "types.hpp"
 #include "visitor.hpp"

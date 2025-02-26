@@ -1,7 +1,10 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
+#include <string>
+#include <vector>
 #include <stack>
+#include <memory>
 
 #include "ast.hpp"
 #include "lexer.hpp"
@@ -12,7 +15,7 @@ namespace parser {
 
 	class Parser {
 	private:
-		Lexer* lex;
+		Lexer* lexer;
 		Token current_token;
 		Token next_token;
 		Type current_array_type = Type::T_UNDEFINED;
@@ -22,7 +25,7 @@ namespace parser {
 		std::string name;
 
 	public:
-		explicit Parser(const std::string& name, Lexer* lex);
+		explicit Parser(const std::string& name, Lexer* lexer);
 
 		std::shared_ptr<ASTProgramNode> parse_program();
 

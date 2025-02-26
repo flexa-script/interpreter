@@ -3,11 +3,9 @@
 
 #include <string>
 #include <vector>
-#include <map>
-#include <unordered_map>
 #include <stack>
-#include <stdexcept>
-#include <functional>
+#include <map>
+#include <memory>
 
 #include "types.hpp"
 #include "module.hpp"

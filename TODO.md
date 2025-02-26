@@ -125,6 +125,7 @@
 - [X] Remove namespace queue due to program be available in nodes
 - [X] Adds single file load with full path
 - [X] Change MetaVisitor to ScopeManager
+- [ ] Reduce compile warning
 - [ ] Remove unnecessary evaluate_access_vector uses
 - [ ] Change types as string to expression token types
     - Create a special type for types?

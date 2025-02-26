@@ -1,7 +1,6 @@
 #ifndef VMCONSTANTS_HPP
 #define VMCONSTANTS_HPP
 
-#include <cstdint>
 #include <string>
 #include <unordered_map>
 

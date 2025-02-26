@@ -1,8 +1,6 @@
 #ifndef MD_CONSOLE_HPP
 #define MD_CONSOLE_HPP
 
-#include <functional>
-
 #include "module.hpp"
 
 namespace modules {

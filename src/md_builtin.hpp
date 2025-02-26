@@ -1,8 +1,8 @@
 #ifndef BUILTIN_HPP
 #define BUILTIN_HPP
 
+#include <string>
 #include <unordered_map>
-#include <functional>
 
 #include "module.hpp"
 

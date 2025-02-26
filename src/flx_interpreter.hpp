@@ -1,6 +1,11 @@
 #ifndef FLX_INTERPRETER_HPP
 #define FLX_INTERPRETER_HPP
 
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
+
 #include "flx_utils.hpp"
 #include "semantic_analysis.hpp"
 

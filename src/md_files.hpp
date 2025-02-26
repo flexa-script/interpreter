@@ -1,8 +1,6 @@
 #ifndef MD_FILES_HPP
 #define MD_FILES_HPP
 
-#include <functional>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
