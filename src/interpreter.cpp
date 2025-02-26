@@ -296,23 +296,13 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 	if (astnode->expr) {
 		// gets the current function return
 		TypeDefinition curr_func_ret_type = current_function.top();
-		auto curr_func_call_id_vector = current_function_call_identifier_vector.top();
+		//auto curr_func_call_id_vector = current_function_call_identifier_vector.top();
+		const auto& curr_func_call_expr_id_vector = current_function_call_expression_identifier_vector.top();
+		const auto& curr_func_call_expr_call = current_function_call_expression_call.top();
 		// evaluates return expression
 		astnode->expr->accept(this);
 		// keeps return value
 		RuntimeValue* returned_value = current_expression_value;
-
-		// evaluates access vector
-		RuntimeValue* value = access_value(current_expression_value, curr_func_call_id_vector);
-		// handle string char access
-		if (is_string(value->type) && curr_func_call_id_vector.back().access_vector.size() > 0 && has_string_access) {
-			has_string_access = false;
-			std::string str = value->get_s();
-			curr_func_call_id_vector.back().access_vector[curr_func_call_id_vector.back().access_vector.size() - 1]->accept(this);
-			auto pos = value->get_i();
-
-			value = alocate_value(new RuntimeValue(flx_char(str[pos])));
-		}
 
 		// check types match
 		if (!TypeDefinition::is_any_or_match_type(curr_func_ret_type, *returned_value, evaluate_access_vector_ptr)) {
@@ -320,8 +310,27 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 				curr_func_ret_type, *returned_value, evaluate_access_vector_ptr);
 		}
 
+		// evaluates access vector
+		RuntimeValue* value = returned_value;
+		if (curr_func_call_expr_id_vector.size() > 0) {
+			value = access_value(value, curr_func_call_expr_id_vector);
+			// handle string char access
+			if (is_string(value->type) && curr_func_call_expr_id_vector.back().access_vector.size() > 0 && has_string_access) {
+				has_string_access = false;
+				std::string str = value->get_s();
+				curr_func_call_expr_id_vector.back().access_vector[curr_func_call_expr_id_vector.back().access_vector.size() - 1]->accept(this);
+				auto pos = value->get_i();
+
+				value = alocate_value(new RuntimeValue(flx_char(str[pos])));
+			}
+		}
+
 		// check if it's reference
 		current_expression_value = value->use_ref ? value : alocate_value(new RuntimeValue(value));
+
+		if (curr_func_call_expr_call) {
+			curr_func_call_expr_call->accept(this);
+		}
 	}
 	else {
 		current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
@@ -340,12 +349,14 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
+	auto name_space = current_program->name_space;
 	std::string identifier = astnode->identifier;
 	std::vector<Identifier> identifier_vector = astnode->identifier_vector;
 	bool strict = true;
 	std::vector<TypeDefinition*> signature;
 	std::shared_ptr<std::vector<RuntimeValue*>> function_arguments = std::make_shared<std::vector<RuntimeValue*>>();
 	bool pop_program = false;
+	auto returned_expression_value = current_expression_value;
 
 	// adds function args container to root, to prevent values sweep while evaluating each one
 	gc.add_root_container(function_arguments);
@@ -363,34 +374,106 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		signature.push_back(pvalue);
 	}
 
-	std::shared_ptr<Scope> func_scope = get_inner_most_function_scope(current_program, astnode->name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
-	if (func_scope) {
-		current_program_stack.push(func_scope->owner);
-		pop_program = true;
-	}
-	else {
-		strict = false;
-		func_scope = get_inner_most_function_scope(current_program, astnode->name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+	std::shared_ptr<Scope> func_scope;
+
+	if (astnode->identifier.empty()) {
+		name_space = returned_expression_value->get_fun().first;
+		identifier = returned_expression_value->get_fun().second;
+
+		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+
 		if (func_scope) {
 			current_program_stack.push(func_scope->owner);
 			pop_program = true;
 		}
 		else {
-			auto var_scope = get_inner_most_variable_scope(current_program, astnode->name_space, identifier);
-			if (!var_scope) {
-				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
-				throw std::runtime_error("function '" + func_name + "' was never declared");
-			}
-			auto var = std::dynamic_pointer_cast<RuntimeVariable>(var_scope->find_declared_variable(identifier));
-			astnode->name_space = var->value->get_fun().first;
-			identifier = var->value->get_fun().second;
-			identifier_vector = std::vector<Identifier>{ Identifier(identifier) };
-			func_scope = get_inner_most_function_scope(current_program, astnode->name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+			strict = false;
+			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+
 			if (!func_scope) {
 				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
 				throw std::runtime_error("function '" + func_name + "' was never declared");
 			}
+
+			current_program_stack.push(func_scope->owner);
+			pop_program = true;
 		}
+		
+
+	}
+	else if (astnode->identifier_vector.size() > 1) {
+		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, name_space, astnode->row, astnode->col);
+		idnode->accept(this);
+
+		name_space = current_expression_value->get_fun().first;
+		identifier = current_expression_value->get_fun().second;
+
+		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+
+		if (func_scope) {
+			current_program_stack.push(func_scope->owner);
+			pop_program = true;
+		}
+		else {
+			strict = false;
+			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+
+			if (!func_scope) {
+				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+				throw std::runtime_error("function '" + func_name + "' was never declared");
+			}
+
+			current_program_stack.push(func_scope->owner);
+			pop_program = true;
+		}
+
+	}
+	else {
+		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+		if (func_scope) {
+			current_program_stack.push(func_scope->owner);
+			pop_program = true;
+		}
+		else {
+			strict = false;
+			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+			if (func_scope) {
+				current_program_stack.push(func_scope->owner);
+				pop_program = true;
+			}
+			else {
+				auto var_scope = get_inner_most_variable_scope(current_program, name_space, identifier);
+
+				if (!var_scope) {
+					std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+					throw std::runtime_error("function '" + func_name + "' was never declared");
+				}
+
+				auto var = std::dynamic_pointer_cast<RuntimeVariable>(var_scope->find_declared_variable(identifier));
+				name_space = var->value->get_fun().first;
+				identifier = var->value->get_fun().second;
+
+				func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+
+				if (func_scope) {
+					current_program_stack.push(func_scope->owner);
+					pop_program = true;
+				}
+				else {
+					strict = false;
+					func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+
+					if (!func_scope) {
+						std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+						throw std::runtime_error("function '" + func_name + "' was never declared");
+					}
+
+					current_program_stack.push(func_scope->owner);
+					pop_program = true;
+				}
+			}
+		}
+
 	}
 
 	auto& declfun = func_scope->find_declared_function(identifier, &signature, evaluate_access_vector_ptr, strict);
@@ -399,7 +482,9 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	current_function_defined_parameters.push(declfun.parameters);
 	current_this_name.push(identifier);
 	current_function_signature.push(signature);
-	current_function_call_identifier_vector.push(identifier_vector);
+	//current_function_call_identifier_vector.push(identifier_vector);
+	current_function_call_expression_identifier_vector.push(astnode->expression_identifier_vector);
+	current_function_call_expression_call.push(astnode->expression_call);
 	current_function_calling_arguments.push(*function_arguments);
 
 	// it's not a stack cause it's one shot use, right it reachs block it's cleaned
@@ -407,7 +492,9 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	declfun.block->accept(this);
 
 	current_function.pop();
-	current_function_call_identifier_vector.pop();
+	//current_function_call_identifier_vector.pop();
+	current_function_call_expression_identifier_vector.pop();
+	current_function_call_expression_call.pop();
 	current_function_signature.pop();
 	current_this_name.pop();
 	gc.remove_root_container(function_arguments);
@@ -420,8 +507,14 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTBuiltinCallNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
+
 	builtin_functions[astnode->identifier]();
-	current_expression_value = access_value(current_expression_value, current_function_call_identifier_vector.top());
+
+	const auto& expression_identifier_vector = current_function_call_expression_identifier_vector.top();
+
+	if (expression_identifier_vector.size() > 0) {
+		current_expression_value = access_value(current_expression_value, expression_identifier_vector);
+	}
 }
 
 void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
@@ -458,7 +551,7 @@ void Interpreter::visit(std::shared_ptr<ASTLambdaFunction> astnode) {
 	auto& fun = astnode->fun;
 
 	// what if...
-	auto fun_name = utils::UUID::generate();
+	auto fun_name = "lambda@" + utils::UUID::generate();
 	while (scopes[name_space].back()->already_declared_function_name(fun_name)) {
 		fun_name = utils::UUID::generate();
 	}

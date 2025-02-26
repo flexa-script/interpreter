@@ -15,10 +15,10 @@
     - [X] Adds code error to Exception struct
     - [X] Implements struct array-like constructoror
     - [X] Add struct iterating over in foreach
-<!-- - [ ] Super structs???
-    - [ ] Add struct functions?
-    - [ ] Add init function?
-    - [ ] Add struct heritage? -->
+- [ ] Super structs
+    - [ ] Add struct functions
+    - [ ] Add init function
+    - [ ] Add struct heritage
 - [X] Implements null
 - [X] Implements type convert support
 - [X] Implements string array-like accessor/assign
@@ -125,6 +125,7 @@
 - [X] Remove namespace queue due to program be available in nodes
 - [X] Adds single file load with full path
 - [X] Change MetaVisitor to ScopeManager
+- [ ] Remove unnecessary evaluate_access_vector uses
 - [ ] Change types as string to expression token types
     - Create a special type for types?
     - Currently types are considered strings, change typeof return?
@@ -137,7 +138,8 @@
         - `var arr[];` to `var arr: [];`
 
 ## Known bugs
-- [ ] Can't executes returned function from another function eg: `here_is_returning_a_function()();`
+- [ ] Adds lambda to garbage collector
+- [X] Can't executes returned function from another function eg: `here_is_returning_a_function()();`
 - [X] Fix HTTP core lib
 - [X] Check behaviour of rest arrays and why join and print haven't the same signature
     - Print seems not differentiating `print({0,1,2})` from `print(0, 1, 2)`

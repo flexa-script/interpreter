@@ -141,11 +141,10 @@ ASTTernaryNode::ASTTernaryNode(std::shared_ptr<ASTExprNode> condition, std::shar
 ASTInNode::ASTInNode(std::shared_ptr<ASTExprNode> value, std::shared_ptr<ASTExprNode> collection, unsigned int row, unsigned int col)
 	: ASTExprNode(row, col), value(value), collection(collection) {}
 
-ASTFunctionCallNode::ASTFunctionCallNode(const std::string& name_space,
-	const std::vector<Identifier>& identifier_vector,
-	const std::vector<std::shared_ptr<ASTExprNode>>& parameters, unsigned int row, unsigned int col)
-	: ASTExprNode(row, col), identifier(identifier_vector[0].identifier),
-	name_space(name_space), identifier_vector(identifier_vector), parameters(parameters) {}
+ASTFunctionCallNode::ASTFunctionCallNode(const std::string& name_space, const std::vector<Identifier>& identifier_vector, const std::vector<std::shared_ptr<ASTExprNode>>& parameters,
+	std::vector<Identifier> expression_identifier_vector, std::shared_ptr<ASTFunctionCallNode> expression_call, unsigned int row, unsigned int col)
+	: ASTExprNode(row, col), identifier(identifier_vector[0].identifier), name_space(name_space), parameters(parameters),
+	identifier_vector(identifier_vector), expression_identifier_vector(expression_identifier_vector), expression_call(expression_call) { }
 
 ASTTypeCastNode::ASTTypeCastNode(Type type, std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
 	: ASTExprNode(row, col), type(type), expr(expr) {}

@@ -435,7 +435,8 @@ namespace parser {
 		std::shared_ptr<ASTExprNode> value_if_true;
 		std::shared_ptr<ASTExprNode> value_if_false;
 
-		ASTTernaryNode(std::shared_ptr<ASTExprNode> condition, std::shared_ptr<ASTExprNode> value_if_true, std::shared_ptr<ASTExprNode> value_if_false, unsigned int row, unsigned int col);
+		ASTTernaryNode(std::shared_ptr<ASTExprNode> condition, std::shared_ptr<ASTExprNode> value_if_true,
+			std::shared_ptr<ASTExprNode> value_if_false, unsigned int row, unsigned int col);
 
 		void accept(Visitor*) override;
 		virtual long long hash(Visitor*) override;
@@ -454,14 +455,15 @@ namespace parser {
 
 	class ASTFunctionCallNode : public ASTExprNode {
 	public:
-		std::string identifier;
 		std::string name_space;
+		std::string identifier;
 		std::vector<Identifier> identifier_vector;
 		std::vector<std::shared_ptr<ASTExprNode>> parameters;
+		std::vector<Identifier> expression_identifier_vector;
+		std::shared_ptr<ASTFunctionCallNode> expression_call;
 
-		ASTFunctionCallNode(const std::string& name_space,
-			const std::vector<Identifier>& identifier_vector,
-			const std::vector<std::shared_ptr<ASTExprNode>>& parameters, unsigned int row, unsigned int col);
+		ASTFunctionCallNode(const std::string& name_space, const std::vector<Identifier>& identifier_vector, const std::vector<std::shared_ptr<ASTExprNode>>& parameters,
+			std::vector<Identifier> expression_identifier_vector, std::shared_ptr<ASTFunctionCallNode> expression_call, unsigned int row, unsigned int col);
 
 		void accept(Visitor*) override;
 		virtual long long hash(Visitor*) override;

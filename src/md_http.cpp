@@ -177,7 +177,8 @@ void ModuleHTTP::register_functions(visitor::Interpreter* visitor) {
 
 		// dictionary emplace function declaration
 		auto identifier_vector = std::vector<Identifier>{ Identifier("emplace") };
-		auto fcall = std::make_shared<ASTFunctionCallNode>(language_namespace, identifier_vector, std::vector<std::shared_ptr<ASTExprNode>>(), 0, 0);
+		auto fcall = std::make_shared<ASTFunctionCallNode>(language_namespace, identifier_vector,
+			std::vector<std::shared_ptr<ASTExprNode>>(), std::vector<Identifier>(), nullptr, 0, 0);
 
 		for (size_t i = 1; i < response_lines.size(); ++i) {
 			auto& line = response_lines[i];

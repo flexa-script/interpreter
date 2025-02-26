@@ -1029,7 +1029,7 @@ std::string RuntimeOperations::parse_value_to_string(const RuntimeValue* value, 
 			if (!value->type_name_space.empty()) {
 				s << value->type_name_space << "::";
 			}
-			s << value->type_name << "{...}";
+			s << value->type_name << "@" << reinterpret_cast<uintptr_t>(value) << "{...}";
 			str = s.str();
 		}
 		else {
@@ -1040,7 +1040,7 @@ std::string RuntimeOperations::parse_value_to_string(const RuntimeValue* value, 
 	}
 	case Type::T_ARRAY: {
 		if (std::find(printed.begin(), printed.end(), reinterpret_cast<uintptr_t>(value)) != printed.end()) {
-			str = "[...]";
+			str = "array@" + std::to_string(reinterpret_cast<uintptr_t>(value)) + "[...]";
 		}
 		else {
 			printed.push_back(reinterpret_cast<uintptr_t>(value));

@@ -615,7 +615,6 @@ TypeDefinition Parser::parse_type_definition(Type default_type) {
 			type = Type::T_ARRAY;
 		}
 
-		//consume_token();
 	}
 
 	if (type == Type::T_UNDEFINED) {
@@ -1040,9 +1039,6 @@ std::shared_ptr<ASTNode> Parser::parse_identifier_statement() {
 
 	switch (next_token.type) {
 	case TOK_LEFT_BRACKET: {
-		if (identifier->identifier_vector.size() > 1) {
-			throw std::runtime_error(msg_header() + "unexpected token '" + next_token.value + "'");
-		}
 		std::shared_ptr<ASTFunctionCallNode> expr = parse_function_call_node(identifier);
 		check_consume_semicolon();
 		return expr;
@@ -1060,13 +1056,14 @@ std::shared_ptr<ASTNode> Parser::parse_identifier_statement() {
 	}
 }
 
-std::shared_ptr<ASTFunctionCallNode> Parser::parse_function_call_node(std::shared_ptr<ASTIdentifierNode> idnode) {
-	std::string identifier = std::move(idnode->identifier_vector[0].identifier);
-	std::string name_space = std::move(idnode->name_space);
-	auto identifier_vector = std::vector<Identifier>();
-	auto parameters = std::vector<std::shared_ptr<ASTExprNode>>();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+std::shared_ptr<ASTFunctionCallNode> Parser::parse_function_call_tail() {
+	std::string name_space = "";
+	std::vector<Identifier> identifier_vector = { Identifier("") };
+	std::vector<std::shared_ptr<ASTExprNode>> parameters;
+	std::vector<Identifier> expression_identifier_vector;
+	std::shared_ptr<ASTFunctionCallNode> expression_call = nullptr;
+	auto row = current_token.row;
+	auto col = current_token.col;
 
 	consume_token(TOK_LEFT_BRACKET);
 
@@ -1079,24 +1076,40 @@ std::shared_ptr<ASTFunctionCallNode> Parser::parse_function_call_node(std::share
 
 	check_current_token(TOK_RIGHT_BRACKET);
 
+	// parses expression array acessor if exists
 	Identifier id;
 	if (next_token.type == TOK_LEFT_BRACE) {
 		id = parse_identifier_accessor();
-		id.identifier = identifier;
-	}
-	else {
-		id = Identifier(identifier);
+		id.identifier = "";
 	}
 
+	// parses expression struct acessor if exists
 	if (next_token.type == TOK_DOT) {
 		consume_token();
 		consume_token();
-		identifier_vector = parse_identifier_vector();
+		expression_identifier_vector = parse_identifier_vector();
+
+		if (id.access_vector.size() > 0) {
+			expression_identifier_vector.emplace(expression_identifier_vector.begin(), id);
+		}
 	}
 
-	identifier_vector.emplace(identifier_vector.begin(), id);
+	// parse expression function call
+	if (next_token.type == TOK_LEFT_BRACKET) {
+		expression_call = parse_function_call_tail();
+	}
 
-	return std::make_shared<ASTFunctionCallNode>(name_space, identifier_vector, parameters, row, col);
+	return std::make_shared<ASTFunctionCallNode>(name_space, identifier_vector, parameters, expression_identifier_vector, expression_call, row, col);
+}
+
+std::shared_ptr<ASTFunctionCallNode> Parser::parse_function_call_node(std::shared_ptr<ASTIdentifierNode> idnode) {
+	std::string name_space = std::move(idnode->name_space);
+	std::string identifier = idnode->identifier_vector[idnode->identifier_vector.size() - 1].identifier;
+	std::shared_ptr<ASTFunctionCallNode> function = parse_function_call_tail();
+	function->name_space = name_space;
+	function->identifier = identifier;
+	function->identifier_vector = idnode->identifier_vector;
+	return function;
 }
 
 std::shared_ptr<ASTUnaryExprNode> Parser::parse_increment_expression(std::shared_ptr<ASTIdentifierNode> identifier) {

@@ -321,6 +321,8 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	const auto& current_program = current_program_stack.top();
 	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
 	bool strict = true;
+	auto returned_expression = current_expression;
+
 	std::vector<TypeDefinition*> signature = std::vector<TypeDefinition*>();
 
 	for (const auto& param : astnode->parameters) {
@@ -332,24 +334,48 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		signature.push_back(new TypeDefinition(current_expression));
 	}
 
-	std::shared_ptr<Scope> curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
-	if (!curr_scope) {
-		curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
-		if (!curr_scope) {
-			std::string func_name = ExceptionHandler::buid_signature(astnode->identifier, signature, evaluate_access_vector_ptr);
-			throw std::runtime_error("function '" + func_name + "' was never declared");
+	if (astnode->identifier.empty()) {
+		if (!is_function(returned_expression.type)) {
+			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature, evaluate_access_vector_ptr));
 		}
+
 	}
+	else if (astnode->identifier_vector.size() > 1) {
+		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, astnode->name_space, astnode->row, astnode->col);
+		idnode->accept(this);
 
-	auto& curr_function = curr_scope->find_declared_function(astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
+		if (!is_function(current_expression.type)) {
+			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature, evaluate_access_vector_ptr));
+		}
 
-	if (is_void(curr_function.type)) {
-		current_expression = SemanticValue(Type::T_UNDEFINED, 0, 0);
 	}
 	else {
-		auto typedeg = std::make_shared<SemanticValue>(static_cast<TypeDefinition>(curr_function), 0, false, 0, 0);
-		typedeg->type_name_space = astnode->name_space;
-		current_expression = *access_value(typedeg, astnode->identifier_vector);
+		std::shared_ptr<Scope> curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
+		if (!curr_scope) {
+			curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
+			if (!curr_scope) {
+				std::string func_name = ExceptionHandler::buid_signature(astnode->identifier, signature, evaluate_access_vector_ptr);
+				throw std::runtime_error("function '" + func_name + "' was never declared");
+			}
+		}
+
+		auto& curr_function = curr_scope->find_declared_function(astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
+
+		if (is_void(curr_function.type)) {
+			current_expression = SemanticValue(Type::T_UNDEFINED, 0, 0);
+		}
+		else {
+			auto typedeg = std::make_shared<SemanticValue>(static_cast<TypeDefinition>(curr_function), 0, false, 0, 0);
+			typedeg->type_name_space = astnode->name_space;
+			if (astnode->expression_identifier_vector.size() > 0) {
+				current_expression = *access_value(typedeg, astnode->expression_identifier_vector);
+			}
+		}
+
+		if (astnode->expression_call) {
+			astnode->expression_call->accept(this);
+		}
+
 	}
 
 }

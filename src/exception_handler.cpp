@@ -41,6 +41,40 @@ void ExceptionHandler::throw_struct_member_err(const std::string& type_name_spac
 	throw std::runtime_error("'" + variable + "' is not a member of '" + (type_name_space.empty() ? "" : type_name_space + "::") + type_name + "'");
 }
 
+std::string ExceptionHandler::buid_member_name(const std::vector<Identifier>& identifier_vector) {
+	std::string ss;
+	
+	for (auto& id : identifier_vector) {
+		ss += id.identifier;
+		if (id.access_vector.size() > 0) {
+			for (size_t i = 0; i < id.access_vector.size(); ++i) {
+				ss += "[]";
+			}
+		}
+		ss += ".";
+	}
+
+	if (ss.ends_with(".")) {
+		ss.erase(ss.end());
+	}
+
+	return ss;
+}
+
+std::string ExceptionHandler::buid_signature(const std::vector<Identifier>& identifier_vector, const std::vector<TypeDefinition*> signature, dim_eval_func_t evaluate_access_vector) {
+	std::string ss = buid_member_name(identifier_vector) + "(";
+	for (const auto& param : signature) {
+		ss += buid_type_str(*param, evaluate_access_vector) + ", ";
+	}
+	if (signature.size() > 0) {
+		ss.pop_back();
+		ss.pop_back();
+	}
+	ss += ")";
+
+	return ss;
+}
+
 std::string ExceptionHandler::buid_signature(const std::string& identifier, const std::vector<TypeDefinition*> signature, dim_eval_func_t evaluate_access_vector) {
 	std::string ss= identifier + "(";
 	for (const auto& param : signature) {
