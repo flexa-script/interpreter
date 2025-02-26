@@ -3,7 +3,7 @@
 
 #include "bytecode.hpp"
 
-using namespace vm;
+using namespace core;
 
 BytecodeInstruction::BytecodeInstruction()
 	: opcode(OpCode::OP_RES), operand(nullptr) {}

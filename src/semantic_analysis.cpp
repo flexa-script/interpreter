@@ -5,9 +5,7 @@
 
 #include "utils.hpp"
 
-using namespace visitor;
-using namespace parser;
-using namespace lexer;
+using namespace core::analysis;
 
 SemanticAnalyser::SemanticAnalyser(std::shared_ptr<Scope> global_scope, std::shared_ptr<ASTProgramNode> main_program,
 	std::map<std::string, std::shared_ptr<ASTProgramNode>> programs, const std::vector<std::string>& args)

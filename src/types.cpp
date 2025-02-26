@@ -12,8 +12,7 @@
 #include "visitor.hpp"
 #include "token.hpp"
 
-using namespace visitor;
-using namespace lexer;
+using namespace core;
 
 std::string language_namespace = "flx";
 

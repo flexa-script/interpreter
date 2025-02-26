@@ -1,8 +1,7 @@
 #include "scope.hpp"
 #include "utils.hpp"
 
-using namespace visitor;
-using namespace parser;
+using namespace core;
 
 Scope::Scope(std::shared_ptr<ASTProgramNode> owner, std::string name) : owner(owner), name(name) {};
 

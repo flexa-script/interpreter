@@ -8,32 +8,38 @@
 
 #include "module.hpp"
 
-namespace modules {
-	class ModuleInput : public Module {
-	public:
-		static const int KEY_COUNT = 256;
+namespace core {
 
-	private:
-		std::array<bool, KEY_COUNT> previous_key_state = { false };
-		std::array<bool, KEY_COUNT> current_key_state = { false };
-		std::thread key_update_thread;
-		std::mutex state_mutex;
-		std::atomic<bool> running;
+	namespace modules {
 
-		void key_update_loop();
+		class ModuleInput : public Module {
+		public:
+			static const int KEY_COUNT = 256;
 
-	public:
-		ModuleInput();
-		~ModuleInput();
+		private:
+			std::array<bool, KEY_COUNT> previous_key_state = { false };
+			std::array<bool, KEY_COUNT> current_key_state = { false };
+			std::thread key_update_thread;
+			std::mutex state_mutex;
+			std::atomic<bool> running;
 
-		void register_functions(visitor::SemanticAnalyser* visitor) override;
-		void register_functions(visitor::Interpreter* visitor) override;
-		void register_functions(visitor::Compiler* visitor) override;
-		void register_functions(vm::VirtualMachine* vm) override;
+			void key_update_loop();
 
-		void start();
-		void stop();
-	};
+		public:
+			ModuleInput();
+			~ModuleInput();
+
+			void register_functions(visitor::SemanticAnalyser* visitor) override;
+			void register_functions(visitor::Interpreter* visitor) override;
+			void register_functions(visitor::Compiler* visitor) override;
+			void register_functions(vm::VirtualMachine* vm) override;
+
+			void start();
+			void stop();
+		};
+
+	}
+
 }
 
 #endif // !MD_INPUT_HPP

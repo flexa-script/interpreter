@@ -10,9 +10,7 @@
 #include "types.hpp"
 #include "ast.hpp"
 
-using namespace parser;
-
-namespace visitor {
+namespace core {
 
 	class Scope {
 	private:
@@ -48,6 +46,7 @@ namespace visitor {
 		std::shared_ptr<Variable> find_declared_variable(const std::string& identifier);
 
 	};
+
 }
 
 #endif // !SCOPE_HPP

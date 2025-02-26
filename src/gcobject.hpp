@@ -3,14 +3,18 @@
 
 #include <vector>
 
-namespace gc {
+namespace core {
 
-    class GCObject {
-    public:
-        bool marked = false;
-        virtual ~GCObject();
-        virtual std::vector<GCObject*> get_references() = 0;
-    };
+	namespace runtime {
+
+		class GCObject {
+		public:
+			bool marked = false;
+			virtual ~GCObject();
+			virtual std::vector<GCObject*> get_references() = 0;
+		};
+
+	}
 
 }
 

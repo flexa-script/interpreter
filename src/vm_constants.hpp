@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace vm {
+namespace core {
 
 	enum OpCode : uint16_t {
 		OP_RES,

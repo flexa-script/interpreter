@@ -1,5 +1,7 @@
 #include "exception_handler.hpp"
 
+using namespace core;
+
 void ExceptionHandler::throw_operation_err(const std::string op, const TypeDefinition& ltype, const TypeDefinition& rtype, dim_eval_func_t evaluate_access_vector) {
 	throw std::runtime_error("invalid '" + op + "' operation for types '" + buid_type_str(ltype, evaluate_access_vector)
 		+ "' and '" + buid_type_str(rtype, evaluate_access_vector) + "'");

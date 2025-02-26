@@ -9,7 +9,7 @@
 #include "utils.hpp"
 #include "watch.hpp"
 
-using namespace lexer;
+using namespace core::runtime;
 
 Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<ASTProgramNode> main_program,
 	const std::map<std::string, std::shared_ptr<ASTProgramNode>>& programs, const std::vector<std::string>& args)

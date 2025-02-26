@@ -6,9 +6,8 @@
 
 #include "utils.hpp"
 
-using namespace visitor;
-using namespace parser;
-using namespace lexer;
+using namespace core::modules;
+using namespace core::analysis;
 
 Compiler::Compiler(std::shared_ptr<ASTProgramNode> main_program, std::map<std::string, std::shared_ptr<ASTProgramNode>> programs, const std::vector<std::string>& args)
 	: Visitor(programs, main_program, default_namespace) {

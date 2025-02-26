@@ -3,8 +3,7 @@
 #include "dependency_resolver.hpp"
 #include "utils.hpp"
 
-using namespace visitor;
-using namespace parser;
+using namespace core::analysis;
 
 DependencyResolver::DependencyResolver(std::shared_ptr<ASTProgramNode> main_program, const std::map<std::string, std::shared_ptr<ASTProgramNode>>& programs)
 	: Visitor(programs, main_program, main_program->name),

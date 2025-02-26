@@ -4,7 +4,7 @@
 #include "utils.hpp"
 #include "watch.hpp"
 
-using namespace vm;
+using namespace core::runtime;
 
 VirtualMachine::VirtualMachine(std::shared_ptr<Scope> global_scope, std::vector<BytecodeInstruction> instructions)
 	: instructions(instructions), gc(GarbageCollector()), set_default_value(nullptr) {

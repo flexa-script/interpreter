@@ -3,17 +3,23 @@
 
 #include "module.hpp"
 
-namespace modules {
-	class ModuleConsole : public Module {
-	public:
-		ModuleConsole();
-		~ModuleConsole();
+namespace core {
 
-		void register_functions(visitor::SemanticAnalyser* visitor) override;
-		void register_functions(visitor::Interpreter* visitor) override;
-		void register_functions(visitor::Compiler* visitor) override;
-		void register_functions(vm::VirtualMachine* vm) override;
-	};
+	namespace modules {
+
+		class ModuleConsole : public Module {
+		public:
+			ModuleConsole();
+			~ModuleConsole();
+
+			void register_functions(visitor::SemanticAnalyser* visitor) override;
+			void register_functions(visitor::Interpreter* visitor) override;
+			void register_functions(visitor::Compiler* visitor) override;
+			void register_functions(vm::VirtualMachine* vm) override;
+		};
+
+	}
+
 }
 
 #endif // !MD_CONSOLE_HPP

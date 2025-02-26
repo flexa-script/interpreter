@@ -10,7 +10,8 @@
 #include "types.hpp"
 #include "module.hpp"
 
-namespace parser {
+namespace core {
+
 	class ASTProgramNode;
 
 	class ASTUsingNode;
@@ -57,15 +58,10 @@ namespace parser {
 	class ASTRefIdNode;
 	class ASTValueNode;
 	class ASTBuiltinCallNode;
-}
 
-using namespace parser;
-
-extern std::string default_namespace;
-extern std::vector<std::string> std_libs;
-extern std::map<std::string, std::shared_ptr<modules::Module>> built_in_libs;
-
-namespace visitor {
+	extern std::string default_namespace;
+	extern std::vector<std::string> std_libs;
+	extern std::map<std::string, std::shared_ptr<modules::Module>> built_in_libs;
 
 	class Visitor {
 	public:
@@ -137,7 +133,9 @@ namespace visitor {
 		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_float>>) = 0;
 		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_char>>) = 0;
 		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_string>>) = 0;
+
 	};
+
 }
 
 #endif // !VISITOR_HPP

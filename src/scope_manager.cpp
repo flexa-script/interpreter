@@ -1,7 +1,7 @@
 #include "scope_manager.hpp"
 #include "utils.hpp"
 
-using namespace visitor;
+using namespace core;
 
 void ScopeManager::validates_reference_type_assignment(TypeDefinition owner, Value* value) {
 	if (is_string(owner.type) && is_char(value->type)

@@ -5,13 +5,12 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "types.hpp"
 #include "visitor.hpp"
 
-using namespace visitor;
-
-namespace parser {
+namespace core {
 
 	class Identifier {
 	public:
@@ -28,7 +27,8 @@ namespace parser {
 	class ASTNode : public std::enable_shared_from_this<ASTNode>, public CodePosition {
 	public:
 		ASTNode(unsigned int row, unsigned int col)
-			: CodePosition(row, col) {}
+			: CodePosition(row, col) {
+		}
 
 		virtual void accept(Visitor*) = 0;
 	};
@@ -36,7 +36,8 @@ namespace parser {
 	class ASTStatementNode : public ASTNode {
 	public:
 		ASTStatementNode(unsigned int row, unsigned int col)
-			: ASTNode(row, col) {}
+			: ASTNode(row, col) {
+		}
 
 		void accept(Visitor*) override = 0;
 	};
@@ -44,7 +45,8 @@ namespace parser {
 	class ASTExprNode : public ASTNode {
 	public:
 		ASTExprNode(unsigned int row, unsigned int col)
-			: ASTNode(row, col) {}
+			: ASTNode(row, col) {
+		}
 
 		void accept(Visitor*) override = 0;
 		virtual long long hash(Visitor*) = 0;

@@ -6,47 +6,51 @@
 
 #include "token.hpp"
 
-namespace lexer {
+namespace core {
 
-    class Lexer {
-    public:
-        Lexer(const std::string& name, const std::string& source);
-        Lexer(const std::string& name, const std::string& source, unsigned int start_row, unsigned int start_col);
-        ~Lexer();
+	namespace parser {
 
-        Token next_token();
+		class Lexer {
+		public:
+			Lexer(const std::string& name, const std::string& source);
+			Lexer(const std::string& name, const std::string& source, unsigned int start_row, unsigned int start_col);
+			~Lexer();
 
-    private:
-        char before_char;
-        char current_char;
-        char next_char;
-        unsigned int current_token = 0;
-        long long current_index = 0;
-        unsigned int current_row = 1;
-        unsigned int start_col = 0;
-        unsigned int current_col = 0;
-        std::string source;
-        std::string name;
-        std::vector<Token> tokens;
+			Token next_token();
 
-        void tokenize();
-        bool has_next();
-        bool is_space();
-        void advance();
-        Token process_identifier();
-        Token process_special_number();
-        Token process_number();
-        Token process_char();
-        Token process_string();
-        void process_multiline_string();
-        Token process_symbol();
-        Token process_comment();
+		private:
+			char before_char;
+			char current_char;
+			char next_char;
+			unsigned int current_token = 0;
+			long long current_index = 0;
+			unsigned int current_row = 1;
+			unsigned int start_col = 0;
+			unsigned int current_col = 0;
+			std::string source;
+			std::string name;
+			std::vector<Token> tokens;
 
-        std::string msg_header();
+			void tokenize();
+			bool has_next();
+			bool is_space();
+			void advance();
+			Token process_identifier();
+			Token process_special_number();
+			Token process_number();
+			Token process_char();
+			Token process_string();
+			void process_multiline_string();
+			Token process_symbol();
+			Token process_comment();
 
-        static size_t find_mlv_closer(const std::string expr);
-    };
+			std::string msg_header();
 
-};
+			static size_t find_mlv_closer(const std::string expr);
+		};
+
+	}
+
+}
 
 #endif // !LEXER_HPP

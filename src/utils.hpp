@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace utils {
+
 	class StringUtils {
 	public:
 		static std::string ltrim(std::string s);
@@ -42,6 +43,7 @@ namespace utils {
 	public:
 		static std::string generate();
 	};
+
 }
 
 #endif // !UTILS_HPP

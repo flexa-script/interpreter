@@ -8,7 +8,7 @@
 #include "vm_constants.hpp"
 #include "types.hpp"
 
-namespace vm {
+namespace core {
 
 	class BytecodeInstruction {
 	public:

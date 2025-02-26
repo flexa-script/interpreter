@@ -4,8 +4,7 @@
 #include "ast.hpp"
 #include "utils.hpp"
 
-using namespace visitor;
-using namespace parser;
+using namespace core;
 
 Identifier::Identifier(const std::string& identifier, const std::vector<std::shared_ptr<ASTExprNode>>& access_vector)
 	: identifier(identifier), access_vector(access_vector) {}

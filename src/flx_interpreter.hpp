@@ -9,26 +9,30 @@
 #include "flx_utils.hpp"
 #include "semantic_analysis.hpp"
 
-class FlexaInterpreter {
-private:
-	std::string libs_root;
-	std::string project_root;
-	FlexaCliArgs args;
+namespace ui {
 
-public:
-	FlexaInterpreter(const FlexaCliArgs& args);
+	class FlexaInterpreter {
+	private:
+		std::string libs_root;
+		std::string project_root;
+		FlexaCliArgs args;
 
-	int execute();
+	public:
+		FlexaInterpreter(const FlexaCliArgs& args);
 
-private:
-	FlexaSource load_program(const std::string& source);
-	std::vector<FlexaSource> load_programs(const std::vector<std::string>& source_files);
+		int execute();
 
-	void parse_programs(const std::vector<FlexaSource>& source_programs, std::shared_ptr<ASTProgramNode>* main_program,
-		std::map<std::string, std::shared_ptr<ASTProgramNode>>* programs);
+	private:
+		FlexaSource load_program(const std::string& source);
+		std::vector<FlexaSource> load_programs(const std::vector<std::string>& source_files);
 
-	int interpreter();
+		void parse_programs(const std::vector<FlexaSource>& source_programs, std::shared_ptr<ASTProgramNode>* main_program,
+			std::map<std::string, std::shared_ptr<ASTProgramNode>>* programs);
 
-};
+		int interpreter();
+
+	};
+
+}
 
 #endif // !FLX_INTERPRETER_HPP

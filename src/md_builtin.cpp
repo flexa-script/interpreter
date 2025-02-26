@@ -11,10 +11,11 @@
 
 #include "visitor.hpp"
 
-using namespace modules;
-using namespace vm;
+using namespace core::modules;
+using namespace core::runtime;
+using namespace core::analysis;
 
-std::string modules::BUILTIN_NAMES[] = {
+std::string BUILTIN_NAMES[] = {
 	"print",
 	"println",
 	"read",
@@ -33,7 +34,7 @@ ModuleBuiltin::ModuleBuiltin() {
 
 ModuleBuiltin::~ModuleBuiltin() = default;
 
-void ModuleBuiltin::register_functions(visitor::SemanticAnalyser* visitor) {
+void ModuleBuiltin::register_functions(SemanticAnalyser* visitor) {
 	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::PRINT], func_decls[BUILTIN_NAMES[BuintinFuncs::PRINT]]);
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::PRINT]] = nullptr;
 
@@ -67,7 +68,7 @@ void ModuleBuiltin::register_functions(visitor::SemanticAnalyser* visitor) {
 
 }
 
-void ModuleBuiltin::register_functions(visitor::Interpreter* visitor) {
+void ModuleBuiltin::register_functions(Interpreter* visitor) {
 	visitor->scopes[default_namespace].back()->declare_function(BUILTIN_NAMES[BuintinFuncs::PRINT], func_decls[BUILTIN_NAMES[BuintinFuncs::PRINT]]);
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::PRINT]] = [this, visitor]() {
 		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
@@ -195,7 +196,7 @@ void ModuleBuiltin::register_functions(visitor::Interpreter* visitor) {
 
 }
 
-void ModuleBuiltin::register_functions(visitor::Compiler* visitor) {
+void ModuleBuiltin::register_functions(Compiler* visitor) {
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::PRINT]] = nullptr;
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::PRINTLN]] = nullptr;
 	visitor->builtin_functions[BUILTIN_NAMES[BuintinFuncs::READ]] = nullptr;

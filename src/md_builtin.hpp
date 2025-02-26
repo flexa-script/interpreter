@@ -8,38 +8,44 @@
 
 class FunctionDefinition;
 
-namespace modules {
-	enum BuintinFuncs {
-		PRINT,
-		PRINTLN,
-		READ,
-		READCH,
-		LEN,
-		SLEEP,
-		SYSTEM,
-		IS_ANY,
-		IS_ARRAY,
-		IS_STRUCT
-	};
+namespace core {
 
-	extern std::string BUILTIN_NAMES[];
+	namespace modules {
 
-	class ModuleBuiltin : public Module {
-	private:
-		std::unordered_map<std::string, FunctionDefinition> func_decls;
+		enum BuintinFuncs {
+			PRINT,
+			PRINTLN,
+			READ,
+			READCH,
+			LEN,
+			SLEEP,
+			SYSTEM,
+			IS_ANY,
+			IS_ARRAY,
+			IS_STRUCT
+		};
 
-	public:
-		ModuleBuiltin();
-		~ModuleBuiltin();
+		extern std::string BUILTIN_NAMES[];
 
-		void register_functions(visitor::SemanticAnalyser* visitor) override;
-		void register_functions(visitor::Interpreter* visitor) override;
-		void register_functions(visitor::Compiler* visitor) override;
-		void register_functions(vm::VirtualMachine* vm) override;
+		class ModuleBuiltin : public Module {
+		private:
+			std::unordered_map<std::string, FunctionDefinition> func_decls;
 
-	private:
-		void build_decls();
-	};
+		public:
+			ModuleBuiltin();
+			~ModuleBuiltin();
+
+			void register_functions(analysis::SemanticAnalyser* visitor) override;
+			void register_functions(runtime::Interpreter* visitor) override;
+			void register_functions(analysis::Compiler* visitor) override;
+			void register_functions(runtime::VirtualMachine* vm) override;
+
+		private:
+			void build_decls();
+		};
+
+	}
+
 }
 
 #endif // !BUILTIN_HPP

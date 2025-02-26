@@ -4,9 +4,8 @@
 #include "utils.hpp"
 #include "visitor.hpp"
 
-using namespace lexer;
-using namespace parser;
-using namespace visitor;
+using namespace core;
+using namespace core::parser;
 
 Parser::Parser(const std::string& name, Lexer* lexer) : name(name), lexer(lexer) {
 	current_token = lexer->next_token();

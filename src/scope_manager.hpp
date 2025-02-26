@@ -11,20 +11,16 @@
 #include "scope.hpp"
 #include "types.hpp"
 
-namespace parser {
+namespace core {
+
 	class ASTProgramNode;
 	template <typename T> class ASTLiteralNode;
 	class ASTLambdaFunction;
 	class ASTIdentifierNode;
-}
-
-using namespace parser;
-
-namespace visitor {
 
 	class ScopeManager {
 	public:
-		std::unordered_map<std::string, std::vector<std::shared_ptr<visitor::Scope>>> scopes;
+		std::unordered_map<std::string, std::vector<std::shared_ptr<Scope>>> scopes;
 		std::map<std::string, std::vector<std::string>> program_nmspaces;
 
 		ScopeManager() = default;
@@ -54,6 +50,7 @@ namespace visitor {
 			std::vector<std::string> vp = std::vector<std::string>(), std::vector<std::string> vf = std::vector<std::string>());
 
 	};
+
 }
 
 #endif // !META_VISITOR_HPP

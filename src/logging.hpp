@@ -58,6 +58,7 @@ namespace utils {
 		void log(LogLevel, std::string);
 		void write(std::string);
 	};
+
 }
 
 #endif // !LOGGING_HPP

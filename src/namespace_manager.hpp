@@ -4,7 +4,7 @@
 #include <string>
 #include <stack>
 
-namespace visitor {
+namespace core {
 
 	class NamespaceManager {
 	public:
@@ -18,6 +18,7 @@ namespace visitor {
 
 		const std::string& get_namespace() const;
 	};
+
 }
 
 #endif // !NAMESPACE_MANAGER_HPP

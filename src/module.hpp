@@ -3,30 +3,34 @@
 
 #include <string>
 
-namespace visitor {
-	class SemanticAnalyser;
-	class Interpreter;
-	class Compiler;
-}
+namespace core {
 
-namespace vm {
-	class VirtualMachine;
-}
+	namespace analysis {
+		class SemanticAnalyser;
+		class Compiler;
+	}
 
-namespace modules {
+	namespace runtime {
+		class Interpreter;
+		class VirtualMachine;
+	}
 
-	class Module {
-	public:
-		static const std::string INSTANCE_ID_NAME;
+	namespace modules {
 
-	public:
-		virtual ~Module() = default;
+		class Module {
+		public:
+			static const std::string INSTANCE_ID_NAME;
 
-		virtual void register_functions(visitor::SemanticAnalyser* visitor) = 0;
-		virtual void register_functions(visitor::Interpreter* visitor) = 0;
-		virtual void register_functions(visitor::Compiler* visitor) = 0;
-		virtual void register_functions(vm::VirtualMachine* vm) = 0;
-	};
+		public:
+			virtual ~Module() = default;
+
+			virtual void register_functions(analysis::SemanticAnalyser* visitor) = 0;
+			virtual void register_functions(runtime::Interpreter* visitor) = 0;
+			virtual void register_functions(analysis::Compiler* visitor) = 0;
+			virtual void register_functions(runtime::VirtualMachine* vm) = 0;
+		};
+
+	}
 
 }
 
