@@ -339,6 +339,8 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature));
 		}
 
+		current_expression = SemanticValue(Type::T_ANY, 0, 0);
+
 	}
 	else if (astnode->identifier_vector.size() > 1) {
 		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, astnode->name_space, astnode->row, astnode->col);
@@ -369,6 +371,9 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 			typedeg->type_name_space = astnode->name_space;
 			if (astnode->expression_identifier_vector.size() > 0) {
 				current_expression = *access_value(typedeg, astnode->expression_identifier_vector);
+			}
+			else if (astnode->expression_call) {
+				current_expression = SemanticValue(Type::T_FUNCTION, 0, 0);
 			}
 			else {
 				current_expression = *typedeg;

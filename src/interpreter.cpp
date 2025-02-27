@@ -254,15 +254,6 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	}
 	// handle sub value assignment
 	else {
-		/**
-		 * I don't know why I did this, but probably it's wrong, it's not necessary to dereference the variable value ptr
-		 */
-		 //// if isn't a sub value access, we derreference the variable value ptr
-		 //if (astnode->identifier_vector.size() == 1 && astnode->identifier_vector[0].access_vector.size() == 0) {
-		 //	variable->set_value(alocate_value(new RuntimeValue(variable->get_value())));
-		 //	value = variable->get_value();
-		 //}
-
 		if (astnode->op == "=") {
 			validates_reference_type_assignment(*variable, new_value);
 
@@ -346,7 +337,7 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	auto name_space = current_program->name_space;
+	auto name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
 	std::string identifier = astnode->identifier;
 	std::vector<Identifier> identifier_vector = astnode->identifier_vector;
 	bool strict = true;

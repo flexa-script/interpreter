@@ -26,11 +26,11 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["request"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("config"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("req"))->value;
 
 		RuntimeValue* config_value = val;
 		if (TypeUtils::is_void(config_value->type)) {
-			throw std::exception("Config is null");
+			throw std::exception("'req' is null");
 		}
 		flx_struct config_str = config_value->get_str();
 		std::string hostname = config_str["hostname"]->get_s();

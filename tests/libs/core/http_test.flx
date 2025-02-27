@@ -2,7 +2,7 @@ using flx.core.HTTP;
 
 include namespace flx;
 
-var config = HttpConfig {
+var config = HttpRequest {
 	hostname="example.com",
 	method=GET
 };
