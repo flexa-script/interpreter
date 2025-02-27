@@ -1088,7 +1088,7 @@ std::shared_ptr<ASTFunctionCallNode> Parser::parse_function_call_tail() {
 		consume_token();
 		expression_identifier_vector = parse_identifier_vector();
 
-		if (id.access_vector.size() > 0) {
+		if (expression_identifier_vector.size() > 0) {
 			expression_identifier_vector.emplace(expression_identifier_vector.begin(), id);
 		}
 	}
