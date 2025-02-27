@@ -93,20 +93,20 @@ namespace core {
 		static TypeDefinition get_struct(const std::string& type_name,
 			const std::string& type_name_space);
 
-		static bool is_any_or_match_type(TypeDefinition ltype, TypeDefinition rtype,
-			dim_eval_func_t evaluate_access_vector, bool strict = false, bool strict_array = false);
-		static bool match_type(TypeDefinition ltype, TypeDefinition rtype, dim_eval_func_t evaluate_access_vector, bool strict = false, bool strict_array = false);
+		static bool is_any_or_match_type(TypeDefinition ltype, TypeDefinition rtype, bool strict = false, bool strict_array = false);
+		static bool match_type(TypeDefinition ltype, TypeDefinition rtype, bool strict = false, bool strict_array = false);
 		static bool match_type_bool(TypeDefinition ltype, TypeDefinition rtype);
 		static bool match_type_int(TypeDefinition ltype, TypeDefinition rtype);
 		static bool match_type_float(TypeDefinition ltype, TypeDefinition rtype, bool strict = false);
 		static bool match_type_char(TypeDefinition ltype, TypeDefinition rtype);
 		static bool match_type_string(TypeDefinition ltype, TypeDefinition rtype, bool strict = false);
-		static bool match_type_array(TypeDefinition ltype, TypeDefinition rtype, dim_eval_func_t evaluate_access_vector, bool strict = false, bool strict_array = false);
+		static bool match_type_array(TypeDefinition ltype, TypeDefinition rtype, bool strict = false, bool strict_array = false);
 		static bool match_type_struct(TypeDefinition ltype, TypeDefinition rtype);
 		static bool match_type_function(TypeDefinition ltype, TypeDefinition rtype);
-		static bool match_array_dim(TypeDefinition ltype, TypeDefinition rtype, dim_eval_func_t evaluate_access_vector);
+		static bool match_array_dim(TypeDefinition ltype, TypeDefinition rtype);
 
 		virtual void reset_ref();
+
 	};
 
 	class VariableDefinition : public TypeDefinition, public CodePosition {
@@ -378,8 +378,8 @@ namespace core {
 		static std::string parse_array_to_string(const flx_array& arr_value, std::vector<uintptr_t> printed);
 		static std::string parse_struct_to_string(const RuntimeValue* value, std::vector<uintptr_t> printed);
 
-		static RuntimeValue* do_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval, dim_eval_func_t evaluate_access_vector_ptr, bool is_expr = false, flx_int str_pos = -1);
-		static flx_bool do_relational_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval, dim_eval_func_t evaluate_access_vector_ptr);
+		static RuntimeValue* do_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval, bool is_expr = false, flx_int str_pos = -1);
+		static flx_bool do_relational_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval);
 		static flx_int do_spaceship_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval);
 		static flx_int do_operation(flx_int lval, flx_int rval, const std::string& op);
 		static flx_float do_operation(flx_float lval, flx_float rval, const std::string& op);
@@ -388,7 +388,7 @@ namespace core {
 
 		static void normalize_type(TypeDefinition* owner, RuntimeValue* value);
 
-		static std::string build_str_type(RuntimeValue* curr_value, dim_eval_func_t evaluate_access_vector_ptr);
+		static std::string build_str_type(RuntimeValue* curr_value);
 
 	};
 

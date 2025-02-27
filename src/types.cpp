@@ -144,22 +144,21 @@ TypeDefinition TypeDefinition::get_struct(const std::string& type_name, const st
 	return TypeDefinition(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<unsigned int>(), type_name, type_name_space);
 }
 
-bool TypeDefinition::is_any_or_match_type(TypeDefinition ltype, TypeDefinition rtype,
-	dim_eval_func_t evaluate_access_vector, bool strict, bool strict_array) {
+bool TypeDefinition::is_any_or_match_type(TypeDefinition ltype, TypeDefinition rtype, bool strict, bool strict_array) {
 	if (TypeUtils::is_any(ltype.type)
 		|| TypeUtils::is_any(rtype.type)
 		|| TypeUtils::is_void(ltype.type)
 		|| TypeUtils::is_void(rtype.type)) return true;
-	return match_type(ltype, rtype, evaluate_access_vector, strict, strict_array);
+	return match_type(ltype, rtype, strict, strict_array);
 }
 
-bool TypeDefinition::match_type(TypeDefinition ltype, TypeDefinition rtype, dim_eval_func_t evaluate_access_vector, bool strict, bool strict_array) {
+bool TypeDefinition::match_type(TypeDefinition ltype, TypeDefinition rtype, bool strict, bool strict_array) {
 	if (match_type_bool(ltype, rtype)) return true;
 	if (match_type_int(ltype, rtype)) return true;
 	if (match_type_float(ltype, rtype, strict)) return true;
 	if (match_type_char(ltype, rtype)) return true;
 	if (match_type_string(ltype, rtype, strict)) return true;
-	if (match_type_array(ltype, rtype, evaluate_access_vector, strict, strict_array)) return true;
+	if (match_type_array(ltype, rtype, strict, strict_array)) return true;
 	if (match_type_struct(ltype, rtype)) return true;
 	if (match_type_function(ltype, rtype)) return true;
 	return false;
@@ -189,16 +188,16 @@ bool TypeDefinition::match_type_string(TypeDefinition ltype, TypeDefinition rtyp
 			!strict && TypeUtils::is_text(rtype.type));
 }
 
-bool TypeDefinition::match_type_array(TypeDefinition ltype, TypeDefinition rtype, dim_eval_func_t evaluate_access_vector, bool strict, bool strict_array) {
+bool TypeDefinition::match_type_array(TypeDefinition ltype, TypeDefinition rtype, bool strict, bool strict_array) {
 	TypeDefinition latype = TypeDefinition(TypeUtils::is_undefined(ltype.array_type) ? Type::T_ANY : ltype.array_type,
 		Type::T_UNDEFINED, std::vector<unsigned int>(), ltype.type_name, ltype.type_name_space);
 	TypeDefinition ratype = TypeDefinition(TypeUtils::is_undefined(rtype.array_type) ? Type::T_ANY : rtype.array_type,
 		Type::T_UNDEFINED, std::vector<unsigned int>(), rtype.type_name, rtype.type_name_space);
 
 	return TypeUtils::is_array(ltype.type) && TypeUtils::is_array(rtype.type)
-		&& (!strict_array && is_any_or_match_type(latype, ratype, evaluate_access_vector, strict, strict_array) ||
-			match_type(latype, ratype, evaluate_access_vector, strict, strict_array))
-		&& match_array_dim(ltype, rtype, evaluate_access_vector);
+		&& (!strict_array && is_any_or_match_type(latype, ratype, strict, strict_array) ||
+			match_type(latype, ratype, strict, strict_array))
+		&& match_array_dim(ltype, rtype);
 }
 
 bool TypeDefinition::match_type_struct(TypeDefinition ltype, TypeDefinition rtype) {
@@ -210,7 +209,7 @@ bool TypeDefinition::match_type_function(TypeDefinition ltype, TypeDefinition rt
 	return TypeUtils::is_function(ltype.type) && TypeUtils::is_function(rtype.type);
 }
 
-bool TypeDefinition::match_array_dim(TypeDefinition ltype, TypeDefinition rtype, dim_eval_func_t evaluate_access_vector) {
+bool TypeDefinition::match_array_dim(TypeDefinition ltype, TypeDefinition rtype) {
 	std::vector<unsigned int> var_dim = ltype.dim;
 	std::vector<unsigned int> expr_dim = rtype.dim;
 
@@ -1099,7 +1098,7 @@ std::string RuntimeOperations::parse_struct_to_string(const RuntimeValue* value,
 	return s.str();
 }
 
-RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval, dim_eval_func_t evaluate_access_vector_ptr, bool is_expr, flx_int str_pos) {
+RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval, bool is_expr, flx_int str_pos) {
 	Type l_var_type = lval->ref.lock() ? lval->ref.lock()->type : lval->type;
 	Type l_var_array_type = lval->ref.lock() ? lval->ref.lock()->array_type : lval->array_type;
 	Type l_type = TypeUtils::is_undefined(lval->type) ? l_var_type : lval->type;
@@ -1139,7 +1138,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		}
 
 		if (!TypeUtils::is_bool(l_type)) {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		if (op == "=") {
@@ -1158,7 +1157,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			res_value = new RuntimeValue((flx_bool)(lval->get_b() != rval->get_b()));
 		}
 		else {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		break;
@@ -1180,7 +1179,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		if (is_expr
 			&& TypeUtils::is_numeric(l_type)
 			&& Token::is_relational_op(op)) {
-			res_value = new RuntimeValue(do_relational_operation(op, lval, rval, evaluate_access_vector_ptr));
+			res_value = new RuntimeValue(do_relational_operation(op, lval, rval));
 
 			break;
 		}
@@ -1208,7 +1207,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			lval->set(do_operation(lval->get_i(), rval->get_i(), op));
 		}
 		else {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		break;
@@ -1230,7 +1229,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		if (is_expr
 			&& TypeUtils::is_numeric(l_type)
 			&& Token::is_relational_op(op)) {
-			lval->set(do_relational_operation(op, lval, rval, evaluate_access_vector_ptr));
+			lval->set(do_relational_operation(op, lval, rval));
 
 			break;
 		}
@@ -1254,7 +1253,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			lval->set(do_operation(flx_float(lval->get_i()), rval->get_f(), op));
 		}
 		else {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		break;
@@ -1278,7 +1277,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		if (TypeUtils::is_string(l_type)) {
 			if (has_string_access) {
 				if (op != "=") {
-					ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+					ExceptionHandler::throw_operation_err(op, *lval, *rval);
 				}
 				has_string_access = false;
 				lval->get_s()[str_pos] = rval->get_c();
@@ -1290,20 +1289,20 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		}
 		else if (TypeUtils::is_char(l_type)) {
 			if (op != "=") {
-				ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+				ExceptionHandler::throw_operation_err(op, *lval, *rval);
 			}
 
 			lval->set(rval->get_c());
 		}
 		else if (TypeUtils::is_any(l_var_type)) {
 			if (op != "=") {
-				ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+				ExceptionHandler::throw_operation_err(op, *lval, *rval);
 			}
 
 			lval->set(rval->get_c());
 		}
 		else {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		break;
@@ -1336,7 +1335,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			lval->set(do_operation(flx_string{ lval->get_c() }, rval->get_s(), op));
 		}
 		else {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		break;
@@ -1357,13 +1356,13 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			break;
 		}
 
-		if (!TypeDefinition::match_type_array(*lval, *rval, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+		if (!TypeDefinition::match_type_array(*lval, *rval)) {
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		bool match_arr_t = lval->array_type == rval->array_type;
 		if (!match_arr_t && !TypeUtils::is_any(l_var_array_type)) {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		lval->set(do_operation(lval->get_arr(), rval->get_arr(), op),
@@ -1389,7 +1388,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		}
 
 		if (!TypeUtils::is_struct(l_type) || op != "=") {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		lval->set(rval->get_str(), rval->type_name, rval->type_name_space);
@@ -1403,7 +1402,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		}
 
 		if (!TypeUtils::is_function(l_type) || op != "=") {
-			ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
 		lval->set(rval->get_fun());
@@ -1422,7 +1421,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 	return res_value;
 }
 
-flx_bool RuntimeOperations::do_relational_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval, dim_eval_func_t evaluate_access_vector_ptr) {
+flx_bool RuntimeOperations::do_relational_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval) {
 	flx_float l = TypeUtils::is_float(lval->type) ? lval->get_f() : lval->get_i();
 	flx_float r = TypeUtils::is_float(rval->type) ? rval->get_f() : rval->get_i();
 
@@ -1438,7 +1437,7 @@ flx_bool RuntimeOperations::do_relational_operation(const std::string& op, Runti
 	else if (op == ">=") {
 		return l >= r;
 	}
-	ExceptionHandler::throw_operation_err(op, *lval, *rval, evaluate_access_vector_ptr);
+	ExceptionHandler::throw_operation_err(op, *lval, *rval);
 }
 
 flx_int RuntimeOperations::do_spaceship_operation(const std::string& op, RuntimeValue* lval, RuntimeValue* rval) {
@@ -1580,7 +1579,7 @@ void RuntimeOperations::normalize_type(TypeDefinition* owner, RuntimeValue* valu
 	}
 }
 
-std::string RuntimeOperations::build_str_type(RuntimeValue* curr_value, dim_eval_func_t evaluate_access_vector_ptr) {
+std::string RuntimeOperations::build_str_type(RuntimeValue* curr_value) {
 	auto dim = std::vector<unsigned int>();
 	auto type = TypeUtils::is_void(curr_value->type) ? curr_value->type : curr_value->type;
 	std::string str_type = "";

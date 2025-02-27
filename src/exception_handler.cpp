@@ -4,40 +4,40 @@
 
 using namespace core;
 
-void ExceptionHandler::throw_operation_err(const std::string op, const TypeDefinition& ltype, const TypeDefinition& rtype, dim_eval_func_t evaluate_access_vector) {
-	throw std::runtime_error("invalid '" + op + "' operation for types '" + buid_type_str(ltype, evaluate_access_vector)
-		+ "' and '" + buid_type_str(rtype, evaluate_access_vector) + "'");
+void ExceptionHandler::throw_operation_err(const std::string op, const TypeDefinition& ltype, const TypeDefinition& rtype) {
+	throw std::runtime_error("invalid '" + op + "' operation for types '" + buid_type_str(ltype)
+		+ "' and '" + buid_type_str(rtype) + "'");
 }
 
-void ExceptionHandler::throw_unary_operation_err(const std::string op, const TypeDefinition& type, dim_eval_func_t evaluate_access_vector) {
+void ExceptionHandler::throw_unary_operation_err(const std::string op, const TypeDefinition& type) {
 	throw std::runtime_error("incompatible unary operator '" + op +
-		"' in front of " + buid_type_str(type, evaluate_access_vector) + " expression");
+		"' in front of " + buid_type_str(type) + " expression");
 }
 
-void ExceptionHandler::throw_declaration_type_err(const std::string& identifier, const TypeDefinition& ltype, const TypeDefinition& rtype, dim_eval_func_t evaluate_access_vector) {
-	throw std::runtime_error("found " + buid_type_str(rtype, evaluate_access_vector)
+void ExceptionHandler::throw_declaration_type_err(const std::string& identifier, const TypeDefinition& ltype, const TypeDefinition& rtype) {
+	throw std::runtime_error("found " + buid_type_str(rtype)
 		+ " in definition of '" + identifier
-		+ "', expected " + buid_type_str(ltype, evaluate_access_vector) + " type");
+		+ "', expected " + buid_type_str(ltype) + " type");
 }
 
-void ExceptionHandler::throw_return_type_err(const std::string& identifier, const TypeDefinition& ltype, const TypeDefinition& rtype, dim_eval_func_t evaluate_access_vector) {
-	throw std::runtime_error("invalid " + buid_type_str(ltype, evaluate_access_vector)
+void ExceptionHandler::throw_return_type_err(const std::string& identifier, const TypeDefinition& ltype, const TypeDefinition& rtype) {
+	throw std::runtime_error("invalid " + buid_type_str(ltype)
 		+ " return type for '" + identifier
-		+ "' function with " + buid_type_str(rtype, evaluate_access_vector)
+		+ "' function with " + buid_type_str(rtype)
 		+ " return type");
 }
 
-void ExceptionHandler::throw_mismatched_type_err(const TypeDefinition& ltype, const TypeDefinition& rtype, dim_eval_func_t evaluate_access_vector) {
-	throw std::runtime_error("mismatched types " + buid_type_str(ltype, evaluate_access_vector)
-		+ " and " + buid_type_str(rtype, evaluate_access_vector));
+void ExceptionHandler::throw_mismatched_type_err(const TypeDefinition& ltype, const TypeDefinition& rtype) {
+	throw std::runtime_error("mismatched types " + buid_type_str(ltype)
+		+ " and " + buid_type_str(rtype));
 }
 
 void ExceptionHandler::throw_condition_type_err() {
 	throw std::runtime_error("conditions must be boolean expression");
 }
 
-void ExceptionHandler::throw_struct_type_err(const std::string& type_name_space, const std::string& type_name, const TypeDefinition& type, dim_eval_func_t evaluate_access_vector) {
-	throw std::runtime_error("invalid type " + buid_type_str(type, evaluate_access_vector) +
+void ExceptionHandler::throw_struct_type_err(const std::string& type_name_space, const std::string& type_name, const TypeDefinition& type) {
+	throw std::runtime_error("invalid type " + buid_type_str(type) +
 		" trying to assign '" + (type_name_space.empty() ? "" : type_name_space + "::") + type_name + "' struct");
 }
 
@@ -65,10 +65,10 @@ std::string ExceptionHandler::buid_member_name(const std::vector<Identifier>& id
 	return ss;
 }
 
-std::string ExceptionHandler::buid_signature(const std::vector<Identifier>& identifier_vector, const std::vector<TypeDefinition*> signature, dim_eval_func_t evaluate_access_vector) {
+std::string ExceptionHandler::buid_signature(const std::vector<Identifier>& identifier_vector, const std::vector<TypeDefinition*> signature) {
 	std::string ss = buid_member_name(identifier_vector) + "(";
 	for (const auto& param : signature) {
-		ss += buid_type_str(*param, evaluate_access_vector) + ", ";
+		ss += buid_type_str(*param) + ", ";
 	}
 	if (signature.size() > 0) {
 		ss.pop_back();
@@ -79,10 +79,10 @@ std::string ExceptionHandler::buid_signature(const std::vector<Identifier>& iden
 	return ss;
 }
 
-std::string ExceptionHandler::buid_signature(const std::string& identifier, const std::vector<TypeDefinition*> signature, dim_eval_func_t evaluate_access_vector) {
+std::string ExceptionHandler::buid_signature(const std::string& identifier, const std::vector<TypeDefinition*> signature) {
 	std::string ss= identifier + "(";
 	for (const auto& param : signature) {
-		ss += buid_type_str(*param, evaluate_access_vector) + ", ";
+		ss += buid_type_str(*param) + ", ";
 	}
 	if (signature.size() > 0) {
 		ss.pop_back();
@@ -93,7 +93,7 @@ std::string ExceptionHandler::buid_signature(const std::string& identifier, cons
 	return ss;
 }
 
-std::string ExceptionHandler::buid_type_str(const TypeDefinition& type_def, dim_eval_func_t evaluate_access_vector) {
+std::string ExceptionHandler::buid_type_str(const TypeDefinition& type_def) {
 	std::string ss;
 
 	auto type = type_def.type;

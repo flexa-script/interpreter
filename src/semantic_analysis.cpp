@@ -176,9 +176,9 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 		astnode->is_const, astnode->row, astnode->col);
 	new_var->set_value(new_value);
 
-	if (!TypeDefinition::is_any_or_match_type(*new_var, *new_value, evaluate_access_vector_ptr)
+	if (!TypeDefinition::is_any_or_match_type(*new_var, *new_value)
 		&& astnode->expr && !TypeUtils::is_undefined(new_value->type)) {
-		ExceptionHandler::throw_declaration_type_err(astnode->identifier, *new_var, *new_value, evaluate_access_vector_ptr);
+		ExceptionHandler::throw_declaration_type_err(astnode->identifier, *new_var, *new_value);
 	}
 
 	if (new_value->dim.size() < new_var->dim.size() && new_value->dim.size() == 1) {
@@ -205,8 +205,8 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTUnpackedDeclarationNode> astnode
 
 	if (var) {
 		var->accept(this);
-		if (!TypeDefinition::is_any_or_match_type(*astnode, current_expression, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_mismatched_type_err(*astnode, current_expression, evaluate_access_vector_ptr);
+		if (!TypeDefinition::is_any_or_match_type(*astnode, current_expression)) {
+			ExceptionHandler::throw_mismatched_type_err(*astnode, current_expression);
 		}
 	}
 
@@ -235,7 +235,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	std::shared_ptr<Scope> curr_scope = get_inner_most_variable_scope(current_program, name_space, identifier);
 	if (!curr_scope) {
 		bool isfunc = false;
-		curr_scope = get_inner_most_function_scope(current_program, name_space, identifier, nullptr, evaluate_access_vector_ptr);
+		curr_scope = get_inner_most_function_scope(current_program, name_space, identifier, nullptr);
 		if (curr_scope) {
 			isfunc = true;
 			throw std::runtime_error("function '" + identifier + "' can't be assigned");
@@ -307,8 +307,8 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTReturnNode> astnode) {
 
 	if (!current_function.empty()) {
 		auto& currfun = current_function.top();
-		if (!TypeDefinition::is_any_or_match_type(currfun, return_expr, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_return_type_err(currfun.identifier, currfun, return_expr, evaluate_access_vector_ptr);
+		if (!TypeDefinition::is_any_or_match_type(currfun, return_expr)) {
+			ExceptionHandler::throw_return_type_err(currfun.identifier, currfun, return_expr);
 		}
 	}
 }
@@ -333,7 +333,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 	if (astnode->identifier.empty()) {
 		if (!TypeUtils::is_function(returned_expression.type)) {
-			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature, evaluate_access_vector_ptr));
+			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature));
 		}
 
 	}
@@ -342,21 +342,21 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		idnode->accept(this);
 
 		if (!TypeUtils::is_function(current_expression.type)) {
-			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature, evaluate_access_vector_ptr));
+			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature));
 		}
 
 	}
 	else {
-		std::shared_ptr<Scope> curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
+		std::shared_ptr<Scope> curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, strict);
 		if (!curr_scope) {
-			curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
+			curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, strict);
 			if (!curr_scope) {
-				std::string func_name = ExceptionHandler::buid_signature(astnode->identifier, signature, evaluate_access_vector_ptr);
+				std::string func_name = ExceptionHandler::buid_signature(astnode->identifier, signature);
 				throw std::runtime_error("function '" + func_name + "' was never declared");
 			}
 		}
 
-		auto& curr_function = curr_scope->find_declared_function(astnode->identifier, &signature, evaluate_access_vector_ptr, strict);
+		auto& curr_function = curr_scope->find_declared_function(astnode->identifier, &signature, strict);
 
 		if (TypeUtils::is_void(curr_function.type)) {
 			current_expression = SemanticValue(Type::T_UNDEFINED, 0, 0);
@@ -385,14 +385,14 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode)
 	const auto& name_space = astnode->type_name_space.empty() ? current_program->name_space : astnode->type_name_space;
 
 	for (const auto& scope : scopes[name_space]) {
-		if (scope->already_declared_function(astnode->identifier, &astnode->parameters, evaluate_access_vector_ptr)) {
-			const auto& decl_function = scope->find_declared_function(astnode->identifier, &astnode->parameters, evaluate_access_vector_ptr);
+		if (scope->already_declared_function(astnode->identifier, &astnode->parameters)) {
+			const auto& decl_function = scope->find_declared_function(astnode->identifier, &astnode->parameters);
 
 			if (!decl_function.block && astnode->block) {
 				break;
 			}
 
-			std::string signature = ExceptionHandler::buid_signature(astnode->identifier, astnode->parameters, evaluate_access_vector_ptr);
+			std::string signature = ExceptionHandler::buid_signature(astnode->identifier, astnode->parameters);
 			throw std::runtime_error("function " + signature + " already defined");
 		}
 	}
@@ -405,7 +405,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode)
 		if (astnode->identifier != "") {
 			try {
 				std::shared_ptr<Scope> func_scope = scopes[name_space].back();
-				auto& declfun = func_scope->find_declared_function(astnode->identifier, &astnode->parameters, evaluate_access_vector_ptr, true);
+				auto& declfun = func_scope->find_declared_function(astnode->identifier, &astnode->parameters, true);
 				declfun.block = astnode->block;
 			}
 			catch (...) {
@@ -414,7 +414,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode)
 				scopes[name_space].back()->declare_function(astnode->identifier, f);
 			}
 
-			auto& curr_function = scopes[name_space].back()->find_declared_function(astnode->identifier, &astnode->parameters, evaluate_access_vector_ptr);
+			auto& curr_function = scopes[name_space].back()->find_declared_function(astnode->identifier, &astnode->parameters);
 
 			current_function.push(curr_function);
 		}
@@ -560,8 +560,8 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 			case_type = current_expression;
 		}
 
-		if (!TypeDefinition::match_type(case_type, current_expression, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_mismatched_type_err(case_type, current_expression, evaluate_access_vector_ptr);
+		if (!TypeDefinition::match_type(case_type, current_expression)) {
+			ExceptionHandler::throw_mismatched_type_err(case_type, current_expression);
 		}
 
 		auto hash = expr.first->hash(this);
@@ -572,8 +572,8 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 		astnode->parsed_case_blocks.emplace(hash, expr.second);
 	}
 
-	if (!TypeDefinition::is_any_or_match_type(cond_type, case_type, evaluate_access_vector_ptr)) {
-		ExceptionHandler::throw_mismatched_type_err(cond_type, case_type, evaluate_access_vector_ptr);
+	if (!TypeDefinition::is_any_or_match_type(cond_type, case_type)) {
+		ExceptionHandler::throw_mismatched_type_err(cond_type, case_type);
 	}
 
 	for (auto& stmt : astnode->statements) {
@@ -1039,8 +1039,8 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTStructConstructorNode> astnode) 
 		}
 
 		if (!TypeDefinition::is_any_or_match_type(var_type_struct,
-			current_expression, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_struct_type_err(astnode->name_space, astnode->type_name, var_type_struct, evaluate_access_vector_ptr);
+			current_expression)) {
+			ExceptionHandler::throw_struct_type_err(astnode->name_space, astnode->type_name, var_type_struct);
 		}
 	}
 
@@ -1093,7 +1093,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 			return;
 		}
 		else {
-			curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, nullptr, evaluate_access_vector_ptr);
+			curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, nullptr);
 			if (curr_scope) {
 				current_expression.type = Type::T_FUNCTION;
 				return;
@@ -1403,7 +1403,7 @@ TypeDefinition SemanticAnalyser::do_operation(const std::string& op, TypeDefinit
 			&& op != "and"
 			&& op != "or"
 			&& !Token::is_equality_op(op)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;
@@ -1415,17 +1415,17 @@ TypeDefinition SemanticAnalyser::do_operation(const std::string& op, TypeDefinit
 			if (!Token::is_float_op(op)
 				&& !Token::is_relational_op(op)
 				&& !Token::is_equality_op(op)) {
-				ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+				ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 			}
 		}
 		else if (TypeUtils::is_int(l_type)
 			&& !Token::is_int_op(op)
 			&& !Token::is_relational_op(op)
 			&& !Token::is_equality_op(op)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 		else if (!TypeUtils::is_numeric(l_type) && !TypeUtils::is_any(l_type) && !TypeUtils::is_any(l_var_type)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;
@@ -1435,25 +1435,25 @@ TypeDefinition SemanticAnalyser::do_operation(const std::string& op, TypeDefinit
 			&& !Token::is_float_op(op)
 			&& !Token::is_relational_op(op)
 			&& !Token::is_equality_op(op)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 		else if (!TypeUtils::is_numeric(l_type) && !TypeUtils::is_any(l_type) && !TypeUtils::is_any(l_var_type)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;
 	}
 	case Type::T_CHAR: {
 		if (TypeUtils::is_string(l_type) && !Token::is_collection_op(op)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 		else if (TypeUtils::is_char(l_type)) {
 			if (op != "=" && !Token::is_equality_op(op) && !is_expr) {
-				ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+				ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 			}
 		}
 		else if (!TypeUtils::is_text(l_type) && !TypeUtils::is_any(l_type) && !TypeUtils::is_any(l_var_type)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;
@@ -1464,32 +1464,32 @@ TypeDefinition SemanticAnalyser::do_operation(const std::string& op, TypeDefinit
 				&& !Token::is_equality_op(op)))
 			&& (is_expr && (!TypeUtils::is_char(l_type)
 				|| !Token::is_expression_collection_op(op)))) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 		else if (!TypeUtils::is_text(l_type) && !TypeUtils::is_any(l_type) && !TypeUtils::is_any(l_var_type)) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;
 	}
 	case Type::T_ARRAY: {
-		if (!TypeDefinition::match_type_array(lvalue, rvalue, evaluate_access_vector_ptr)
+		if (!TypeDefinition::match_type_array(lvalue, rvalue)
 			|| (!Token::is_collection_op(op) && !Token::is_equality_op(op))) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;
 	}
 	case Type::T_STRUCT: {
 		if (!TypeUtils::is_struct(l_type) || (!Token::is_equality_op(op) && op != "=")) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;
 	}
 	case Type::T_FUNCTION: {
 		if (!TypeUtils::is_function(l_type) || (!Token::is_equality_op(op) && op != "=")) {
-			ExceptionHandler::throw_operation_err(op, lvalue, rvalue, evaluate_access_vector_ptr);
+			ExceptionHandler::throw_operation_err(op, lvalue, rvalue);
 		}
 
 		break;

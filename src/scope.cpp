@@ -20,8 +20,7 @@ std::shared_ptr<Variable> Scope::find_declared_variable(const std::string& ident
 	return var;
 }
 
-FunctionDefinition& Scope::find_declared_function(const std::string& identifier, const std::vector<TypeDefinition*>* signature,
-	dim_eval_func_t evaluate_access_vector, bool strict) {
+FunctionDefinition& Scope::find_declared_function(const std::string& identifier, const std::vector<TypeDefinition*>* signature, bool strict) {
 	auto funcs = function_symbol_table.equal_range(identifier);
 
 	if (std::distance(funcs.first, funcs.second) == 0) {
@@ -47,7 +46,7 @@ FunctionDefinition& Scope::find_declared_function(const std::string& identifier,
 				ftype = func_sig.at(i);
 				stype = signature->at(i);
 
-				if (!TypeDefinition::is_any_or_match_type(*ftype, *stype, evaluate_access_vector, strict || stype->use_ref)) {
+				if (!TypeDefinition::is_any_or_match_type(*ftype, *stype, strict || stype->use_ref)) {
 					found = false;
 					break;
 				}
@@ -81,7 +80,7 @@ FunctionDefinition& Scope::find_declared_function(const std::string& identifier,
 				}
 				stype = signature->at(i);
 
-				if (!TypeDefinition::is_any_or_match_type(*ftype, *stype, evaluate_access_vector, strict || stype->use_ref)) {
+				if (!TypeDefinition::is_any_or_match_type(*ftype, *stype, strict || stype->use_ref)) {
 					found = false;
 					break;
 				}
@@ -100,7 +99,7 @@ FunctionDefinition& Scope::find_declared_function(const std::string& identifier,
 					ftype = func_sig.at(i);
 					stype = signature->at(i);
 
-					if (!TypeDefinition::is_any_or_match_type(*ftype, *stype, evaluate_access_vector, strict || stype->use_ref)) {
+					if (!TypeDefinition::is_any_or_match_type(*ftype, *stype, strict || stype->use_ref)) {
 						found = false;
 						break;
 					}
@@ -143,10 +142,9 @@ bool Scope::already_declared_variable(const std::string& identifier) {
 	return variable_symbol_table.find(identifier) != variable_symbol_table.end();
 }
 
-bool Scope::already_declared_function(const std::string& identifier, const std::vector<TypeDefinition*>* signature,
-	dim_eval_func_t evaluate_access_vector, bool strict) {
+bool Scope::already_declared_function(const std::string& identifier, const std::vector<TypeDefinition*>* signature, bool strict) {
 	try {
-		find_declared_function(identifier, signature, evaluate_access_vector, strict);
+		find_declared_function(identifier, signature, strict);
 		return true;
 	}
 	catch (...) {

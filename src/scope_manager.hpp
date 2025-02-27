@@ -44,9 +44,9 @@ namespace core {
 			std::vector<std::string> vp = std::vector<std::string>(), std::vector<std::string> vf = std::vector<std::string>());
 
 		std::shared_ptr<Scope> get_inner_most_function_scope_aux(const std::string& name_space, const std::string& identifier,
-			const std::vector<TypeDefinition*>* signature, dim_eval_func_t evaluate_access_vector_ptr, bool strict, std::vector<std::string>& visited);
+			const std::vector<TypeDefinition*>* signature, bool strict, std::vector<std::string>& visited);
 		std::shared_ptr<Scope> get_inner_most_function_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier,
-			const std::vector<TypeDefinition*>* signature, dim_eval_func_t evaluate_access_vector_ptr, bool strict = true,
+			const std::vector<TypeDefinition*>* signature, bool strict = true,
 			std::vector<std::string> vp = std::vector<std::string>(), std::vector<std::string> vf = std::vector<std::string>());
 
 	};

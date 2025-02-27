@@ -183,7 +183,7 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_functions_scope(std::shared_
 }
 
 std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope_aux(const std::string& name_space, const std::string& identifier,
-	const std::vector<TypeDefinition*>* signature, dim_eval_func_t evaluate_access_vector_ptr, bool strict, std::vector<std::string>& visited) {
+	const std::vector<TypeDefinition*>* signature, bool strict, std::vector<std::string>& visited) {
 	if (name_space.empty()) {
 		return nullptr;
 	}
@@ -193,7 +193,7 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope_aux(const std
 	visited.push_back(name_space);
 
 	long long i;
-	for (i = scopes[name_space].size() - 1; i >= 0 && !scopes[name_space][i]->already_declared_function(identifier, signature, evaluate_access_vector_ptr, strict); i--);
+	for (i = scopes[name_space].size() - 1; i >= 0 && !scopes[name_space][i]->already_declared_function(identifier, signature, strict); i--);
 	if (i < 0) {
 		return nullptr;
 	}
@@ -201,7 +201,7 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope_aux(const std
 }
 
 std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope(std::shared_ptr<ASTProgramNode> program, const std::string& name_space, const std::string& identifier,
-	const std::vector<TypeDefinition*>* signature, dim_eval_func_t evaluate_access_vector_ptr, bool strict, std::vector<std::string> vp, std::vector<std::string> vf) {
+	const std::vector<TypeDefinition*>* signature, bool strict, std::vector<std::string> vp, std::vector<std::string> vf) {
 	if (utils::CollectionUtils::contains(vp, program->name)) {
 		return nullptr;
 	}
@@ -211,21 +211,21 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope(std::shared_p
 
 	// try find at given namespace
 	if (!name_space.empty()) {
-		scope = get_inner_most_function_scope_aux(name_space, identifier, signature, evaluate_access_vector_ptr, strict, vf);
+		scope = get_inner_most_function_scope_aux(name_space, identifier, signature, strict, vf);
 		if (scope) {
 			return scope;
 		}
 	}
 
 	// try find at program namespace
-	scope = get_inner_most_function_scope_aux(program->name_space, identifier, signature, evaluate_access_vector_ptr, strict, vf);
+	scope = get_inner_most_function_scope_aux(program->name_space, identifier, signature, strict, vf);
 	if (scope) {
 		return scope;
 	}
 
 	// try find at program included namespace
 	for (const auto& prgnmspace : program_nmspaces[program->name]) {
-		scope = get_inner_most_function_scope_aux(prgnmspace, identifier, signature, evaluate_access_vector_ptr, strict, vf);
+		scope = get_inner_most_function_scope_aux(prgnmspace, identifier, signature, strict, vf);
 		if (scope) {
 			return scope;
 		}

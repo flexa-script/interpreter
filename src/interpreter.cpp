@@ -164,11 +164,11 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 	new_var->set_value(new_value);
 
 	// validate assignment type
-	if ((!TypeDefinition::is_any_or_match_type(*new_var, *new_value, evaluate_access_vector_ptr) ||
+	if ((!TypeDefinition::is_any_or_match_type(*new_var, *new_value) ||
 		TypeUtils::is_array(new_var->type) && !TypeUtils::is_any(new_var->array_type)
-		&& !TypeDefinition::match_type(*new_var, *new_value, evaluate_access_vector_ptr, false, true))
+		&& !TypeDefinition::match_type(*new_var, *new_value, false, true))
 		&& astnode->expr && !TypeUtils::is_undefined(new_value->type) && !TypeUtils::is_array(new_value->type)) {
-		ExceptionHandler::throw_declaration_type_err(astnode->identifier, *new_var, *new_value, evaluate_access_vector_ptr);
+		ExceptionHandler::throw_declaration_type_err(astnode->identifier, *new_var, *new_value);
 	}
 
 	// normalize string and number types
@@ -188,8 +188,8 @@ void Interpreter::visit(std::shared_ptr<ASTUnpackedDeclarationNode> astnode) {
 
 	if (var) {
 		var->accept(this);
-		if (!TypeDefinition::is_any_or_match_type(*astnode, *current_expression_value, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_mismatched_type_err(*astnode, *current_expression_value, evaluate_access_vector_ptr);
+		if (!TypeDefinition::is_any_or_match_type(*astnode, *current_expression_value)) {
+			ExceptionHandler::throw_mismatched_type_err(*astnode, *current_expression_value);
 		}
 	}
 
@@ -241,10 +241,10 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 		&& astnode->identifier_vector.size() == 1
 		&& astnode->identifier_vector[0].access_vector.size() == 0
 		&& !has_string_access) {
-		if (!TypeDefinition::is_any_or_match_type(*variable, *ptr_value, evaluate_access_vector_ptr) ||
+		if (!TypeDefinition::is_any_or_match_type(*variable, *ptr_value) ||
 			TypeUtils::is_array(variable->type) && !TypeUtils::is_any(variable->array_type)
-			&& !TypeDefinition::match_type(*variable, *ptr_value, evaluate_access_vector_ptr, false, true)) {
-			ExceptionHandler::throw_mismatched_type_err(*variable, *ptr_value, evaluate_access_vector_ptr);
+			&& !TypeDefinition::match_type(*variable, *ptr_value, false, true)) {
+			ExceptionHandler::throw_mismatched_type_err(*variable, *ptr_value);
 		}
 
 		RuntimeOperations::normalize_type(variable.get(), new_value);
@@ -280,7 +280,7 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 			RuntimeOperations::normalize_type(variable.get(), new_value);
 
 			// do value/sub value operation
-			RuntimeOperations::do_operation(astnode->op, value, new_value, evaluate_access_vector_ptr, false, pos);
+			RuntimeOperations::do_operation(astnode->op, value, new_value, false, pos);
 		}
 	}
 
@@ -302,9 +302,9 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 		RuntimeValue* returned_value = current_expression_value;
 
 		// check types match
-		if (!TypeDefinition::is_any_or_match_type(curr_func_ret_type, *returned_value, evaluate_access_vector_ptr)) {
+		if (!TypeDefinition::is_any_or_match_type(curr_func_ret_type, *returned_value)) {
 			ExceptionHandler::throw_return_type_err(current_function.top().identifier,
-				curr_func_ret_type, *returned_value, evaluate_access_vector_ptr);
+				curr_func_ret_type, *returned_value);
 		}
 
 		// evaluates access vector
@@ -377,7 +377,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		name_space = returned_expression_value->get_fun().first;
 		identifier = returned_expression_value->get_fun().second;
 
-		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 
 		if (func_scope) {
 			current_program_stack.push(func_scope->owner);
@@ -385,10 +385,10 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		}
 		else {
 			strict = false;
-			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 
 			if (!func_scope) {
-				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+				std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
 				throw std::runtime_error("function '" + func_name + "' was never declared");
 			}
 
@@ -405,7 +405,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		name_space = current_expression_value->get_fun().first;
 		identifier = current_expression_value->get_fun().second;
 
-		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 
 		if (func_scope) {
 			current_program_stack.push(func_scope->owner);
@@ -413,10 +413,10 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		}
 		else {
 			strict = false;
-			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 
 			if (!func_scope) {
-				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+				std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
 				throw std::runtime_error("function '" + func_name + "' was never declared");
 			}
 
@@ -426,14 +426,14 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 	}
 	else {
-		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 		if (func_scope) {
 			current_program_stack.push(func_scope->owner);
 			pop_program = true;
 		}
 		else {
 			strict = false;
-			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 			if (func_scope) {
 				current_program_stack.push(func_scope->owner);
 				pop_program = true;
@@ -442,7 +442,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 				auto var_scope = get_inner_most_variable_scope(current_program, name_space, identifier);
 
 				if (!var_scope) {
-					std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+					std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
 					throw std::runtime_error("function '" + func_name + "' was never declared");
 				}
 
@@ -450,7 +450,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 				name_space = var->value->get_fun().first;
 				identifier = var->value->get_fun().second;
 
-				func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+				func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 
 				if (func_scope) {
 					current_program_stack.push(func_scope->owner);
@@ -458,10 +458,10 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 				}
 				else {
 					strict = false;
-					func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+					func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 
 					if (!func_scope) {
-						std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+						std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
 						throw std::runtime_error("function '" + func_name + "' was never declared");
 					}
 
@@ -473,7 +473,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 	}
 
-	auto& declfun = func_scope->find_declared_function(identifier, &signature, evaluate_access_vector_ptr, strict);
+	auto& declfun = func_scope->find_declared_function(identifier, &signature, strict);
 
 	current_function.push(declfun);
 	current_function_defined_parameters.push(declfun.parameters);
@@ -521,7 +521,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 
 	try {
 		// if its already declared, it's a block definition
-		auto& declfun = scopes[name_space].back()->find_declared_function(astnode->identifier, &astnode->parameters, evaluate_access_vector_ptr, true);
+		auto& declfun = scopes[name_space].back()->find_declared_function(astnode->identifier, &astnode->parameters, true);
 		declfun.block = astnode->block;
 	}
 	catch (...) {
@@ -645,8 +645,8 @@ void Interpreter::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 		}
 		TypeDefinition case_type = *current_expression_value;
 
-		if (!TypeDefinition::match_type(cond_type, case_type, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_mismatched_type_err(cond_type, case_type, evaluate_access_vector_ptr);
+		if (!TypeDefinition::match_type(cond_type, case_type)) {
+			ExceptionHandler::throw_mismatched_type_err(cond_type, case_type);
 		}
 	}
 
@@ -1030,7 +1030,7 @@ void Interpreter::visit(std::shared_ptr<ASTThrowNode> astnode) {
 		// check struct type
 		if (current_expression_value->type_name != "Exception"
 			|| current_expression_value->type_name_space != Constants::STD_NAMESPACE) {
-			throw std::runtime_error("expected flx::Exception not " + ExceptionHandler::buid_type_str(*current_expression_value, evaluate_access_vector_ptr));
+			throw std::runtime_error("expected flx::Exception not " + ExceptionHandler::buid_type_str(*current_expression_value));
 		}
 
 		throw std::exception(current_expression_value->get_str()["error"]->get_s().c_str());
@@ -1266,8 +1266,8 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 
 		RuntimeValue* str_value = current_expression_value;
 
-		if (!TypeDefinition::is_any_or_match_type(var_type_struct, *current_expression_value, evaluate_access_vector_ptr)) {
-			ExceptionHandler::throw_struct_type_err(astnode->name_space, astnode->type_name, var_type_struct, evaluate_access_vector_ptr);
+		if (!TypeDefinition::is_any_or_match_type(var_type_struct, *current_expression_value)) {
+			ExceptionHandler::throw_struct_type_err(astnode->name_space, astnode->type_name, var_type_struct);
 		}
 
 		// check if it's a reference
@@ -1350,7 +1350,7 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 		if (TypeUtils::is_undefined(type)) {
 			std::shared_ptr<Scope> curr_scope = get_inner_most_struct_definition_scope(current_program, astnode->name_space, astnode->identifier);
 			if (!curr_scope) {
-				curr_scope = get_inner_most_function_scope(current_program, astnode->name_space, astnode->identifier, nullptr, evaluate_access_vector_ptr);
+				curr_scope = get_inner_most_function_scope(current_program, astnode->name_space, astnode->identifier, nullptr);
 				if (!curr_scope) {
 					throw std::runtime_error("identifier '" + astnode->identifier + "' was not declared");
 				}
@@ -1404,7 +1404,7 @@ void Interpreter::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 	}
 	gc.add_root(r_value);
 
-	current_expression_value = RuntimeOperations::do_operation(astnode->op, l_value, r_value, evaluate_access_vector_ptr, true);
+	current_expression_value = RuntimeOperations::do_operation(astnode->op, l_value, r_value, true);
 
 	if (current_expression_value != l_value && current_expression_value != r_value) {
 		alocate_value(current_expression_value);
@@ -1497,7 +1497,7 @@ void Interpreter::visit(std::shared_ptr<ASTUnaryExprNode> astnode) {
 					current_expression_value->set(flx_int(~current_expression_value->get_i()));
 				}
 				else {
-					ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value, evaluate_access_vector_ptr);
+					ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value);
 				}
 				break;
 			case Type::T_FLOAT:
@@ -1505,7 +1505,7 @@ void Interpreter::visit(std::shared_ptr<ASTUnaryExprNode> astnode) {
 					current_expression_value->set(flx_float(-current_expression_value->get_f()));
 				}
 				else {
-					ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value, evaluate_access_vector_ptr);
+					ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value);
 				}
 				break;
 			case Type::T_BOOL:
@@ -1513,11 +1513,11 @@ void Interpreter::visit(std::shared_ptr<ASTUnaryExprNode> astnode) {
 					current_expression_value->set(flx_bool(!current_expression_value->get_b()));
 				}
 				else {
-					ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value, evaluate_access_vector_ptr);
+					ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value);
 				}
 				break;
 			default:
-				ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value, evaluate_access_vector_ptr);
+				ExceptionHandler::throw_unary_operation_err(astnode->unary_op, *current_expression_value);
 			}
 		}
 	}
@@ -1654,7 +1654,7 @@ void Interpreter::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 
 	astnode->expr->accept(this);
 
-	auto str_type = RuntimeOperations::build_str_type(current_expression_value, evaluate_access_vector_ptr);
+	auto str_type = RuntimeOperations::build_str_type(current_expression_value);
 
 	auto value = alocate_value(new RuntimeValue(Type::T_STRING));
 	value->set(flx_string(str_type));
@@ -1666,7 +1666,7 @@ void Interpreter::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
 
 	astnode->expr->accept(this);
 
-	auto str_type = RuntimeOperations::build_str_type(current_expression_value, evaluate_access_vector_ptr);
+	auto str_type = RuntimeOperations::build_str_type(current_expression_value);
 
 	auto value = alocate_value(new RuntimeValue(Type::T_INT));
 	value->set(flx_int(utils::StringUtils::hashcode(str_type)));

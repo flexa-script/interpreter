@@ -67,7 +67,7 @@ void VirtualMachine::binary_operation(const std::string& op) {
 	RuntimeValue* rval = get_stack_top();
 	RuntimeValue* lval = get_stack_top();
 
-	auto res = RuntimeOperations::do_operation(op, lval, rval, evaluate_access_vector_ptr, true);
+	auto res = RuntimeOperations::do_operation(op, lval, rval, true);
 
 	if (res != lval && res != rval) {
 		push_constant(res);
@@ -145,12 +145,12 @@ void VirtualMachine::handle_call() {
 
 	std::shared_ptr<Scope> func_scope;
 	try {
-		func_scope = get_inner_most_function_scope(nullptr, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+		func_scope = get_inner_most_function_scope(nullptr, name_space, identifier, &signature, strict);
 	}
 	catch (...) {
 		try {
 			strict = false;
-			func_scope = get_inner_most_function_scope(nullptr, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+			func_scope = get_inner_most_function_scope(nullptr, name_space, identifier, &signature, strict);
 		}
 		catch (...) {
 			try {
@@ -159,16 +159,16 @@ void VirtualMachine::handle_call() {
 				name_space = var->value->get_fun().first;
 				identifier = var->value->get_fun().second;
 				auto identifier_vector = std::vector<Identifier>{ Identifier(identifier) };
-				func_scope = get_inner_most_function_scope(nullptr, name_space, identifier, &signature, evaluate_access_vector_ptr, strict);
+				func_scope = get_inner_most_function_scope(nullptr, name_space, identifier, &signature, strict);
 			}
 			catch (...) {
-				std::string func_name = ExceptionHandler::buid_signature(identifier, signature, evaluate_access_vector_ptr);
+				std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
 				throw std::runtime_error("function '" + func_name + "' was never declared");
 			}
 		}
 	}
 
-	auto& declfun = func_scope->find_declared_function(identifier, &signature, evaluate_access_vector_ptr, strict);
+	auto& declfun = func_scope->find_declared_function(identifier, &signature, strict);
 
 	if (declfun.pointer) {
 		pc = declfun.pointer;
@@ -331,10 +331,10 @@ void VirtualMachine::handle_store_var() {
 	gc.add_var_root(new_var);
 	new_var->set_value(new_value);
 
-	if ((!TypeDefinition::is_any_or_match_type(*new_var, *new_value, evaluate_access_vector_ptr) ||
+	if ((!TypeDefinition::is_any_or_match_type(*new_var, *new_value) ||
 		TypeUtils::is_array(new_var->type) && !TypeUtils::is_any(new_var->array_type)
-		&& !TypeDefinition::match_type(*new_var, *new_value, evaluate_access_vector_ptr, false, true))) {
-		ExceptionHandler::throw_declaration_type_err(identifier, *new_var, *new_value, evaluate_access_vector_ptr);
+		&& !TypeDefinition::match_type(*new_var, *new_value, false, true))) {
+		ExceptionHandler::throw_declaration_type_err(identifier, *new_var, *new_value);
 	}
 
 	RuntimeOperations::normalize_type(new_var.get(), new_value);
@@ -778,7 +778,7 @@ void VirtualMachine::decode_operation() {
 		push_constant(
 			new RuntimeValue(
 				flx_string(
-					RuntimeOperations::build_str_type(get_stack_top(), evaluate_access_vector_ptr)
+					RuntimeOperations::build_str_type(get_stack_top())
 				)
 			)
 		);
@@ -787,7 +787,7 @@ void VirtualMachine::decode_operation() {
 		push_constant(
 			new RuntimeValue(
 				flx_int(
-					utils::StringUtils::hashcode(RuntimeOperations::build_str_type(get_stack_top(), evaluate_access_vector_ptr))
+					utils::StringUtils::hashcode(RuntimeOperations::build_str_type(get_stack_top()))
 				)
 			)
 		);
