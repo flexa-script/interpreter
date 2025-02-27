@@ -147,7 +147,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 	if (astnode->expr) {
 		astnode->expr->accept(this);
 		if (TypeUtils::is_undefined(current_expression.type)) {
-			throw std::runtime_error("undefined expression");
+			throw std::runtime_error("'" + astnode->identifier + "' decaration expression is undefined");
 		}
 	}
 	else {
@@ -248,7 +248,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	astnode->expr->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("'" + astnode->identifier + "' assign expression is undefined");
 	}
 
 	if (TypeUtils::is_function(current_expression.type)) {
@@ -301,7 +301,10 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTReturnNode> astnode) {
 		astnode->expr->accept(this);
 		return_expr = current_expression;
 		if (TypeUtils::is_undefined(return_expr.type)) {
-			throw std::runtime_error("undefined expression");
+			if (!current_function.empty()) {
+				throw std::runtime_error("'" + current_function.top().identifier + "' return expression is undefined");
+			}
+			throw std::runtime_error("return expression is undefined");
 		}
 	}
 
@@ -325,7 +328,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	for (const auto& param : astnode->parameters) {
 		param->accept(this);
 		if (TypeUtils::is_undefined(current_expression.type)) {
-			throw std::runtime_error("undefined expression");
+			throw std::runtime_error("'" + astnode->identifier + "' parameter in position " + std::to_string(signature.size()) + " is undefined");
 		}
 
 		signature.push_back(new TypeDefinition(current_expression));
@@ -366,6 +369,9 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 			typedeg->type_name_space = astnode->name_space;
 			if (astnode->expression_identifier_vector.size() > 0) {
 				current_expression = *access_value(typedeg, astnode->expression_identifier_vector);
+			}
+			else {
+				current_expression = *typedeg;
 			}
 		}
 
@@ -496,7 +502,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTExitNode> astnode) {
 	astnode->exit_code->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("exit expression is undefined");
 	}
 
 	if (!TypeUtils::is_int(current_expression.type)) {
@@ -534,7 +540,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 	astnode->condition->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("switch expression is undefined");
 	}
 
 	auto cond_type = static_cast<TypeDefinition>(current_expression);
@@ -544,11 +550,11 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 		expr.first->accept(this);
 
 		if (TypeUtils::is_undefined(current_expression.type)) {
-			throw std::runtime_error("undefined expression");
+			throw std::runtime_error("case expression is undefined");
 		}
 
 		if (!current_expression.is_const) {
-			throw std::runtime_error("case expression is not an constant expression");
+			throw std::runtime_error("case expression is not an constant");
 		}
 
 		if (TypeUtils::is_undefined(case_type.type)) {
@@ -590,7 +596,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTElseIfNode> astnode) {
 	astnode->condition->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("else if expression is undefined");
 	}
 
 	if (!TypeUtils::is_bool(current_expression.type)
@@ -607,7 +613,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTIfNode> astnode) {
 	astnode->condition->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("if expression is undefined");
 	}
 
 	if (!TypeUtils::is_bool(current_expression.type)
@@ -642,7 +648,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTForNode> astnode) {
 		astnode->dci[1]->accept(this);
 
 		if (TypeUtils::is_undefined(current_expression.type)) {
-			throw std::runtime_error("undefined expression");
+			throw std::runtime_error("for expression is undefined");
 		}
 
 		if (!TypeUtils::is_bool(current_expression.type)
@@ -851,7 +857,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTWhileNode> astnode) {
 	astnode->condition->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("while expression is undefined");
 	}
 
 	if (!TypeUtils::is_bool(current_expression.type)
@@ -870,7 +876,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTDoWhileNode> astnode) {
 	astnode->condition->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("do-while expression is undefined");
 	}
 
 	if (!TypeUtils::is_bool(current_expression.type)
@@ -968,7 +974,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 		}
 
 		if (TypeUtils::is_undefined(current_expression.type)) {
-			throw std::runtime_error("undefined expression");
+			throw std::runtime_error("array value is undefined");
 		}
 
 		if (TypeUtils::is_undefined(current_expression_array_type.type) || TypeUtils::is_array(current_expression_array_type.type)) {
@@ -1130,7 +1136,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 	astnode->left->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("left expression is undefined");
 	}
 
 	auto lexpr = current_expression;
@@ -1138,7 +1144,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 	astnode->right->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("right expression is undefined");
 	}
 
 	auto rexpr = current_expression;
@@ -1153,7 +1159,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTUnaryExprNode> astnode) {
 	astnode->expr->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("unary expression is undefined");
 	}
 
 	if (astnode->unary_op == "ref" || astnode->unary_op == "unref") {
@@ -1204,19 +1210,19 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTernaryNode> astnode) {
 	astnode->condition->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("ternary condition is undefined");
 	}
 
 	astnode->value_if_true->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("left ternary expression is undefined");
 	}
 
 	astnode->value_if_false->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("right ternary expression is undefined");
 	}
 }
 
@@ -1226,7 +1232,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTInNode> astnode) {
 	astnode->value->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("in value is undefined");
 	}
 
 	auto valtype = current_expression.type;
@@ -1234,7 +1240,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTInNode> astnode) {
 	astnode->collection->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("in collection is undefined");
 	}
 
 	auto coltype = current_expression.type;
@@ -1269,7 +1275,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTypeCastNode> astnode) {
 	astnode->expr->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("cast expression is undefined");
 	}
 
 	if ((TypeUtils::is_array(current_expression.type) || TypeUtils::is_struct(current_expression.type))
@@ -1302,7 +1308,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 	astnode->expr->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("typeof expression is undefined");
 	}
 
 	current_expression = SemanticValue();
@@ -1315,7 +1321,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
 	astnode->expr->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("typeid expression is undefined");
 	}
 
 	current_expression = SemanticValue();
@@ -1328,7 +1334,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTRefIdNode> astnode) {
 	astnode->expr->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
-		throw std::runtime_error("undefined expression");
+		throw std::runtime_error("refid expression is undefined");
 	}
 
 	current_expression = SemanticValue();
