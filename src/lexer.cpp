@@ -3,6 +3,7 @@
 
 #include "lexer.hpp"
 
+using namespace core;
 using namespace core::parser;
 
 Lexer::Lexer(const std::string& name, const std::string& source)

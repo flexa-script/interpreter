@@ -1,24 +1,25 @@
 #include <utility>
 
 #include "compiler.hpp"
+
 #include "token.hpp"
 #include "md_builtin.hpp"
-
+#include "constants.hpp"
 #include "utils.hpp"
 
 using namespace core::modules;
 using namespace core::analysis;
 
 Compiler::Compiler(std::shared_ptr<ASTProgramNode> main_program, std::map<std::string, std::shared_ptr<ASTProgramNode>> programs, const std::vector<std::string>& args)
-	: Visitor(programs, main_program, default_namespace) {
+	: Visitor(programs, main_program, Constants::DEFAULT_NAMESPACE) {
 
-	built_in_libs["builtin"]->register_functions(this);
+	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 
 	build_args(args);
 };
 
 void Compiler::start() {
-	auto pop = push_namespace(flx_string(default_namespace));
+	auto pop = push_namespace(flx_string(Constants::DEFAULT_NAMESPACE));
 	visit(current_program_stack.top());
 	pop_namespace(pop);
 	add_instruction(OpCode::OP_HALT, nullptr);
@@ -38,8 +39,8 @@ void Compiler::visit(std::shared_ptr<ASTProgramNode> astnode) {
 void Compiler::visit(std::shared_ptr<ASTUsingNode> astnode) {
 	std::string libname = utils::StringUtils::join(astnode->library, ".");
 
-	if (built_in_libs.find(libname) != built_in_libs.end()) {
-		//built_in_libs.find(libname)->second->register_functions(this);
+	if (Constants::BUILT_IN_LIBS.find(libname) != Constants::BUILT_IN_LIBS.end()) {
+		//Constants::BUILT_IN_LIBS.find(libname)->second->register_functions(this);
 	}
 
 	auto& program = programs[libname];
@@ -630,9 +631,9 @@ void Compiler::type_definition_operations(TypeDefinition type) {
 		add_instruction(OpCode::OP_SET_TYPE, uint8_t(type.type));
 	}
 
-	if (is_array(type.type) || type.dim.size() > 0) {
+	if (TypeUtils::is_array(type.type) || type.dim.size() > 0) {
 		add_instruction(OpCode::OP_SET_ARRAY_TYPE, uint8_t(
-			is_undefined(type.array_type) ? Type::T_ANY : type.array_type
+			TypeUtils::is_undefined(type.array_type) ? Type::T_ANY : type.array_type
 		));
 	}
 
@@ -689,7 +690,7 @@ void Compiler::build_args(const std::vector<std::string>& args) {
 
 	//var->set_value(alocate_value(new RuntimeValue(arr, Type::T_STRING, dim)));
 
-	//scopes[default_namespace].back()->declare_variable("args", var);
+	//scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("args", var);
 }
 
 bool Compiler::push_namespace(const std::string name_space) {

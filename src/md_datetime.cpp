@@ -2,14 +2,18 @@
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"
+#include "constants.hpp"
 
-using namespace modules;
+using namespace core;
+using namespace core::modules;
+using namespace core::runtime;
+using namespace core::analysis;
 
 ModuleDateTime::ModuleDateTime() {}
 
 ModuleDateTime::~ModuleDateTime() = default;
 
-flx_struct ModuleDateTime::tm_to_date_time(visitor::Interpreter* visitor, time_t t, tm* tm) {
+flx_struct ModuleDateTime::tm_to_date_time(Interpreter* visitor, time_t t, tm* tm) {
 	flx_struct dt_str = flx_struct();
 	dt_str["timestamp"] = visitor->alocate_value(new RuntimeValue(flx_int(t)));
 	dt_str["second"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_sec)));
@@ -25,7 +29,7 @@ flx_struct ModuleDateTime::tm_to_date_time(visitor::Interpreter* visitor, time_t
 	return dt_str;
 }
 
-void ModuleDateTime::register_functions(visitor::SemanticAnalyser* visitor) {
+void ModuleDateTime::register_functions(SemanticAnalyser* visitor) {
 	visitor->builtin_functions["create_date_time"] = nullptr;
 	visitor->builtin_functions["diff_date_time"] = nullptr;
 	visitor->builtin_functions["format_date_time"] = nullptr;
@@ -35,10 +39,10 @@ void ModuleDateTime::register_functions(visitor::SemanticAnalyser* visitor) {
 	visitor->builtin_functions["clock"] = nullptr;
 }
 
-void ModuleDateTime::register_functions(visitor::Interpreter* visitor) {
+void ModuleDateTime::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["create_date_time"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 
 		tm* tm = new struct tm();
 		time_t t;
@@ -72,12 +76,12 @@ void ModuleDateTime::register_functions(visitor::Interpreter* visitor) {
 			t = mktime(tm);
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", language_namespace));
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", Constants::STD_NAMESPACE));
 
 		};
 
 	visitor->builtin_functions["diff_date_time"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("left_date_time"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("right_date_time"))->value
@@ -89,12 +93,12 @@ void ModuleDateTime::register_functions(visitor::Interpreter* visitor) {
 		tm* tm = new struct tm();
 		gmtime_s(tm, &t);
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", language_namespace));
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", Constants::STD_NAMESPACE));
 
 		};
 
 	visitor->builtin_functions["format_date_time"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("date_time"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("format"))->value
@@ -112,7 +116,7 @@ void ModuleDateTime::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["format_local_date_time"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("date_time"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("format"))->value
@@ -130,7 +134,7 @@ void ModuleDateTime::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["ascii_date_time"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("date_time"))->value;
 
 		time_t t = val->get_str()["timestamp"]->get_i();
@@ -147,7 +151,7 @@ void ModuleDateTime::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["ascii_local_date_time"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("date_time"))->value;
 
 		time_t t = val->get_str()["timestamp"]->get_i();
@@ -170,6 +174,6 @@ void ModuleDateTime::register_functions(visitor::Interpreter* visitor) {
 
 }
 
-void ModuleDateTime::register_functions(visitor::Compiler* visitor) {}
+void ModuleDateTime::register_functions(Compiler* visitor) {}
 
-void ModuleDateTime::register_functions(vm::VirtualMachine* vm) {}
+void ModuleDateTime::register_functions(VirtualMachine* vm) {}

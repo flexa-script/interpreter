@@ -15,12 +15,12 @@ namespace core {
 			ModuleDateTime();
 			~ModuleDateTime();
 
-			flx_struct tm_to_date_time(visitor::Interpreter* visitor, time_t t, tm* tm);
+			flx_struct tm_to_date_time(runtime::Interpreter* visitor, time_t t, tm* tm);
 
-			void register_functions(visitor::SemanticAnalyser* visitor) override;
-			void register_functions(visitor::Interpreter* visitor) override;
-			void register_functions(visitor::Compiler* visitor) override;
-			void register_functions(vm::VirtualMachine* vm) override;
+			void register_functions(analysis::SemanticAnalyser* visitor) override;
+			void register_functions(runtime::Interpreter* visitor) override;
+			void register_functions(analysis::Compiler* visitor) override;
+			void register_functions(runtime::VirtualMachine* vm) override;
 		};
 
 	}

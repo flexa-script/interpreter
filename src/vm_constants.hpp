@@ -111,7 +111,7 @@ namespace core {
 		OP_ERROR = 0xFFFF
 	};
 
-	const std::unordered_map<OpCode, std::string> OP_NAMES = {
+	inline const std::unordered_map<OpCode, std::string> OP_NAMES = {
 		{OP_RES, "RES"},
 		// namespace ops
 		{OP_POP_NAMESPACE, "POP_NAMESPACE"},

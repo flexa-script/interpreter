@@ -16,24 +16,28 @@ namespace core {
 		T_UNDEFINED, T_VOID, T_BOOL, T_INT, T_FLOAT, T_CHAR, T_STRING, T_ARRAY, T_STRUCT, T_ANY, T_FUNCTION
 	};
 
-	std::string type_str(Type);
+	class TypeUtils {
+	public:
+		static std::string type_str(Type);
 
-	bool match_type(Type, Type);
-	bool is_undefined(Type);
-	bool is_void(Type);
-	bool is_bool(Type);
-	bool is_int(Type);
-	bool is_float(Type);
-	bool is_char(Type);
-	bool is_string(Type);
-	bool is_any(Type);
-	bool is_array(Type);
-	bool is_struct(Type);
-	bool is_function(Type);
-	bool is_text(Type);
-	bool is_numeric(Type);
-	bool is_collection(Type);
-	bool is_iterable(Type);
+		static bool match_type(Type, Type);
+		static bool is_undefined(Type);
+		static bool is_void(Type);
+		static bool is_bool(Type);
+		static bool is_int(Type);
+		static bool is_float(Type);
+		static bool is_char(Type);
+		static bool is_string(Type);
+		static bool is_any(Type);
+		static bool is_array(Type);
+		static bool is_struct(Type);
+		static bool is_function(Type);
+		static bool is_text(Type);
+		static bool is_numeric(Type);
+		static bool is_collection(Type);
+		static bool is_iterable(Type);
+
+	};
 
 	class ASTExprNode;
 	class ASTBlockNode;
@@ -50,8 +54,6 @@ namespace core {
 	typedef std::vector<RuntimeValue*> flx_array;
 	typedef std::unordered_map<std::string, RuntimeValue*> flx_struct;
 	typedef std::pair<std::string, std::string> flx_function;
-
-	extern std::string language_namespace;
 
 	class SemanticVariable;
 	class RuntimeVariable;
@@ -261,7 +263,7 @@ namespace core {
 		void reset_ref() override;
 	};
 
-	class RuntimeValue : public Value, public GCObject {
+	class RuntimeValue : public Value, public runtime::GCObject {
 	private:
 		flx_bool* b = nullptr;
 		flx_int* i = nullptr;
@@ -345,7 +347,7 @@ namespace core {
 		void unset();
 	};
 
-	class RuntimeVariable : public Variable, public GCObject, public std::enable_shared_from_this<RuntimeVariable> {
+	class RuntimeVariable : public Variable, public runtime::GCObject, public std::enable_shared_from_this<RuntimeVariable> {
 	public:
 		RuntimeValue* value;
 
@@ -363,7 +365,7 @@ namespace core {
 
 		void reset_ref() override;
 
-		virtual std::vector<GCObject*> get_references() override;
+		virtual std::vector<runtime::GCObject*> get_references() override;
 	};
 
 	class RuntimeOperations {

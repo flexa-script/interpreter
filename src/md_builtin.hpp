@@ -6,26 +6,11 @@
 
 #include "module.hpp"
 
-class FunctionDefinition;
-
 namespace core {
 
+	class FunctionDefinition;
+
 	namespace modules {
-
-		enum BuintinFuncs {
-			PRINT,
-			PRINTLN,
-			READ,
-			READCH,
-			LEN,
-			SLEEP,
-			SYSTEM,
-			IS_ANY,
-			IS_ARRAY,
-			IS_STRUCT
-		};
-
-		extern std::string BUILTIN_NAMES[];
 
 		class ModuleBuiltin : public Module {
 		private:

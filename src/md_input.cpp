@@ -4,8 +4,11 @@
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"
+#include "constants.hpp"
 
-using namespace modules;
+using namespace core::modules;
+using namespace core::runtime;
+using namespace core::analysis;
 
 ModuleInput::ModuleInput() : running(false) {
 	start();
@@ -15,7 +18,7 @@ ModuleInput::~ModuleInput() {
 	stop();
 }
 
-void ModuleInput::register_functions(visitor::SemanticAnalyser* visitor) {
+void ModuleInput::register_functions(SemanticAnalyser* visitor) {
 	visitor->builtin_functions["update_key_states"] = nullptr;
 	visitor->builtin_functions["is_key_pressed"] = nullptr;
 	visitor->builtin_functions["is_key_released"] = nullptr;
@@ -24,7 +27,7 @@ void ModuleInput::register_functions(visitor::SemanticAnalyser* visitor) {
 	visitor->builtin_functions["is_mouse_button_pressed"] = nullptr;
 }
 
-void ModuleInput::register_functions(visitor::Interpreter* visitor) {
+void ModuleInput::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["update_key_states"] = [this, visitor]() {
 		previous_key_state = current_key_state;
@@ -36,7 +39,7 @@ void ModuleInput::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["is_key_pressed"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("key"))->value;
 
 		int key = val->get_i();
@@ -52,7 +55,7 @@ void ModuleInput::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["is_key_released"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("key"))->value;
 
 		int key = val->get_i();
@@ -76,14 +79,14 @@ void ModuleInput::register_functions(visitor::Interpreter* visitor) {
 		flx_struct str = flx_struct();
 		str["x"] = visitor->alocate_value(new RuntimeValue(flx_int(point.x * 2 * 0.905)));
 		str["y"] = visitor->alocate_value(new RuntimeValue(flx_int(point.y * 2 * 0.875)));
-		RuntimeValue* res = visitor->alocate_value(new RuntimeValue(str, "Point", language_namespace));
+		RuntimeValue* res = visitor->alocate_value(new RuntimeValue(str, "Point", Constants::STD_NAMESPACE));
 
 		visitor->current_expression_value = res;
 
 		};
 
 	visitor->builtin_functions["set_mouse_position"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value
@@ -96,7 +99,7 @@ void ModuleInput::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["is_mouse_button_pressed"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("button"))->value;
 
 		int button = val->get_i();
@@ -136,6 +139,6 @@ void ModuleInput::stop() {
 	}
 }
 
-void ModuleInput::register_functions(visitor::Compiler* visitor) {}
+void ModuleInput::register_functions(Compiler* visitor) {}
 
-void ModuleInput::register_functions(vm::VirtualMachine* vm) {}
+void ModuleInput::register_functions(VirtualMachine* vm) {}

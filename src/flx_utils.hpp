@@ -8,20 +8,26 @@
 #include <iomanip>
 #include <vector>
 
-namespace ui {
+namespace interpreter {
 
 	struct FlexaSource {
 		std::string name;
 		std::string source;
 	};
 
-	extern std::string load_source(const std::string& path);
+	class FlxUtils {
+	public:
+		static std::string load_source(const std::string& path);
+		static std::string get_lib_name(const std::string& libpath);
+		static std::string get_prog_name(const std::string& progpath);
 
-	extern std::string get_lib_name(const std::string& libpath);
+	};
 
-	extern std::string get_prog_name(const std::string& progpath);
+	class FlexaCliArgs {
+	private:
+		std::vector<std::string> args;
 
-	struct FlexaCliArgs {
+	public:
 		bool debug = false;
 		std::string engine;
 		std::string libs_path;
@@ -29,11 +35,14 @@ namespace ui {
 		std::string main_file;
 		std::vector<std::string> source_files;
 		std::vector<std::string> program_args;
+
+		FlexaCliArgs(int argc, const char* argv[]);
+
+		void parse_args();
+
+		void throw_if_not_parameter(int argc, size_t i, std::string parameter);
+
 	};
-
-	extern void throw_if_not_parameter(int argc, size_t i, std::string parameter);
-
-	extern FlexaCliArgs parse_args(int argc, const char* argv[]);
 
 }
 

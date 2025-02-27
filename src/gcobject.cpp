@@ -1,5 +1,5 @@
 #include "gcobject.hpp"
 
-using namespace gc;
+using namespace core::runtime;
 
 GCObject::~GCObject() = default;

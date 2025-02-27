@@ -25,7 +25,7 @@ namespace core {
 			std::string name;
 
 		public:
-			explicit Parser(const std::string& name, Lexer* lexer);
+			Parser(const std::string& name, Lexer* lexer);
 
 			std::shared_ptr<ASTProgramNode> parse_program();
 

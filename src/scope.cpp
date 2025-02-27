@@ -1,4 +1,5 @@
 #include "scope.hpp"
+
 #include "utils.hpp"
 
 using namespace core;
@@ -68,7 +69,7 @@ FunctionDefinition& Scope::find_declared_function(const std::string& identifier,
 
 					if (parameter && parameter->is_rest) {
 						rest = true;
-						if (is_array(ftype->type)) {
+						if (TypeUtils::is_array(ftype->type)) {
 							ftype = new TypeDefinition(ftype->array_type, Type::T_UNDEFINED, std::vector<std::shared_ptr<ASTExprNode>>(), ftype->type_name, ftype->type_name_space);
 						}
 					}

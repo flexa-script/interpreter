@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include "dependency_resolver.hpp"
+
 #include "utils.hpp"
 
 using namespace core::analysis;

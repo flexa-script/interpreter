@@ -1,26 +1,28 @@
 #include <filesystem>
 
 #include "interpreter.hpp"
+
 #include "exception_handler.hpp"
 #include "token.hpp"
 #include "md_builtin.hpp"
 #include "gc.hpp"
-
 #include "utils.hpp"
 #include "watch.hpp"
+#include "constants.hpp"
 
+using namespace core;
 using namespace core::runtime;
 
 Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<ASTProgramNode> main_program,
 	const std::map<std::string, std::shared_ptr<ASTProgramNode>>& programs, const std::vector<std::string>& args)
-	: Visitor(programs, main_program, main_program ? main_program->name : default_namespace) {
+	: Visitor(programs, main_program, main_program ? main_program->name : Constants::DEFAULT_NAMESPACE) {
 	current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 	gc.add_ptr_root(&current_expression_value);
 
-	current_this_name.push(default_namespace);
-	scopes[default_namespace].push_back(global_scope);
+	current_this_name.push(Constants::DEFAULT_NAMESPACE);
+	scopes[Constants::DEFAULT_NAMESPACE].push_back(global_scope);
 
-	built_in_libs["builtin"]->register_functions(this);
+	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 
 	build_args(args);
 }
@@ -64,8 +66,8 @@ void Interpreter::visit(std::shared_ptr<ASTUsingNode> astnode) {
 
 	std::string libname = utils::StringUtils::join(astnode->library, ".");
 
-	if (built_in_libs.find(libname) != built_in_libs.end()) {
-		built_in_libs.find(libname)->second->register_functions(this);
+	if (Constants::BUILT_IN_LIBS.find(libname) != Constants::BUILT_IN_LIBS.end()) {
+		Constants::BUILT_IN_LIBS.find(libname)->second->register_functions(this);
 	}
 
 	auto program = programs[libname];
@@ -78,8 +80,8 @@ void Interpreter::visit(std::shared_ptr<ASTUsingNode> astnode) {
 
 		scopes[program->name_space].push_back(std::make_shared<Scope>(program));
 
-		if (std::find(program_nmspaces[program->name].begin(), program_nmspaces[program->name].end(), default_namespace) == program_nmspaces[program->name].end()) {
-			program_nmspaces[program->name].push_back(default_namespace);
+		if (std::find(program_nmspaces[program->name].begin(), program_nmspaces[program->name].end(), Constants::DEFAULT_NAMESPACE) == program_nmspaces[program->name].end()) {
+			program_nmspaces[program->name].push_back(Constants::DEFAULT_NAMESPACE);
 		}
 
 		start();
@@ -163,9 +165,9 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 
 	// validate assignment type
 	if ((!TypeDefinition::is_any_or_match_type(*new_var, *new_value, evaluate_access_vector_ptr) ||
-		is_array(new_var->type) && !is_any(new_var->array_type)
+		TypeUtils::is_array(new_var->type) && !TypeUtils::is_any(new_var->array_type)
 		&& !TypeDefinition::match_type(*new_var, *new_value, evaluate_access_vector_ptr, false, true))
-		&& astnode->expr && !is_undefined(new_value->type) && !is_array(new_value->type)) {
+		&& astnode->expr && !TypeUtils::is_undefined(new_value->type) && !TypeUtils::is_array(new_value->type)) {
 		ExceptionHandler::throw_declaration_type_err(astnode->identifier, *new_var, *new_value, evaluate_access_vector_ptr);
 	}
 
@@ -240,7 +242,7 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 		&& astnode->identifier_vector[0].access_vector.size() == 0
 		&& !has_string_access) {
 		if (!TypeDefinition::is_any_or_match_type(*variable, *ptr_value, evaluate_access_vector_ptr) ||
-			is_array(variable->type) && !is_any(variable->array_type)
+			TypeUtils::is_array(variable->type) && !TypeUtils::is_any(variable->array_type)
 			&& !TypeDefinition::match_type(*variable, *ptr_value, evaluate_access_vector_ptr, false, true)) {
 			ExceptionHandler::throw_mismatched_type_err(*variable, *ptr_value, evaluate_access_vector_ptr);
 		}
@@ -310,7 +312,7 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 		if (curr_func_call_expr_id_vector.size() > 0) {
 			value = access_value(value, curr_func_call_expr_id_vector);
 			// handle string char access
-			if (is_string(value->type) && curr_func_call_expr_id_vector.back().access_vector.size() > 0 && has_string_access) {
+			if (TypeUtils::is_string(value->type) && curr_func_call_expr_id_vector.back().access_vector.size() > 0 && has_string_access) {
 				has_string_access = false;
 				std::string str = value->get_s();
 				curr_func_call_expr_id_vector.back().access_vector[curr_func_call_expr_id_vector.back().access_vector.size() - 1]->accept(this);
@@ -602,7 +604,7 @@ void Interpreter::visit(std::shared_ptr<ASTExitNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	astnode->exit_code->accept(this);
-	if (!is_int(current_expression_value->type)) {
+	if (!TypeUtils::is_int(current_expression_value->type)) {
 		throw std::runtime_error("expected int value");
 	}
 	exit_from_program = true;
@@ -698,7 +700,7 @@ void Interpreter::visit(std::shared_ptr<ASTElseIfNode> astnode) {
 
 	astnode->condition->accept(this);
 
-	if (!is_bool(current_expression_value->type)) {
+	if (!TypeUtils::is_bool(current_expression_value->type)) {
 		ExceptionHandler::throw_condition_type_err();
 	}
 
@@ -715,7 +717,7 @@ void Interpreter::visit(std::shared_ptr<ASTIfNode> astnode) {
 
 	astnode->condition->accept(this);
 
-	if (!is_bool(current_expression_value->type)) {
+	if (!TypeUtils::is_bool(current_expression_value->type)) {
 		ExceptionHandler::throw_condition_type_err();
 	}
 
@@ -762,7 +764,7 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 		if (astnode->dci[1]) {
 			astnode->dci[1]->accept(this);
 
-			if (!is_bool(current_expression_value->type)) {
+			if (!TypeUtils::is_bool(current_expression_value->type)) {
 				ExceptionHandler::throw_condition_type_err();
 			}
 		}
@@ -914,7 +916,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 			// when handling structs, we have a third type of declaration: unpacked declaration
 			if (auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl)) {
 				std::map<std::string, std::shared_ptr<ASTExprNode>> values = { { "key", key }, { "value", value } };
-				auto exnode = std::make_shared<ASTStructConstructorNode>("Pair", language_namespace, values, astnode->row, astnode->col);
+				auto exnode = std::make_shared<ASTStructConstructorNode>("Pair", Constants::STD_NAMESPACE, values, astnode->row, astnode->col);
 				itdecl->expr = exnode;
 				itdecl->accept(this);
 				itdecl->expr = nullptr;
@@ -922,7 +924,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 			}
 			else if (auto itdecl = std::dynamic_pointer_cast<ASTIdentifierNode>(astnode->itdecl)) {
 				std::map<std::string, std::shared_ptr<ASTExprNode>> values = { { "key", key }, { "value", value } };
-				auto exnode = std::make_shared<ASTStructConstructorNode>("Pair", language_namespace, values, astnode->row, astnode->col);
+				auto exnode = std::make_shared<ASTStructConstructorNode>("Pair", Constants::STD_NAMESPACE, values, astnode->row, astnode->col);
 				auto assign_node = std::make_shared<ASTAssignmentNode>(itdecl->identifier_vector, itdecl->name_space, "=", exnode, itdecl->row, itdecl->col);
 				assign_node->accept(this);
 
@@ -1003,7 +1005,7 @@ void Interpreter::visit(std::shared_ptr<ASTTryCatchNode> astnode) {
 		}
 		else if (const auto idnode = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->decl)) {
 			std::map<std::string, std::shared_ptr<ASTExprNode>> values = { { "error", error_node }, { "code", code_node } };
-			auto exnode = std::make_shared<ASTStructConstructorNode>("Exception", language_namespace, values, astnode->row, astnode->col);
+			auto exnode = std::make_shared<ASTStructConstructorNode>("Exception", Constants::STD_NAMESPACE, values, astnode->row, astnode->col);
 			idnode->expr = exnode;
 			idnode->accept(this);
 			idnode->expr = nullptr;
@@ -1024,17 +1026,17 @@ void Interpreter::visit(std::shared_ptr<ASTThrowNode> astnode) {
 	astnode->error->accept(this);
 
 	// handle Exception struct
-	if (is_struct(current_expression_value->type)) {
+	if (TypeUtils::is_struct(current_expression_value->type)) {
 		// check struct type
 		if (current_expression_value->type_name != "Exception"
-			|| current_expression_value->type_name_space != language_namespace) {
+			|| current_expression_value->type_name_space != Constants::STD_NAMESPACE) {
 			throw std::runtime_error("expected flx::Exception not " + ExceptionHandler::buid_type_str(*current_expression_value, evaluate_access_vector_ptr));
 		}
 
 		throw std::exception(current_expression_value->get_str()["error"]->get_s().c_str());
 	}
 	// handle bare string
-	else if (is_string(current_expression_value->type)) {
+	else if (TypeUtils::is_string(current_expression_value->type)) {
 		throw std::runtime_error(current_expression_value->get_s());
 	}
 	else {
@@ -1057,7 +1059,7 @@ void Interpreter::visit(std::shared_ptr<ASTWhileNode> astnode) {
 		// evaluates while condition after each block execution
 		astnode->condition->accept(this);
 
-		if (!is_bool(current_expression_value->type)) {
+		if (!TypeUtils::is_bool(current_expression_value->type)) {
 			ExceptionHandler::throw_condition_type_err();
 		}
 
@@ -1116,7 +1118,7 @@ void Interpreter::visit(std::shared_ptr<ASTDoWhileNode> astnode) {
 		// executes condition at the end of block
 		astnode->condition->accept(this);
 
-		if (!is_bool(current_expression_value->type)) {
+		if (!TypeUtils::is_bool(current_expression_value->type)) {
 			ExceptionHandler::throw_condition_type_err();
 		}
 
@@ -1196,14 +1198,14 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 		expr->accept(this);
 
 		// if it's undefined or array (nested), it's accepts the first type encountered
-		if (is_undefined(current_expression_array_type.type) || is_array(current_expression_array_type.type)) {
+		if (TypeUtils::is_undefined(current_expression_array_type.type) || TypeUtils::is_array(current_expression_array_type.type)) {
 			current_expression_array_type = *current_expression_value;
 		}
 		else {
 			// else check if is any array
-			if (!match_type(current_expression_array_type.type, current_expression_value->type)
-				&& !is_any(current_expression_value->type) && !is_void(current_expression_value->type)
-				&& !is_array(current_expression_value->type)) {
+			if (!TypeUtils::match_type(current_expression_array_type.type, current_expression_value->type)
+				&& !TypeUtils::is_any(current_expression_value->type) && !TypeUtils::is_void(current_expression_value->type)
+				&& !TypeUtils::is_array(current_expression_value->type)) {
 				current_expression_array_type = TypeDefinition::get_basic(Type::T_ANY);
 			}
 		}
@@ -1238,7 +1240,7 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 
 	// final type check
 	if (current_expression_array_dim_max == 0) {
-		if (is_undefined(current_expression_value->array_type)) {
+		if (TypeUtils::is_undefined(current_expression_value->array_type)) {
 			current_expression_value->array_type = Type::T_ANY;
 		}
 		current_expression_array_dim.clear();
@@ -1275,7 +1277,7 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 
 		check_build_array(str_value, evaluate_access_vector(var_type_struct.expr_dim));
 
-		if (!is_any(var_type_struct.type) && !is_void(str_value->type)) {
+		if (!TypeUtils::is_any(var_type_struct.type) && !TypeUtils::is_void(str_value->type)) {
 			str_value->type = var_type_struct.type;
 			str_value->array_type = var_type_struct.array_type;
 			str_value->type_name = var_type_struct.type_name;
@@ -1345,7 +1347,7 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 			type = Type::T_FUNCTION;
 		}
 
-		if (is_undefined(type)) {
+		if (TypeUtils::is_undefined(type)) {
 			std::shared_ptr<Scope> curr_scope = get_inner_most_struct_definition_scope(current_program, astnode->name_space, astnode->identifier);
 			if (!curr_scope) {
 				curr_scope = get_inner_most_function_scope(current_program, astnode->name_space, astnode->identifier, nullptr, evaluate_access_vector_ptr);
@@ -1390,7 +1392,7 @@ void Interpreter::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 	}
 	gc.add_root(l_value);
 
-	if (is_bool(current_expression_value->type) && astnode->op == "and" && !current_expression_value->get_b()) {
+	if (TypeUtils::is_bool(current_expression_value->type) && astnode->op == "and" && !current_expression_value->get_b()) {
 		return;
 	}
 
@@ -1432,7 +1434,7 @@ void Interpreter::visit(std::shared_ptr<ASTInNode> astnode) {
 	astnode->collection->accept(this);
 	bool res = false;
 
-	if (is_array(current_expression_value->type)) {
+	if (TypeUtils::is_array(current_expression_value->type)) {
 		flx_array expr_col = current_expression_value->get_arr();
 
 		for (size_t i = 0; i < expr_col.size(); ++i) {
@@ -1445,7 +1447,7 @@ void Interpreter::visit(std::shared_ptr<ASTInNode> astnode) {
 	else {
 		const auto& expr_col = current_expression_value->get_s();
 
-		if (is_char(expr_val.type)) {
+		if (TypeUtils::is_char(expr_val.type)) {
 			res = current_expression_value->get_s().find(expr_val.get_c()) != std::string::npos;
 		}
 		else {
@@ -1679,7 +1681,7 @@ void Interpreter::visit(std::shared_ptr<ASTRefIdNode> astnode) {
 	current_expression_value = alocate_value(new RuntimeValue(flx_int(current_expression_value)));
 }
 
-RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<parser::Identifier>& identifier_vector, RuntimeValue* new_value) {
+RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<Identifier>& identifier_vector, RuntimeValue* new_value) {
 	if (identifier_vector.size() == 1 && identifier_vector[0].access_vector.size() == 0) {
 		var->set_value(new_value);
 		return var->get_value();
@@ -1703,7 +1705,7 @@ RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const
 				access_pos = access_vector.at(s);
 
 				// break if it is a string, and the string access will be handled in identifier node evaluation
-				if (is_string((*current_val)[access_pos]->type)) {
+				if (TypeUtils::is_string((*current_val)[access_pos]->type)) {
 					(*current_val)[access_pos]->get_s()[access_vector.at(s + 1)] = new_value->get_c();
 					return (*current_val)[access_pos];
 				}
@@ -1712,7 +1714,7 @@ RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const
 				}
 				current_val = (*current_val)[access_pos]->get_raw_arr();
 			}
-			if (is_string(value->type)) {
+			if (TypeUtils::is_string(value->type)) {
 				value->get_s()[access_vector.at(s)] = new_value->get_c();
 				return value;
 			}
@@ -1728,7 +1730,7 @@ RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const
 		++i;
 
 		if (i < identifier_vector.size()) {
-			if (is_void(value->type)) {
+			if (TypeUtils::is_void(value->type)) {
 				std::stringstream ss;
 				for (size_t si = 0; si <= i; ++si) {
 					ss << identifier_vector[si].identifier;
@@ -1764,7 +1766,7 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 		for (s = 0; s < access_vector.size() - 1; ++s) {
 			access_pos = access_vector.at(s);
 			// break if it is a string, and the string access will be handled in identifier node evaluation
-			if (is_string(current_val[access_pos]->type)) {
+			if (TypeUtils::is_string(current_val[access_pos]->type)) {
 				has_string_access = true;
 				break;
 			}
@@ -1773,7 +1775,7 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 			}
 			current_val = current_val[access_pos]->get_arr();
 		}
-		if (is_string(next_value->type)) {
+		if (TypeUtils::is_string(next_value->type)) {
 			has_string_access = true;
 			return next_value;
 		}
@@ -1784,7 +1786,7 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 	++i;
 
 	if (i < identifier_vector.size()) {
-		if (is_void(next_value->type)) {
+		if (TypeUtils::is_void(next_value->type)) {
 			std::stringstream ss;
 			for (size_t si = 0; si <= i; ++si) {
 				ss << identifier_vector[si].identifier;
@@ -1809,7 +1811,7 @@ void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigne
 	auto arr = new_value->get_arr();
 	auto arrsize = arr.size();
 
-	if (is_array(new_value->type) && dim.size() > 0 && dim[0] > 0 && arrsize >= 0 && arrsize <= 1) {
+	if (TypeUtils::is_array(new_value->type) && dim.size() > 0 && dim[0] > 0 && arrsize >= 0 && arrsize <= 1) {
 		auto val = arrsize == 1 ? arr[0] : alocate_value(new RuntimeValue(Type::T_VOID));
 
 		flx_array rarr = build_array(dim, val, dim.size() - 1);
@@ -1840,7 +1842,7 @@ flx_array Interpreter::build_array(const std::vector<unsigned int>& dim, Runtime
 	for (size_t j = 0; j < size; ++j) {
 		auto val = alocate_value(new RuntimeValue(init_value));
 
-		if (is_undefined(current_expression_array_type.type) || is_array(current_expression_array_type.type)) {
+		if (TypeUtils::is_undefined(current_expression_array_type.type) || TypeUtils::is_array(current_expression_array_type.type)) {
 			current_expression_array_type = *val;
 		}
 
@@ -1872,7 +1874,7 @@ std::vector<unsigned int> Interpreter::calculate_array_dim_size(const flx_array&
 
 	dim.push_back(arr.size());
 
-	if (is_array(arr[0]->type)) {
+	if (TypeUtils::is_array(arr[0]->type)) {
 		auto dim2 = calculate_array_dim_size(arr[0]->get_arr());
 		dim.insert(dim.end(), dim2.begin(), dim2.end());
 	}
@@ -1886,7 +1888,7 @@ std::vector<unsigned int> Interpreter::evaluate_access_vector(const std::vector<
 		unsigned int val = 0;
 		if (expr) {
 			std::dynamic_pointer_cast<ASTExprNode>(expr)->accept(this);
-			if (!is_int(current_expression_value->type)) {
+			if (!TypeUtils::is_int(current_expression_value->type)) {
 				throw std::runtime_error("array index access must be a integer value");
 			}
 			val = current_expression_value->get_i();
@@ -1956,7 +1958,7 @@ long long Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
 }
 
 void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value) {
-	if (is_function(value->type)) {
+	if (TypeUtils::is_function(value->type)) {
 		const auto& prg = current_program_stack.top();
 		const auto& name_space = value->get_fun().first;
 		auto funcs = get_inner_most_functions_scope(prg, name_space, value->get_fun().second)->find_declared_functions(value->get_fun().second);
@@ -2016,7 +2018,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 					rest_name = decl->identifier;
 					// if is last parameter and is array and is not a single parameter
 					if (current_function_defined_parameters.top().size() - 1 == i
-						&& is_array(current_value->type)
+						&& TypeUtils::is_array(current_value->type)
 						&& current_function_defined_parameters.top().size() > 1) {
 						for (size_t i = 0; i < vec.size(); ++i) {
 							vec.push_back(current_value->get_arr()[i]);
@@ -2078,13 +2080,13 @@ void Interpreter::build_args(const std::vector<std::string>& args) {
 	}
 
 	var->set_value(alocate_value(new RuntimeValue(arr, Type::T_STRING, dim)));
-	scopes[default_namespace].back()->declare_variable("args", var);
+	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("args", var);
 
 	// cwd
 	auto cwd_var = std::make_shared<RuntimeVariable>("cwd", Type::T_STRING, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "");
 	gc.add_var_root(cwd_var);
 	cwd_var->set_value(alocate_value(new RuntimeValue(std::filesystem::current_path().string())));
-	scopes[default_namespace].back()->declare_variable("cwd", cwd_var);
+	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("cwd", cwd_var);
 }
 
 void Interpreter::set_curr_pos(unsigned int row, unsigned int col) {

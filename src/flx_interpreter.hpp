@@ -9,7 +9,7 @@
 #include "flx_utils.hpp"
 #include "semantic_analysis.hpp"
 
-namespace ui {
+namespace interpreter {
 
 	class FlexaInterpreter {
 	private:
@@ -26,8 +26,8 @@ namespace ui {
 		FlexaSource load_program(const std::string& source);
 		std::vector<FlexaSource> load_programs(const std::vector<std::string>& source_files);
 
-		void parse_programs(const std::vector<FlexaSource>& source_programs, std::shared_ptr<ASTProgramNode>* main_program,
-			std::map<std::string, std::shared_ptr<ASTProgramNode>>* programs);
+		void parse_programs(const std::vector<FlexaSource>& source_programs, std::shared_ptr<core::ASTProgramNode>* main_program,
+			std::map<std::string, std::shared_ptr<core::ASTProgramNode>>* programs);
 
 		int interpreter();
 

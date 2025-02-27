@@ -15,7 +15,7 @@
 #define clear_screen() system("cls")
 #endif // __unix__
 
-namespace ui {
+namespace interpreter {
 
 	class FlexaRepl {
 	private:

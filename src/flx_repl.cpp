@@ -1,6 +1,13 @@
 #include "flx_repl.hpp"
+
 #include "utils.hpp"
 #include "types.hpp"
+
+using namespace interpreter;
+using namespace core;
+using namespace core::parser;
+using namespace core::analysis;
+using namespace core::runtime;
 
 const std::string FlexaRepl::NAME = "Flexa";
 const std::string FlexaRepl::VER = "v0.0.1";
@@ -29,8 +36,8 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 	std::cout << NAME << " " << VER << " [" << YEAR << "]\n";
 	std::cout << "Type \"#help\" for more information.\n";
 
-	std::shared_ptr<visitor::Scope> semantic_global_scope = std::make_shared<visitor::Scope>(nullptr);
-	std::shared_ptr<visitor::Scope> interpreter_global_scope = std::make_shared<visitor::Scope>(nullptr);
+	std::shared_ptr<Scope> semantic_global_scope = std::make_shared<Scope>(nullptr);
+	std::shared_ptr<Scope> interpreter_global_scope = std::make_shared<Scope>(nullptr);
 
 	while (true) {
 		std::string input_line;
@@ -69,8 +76,8 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 			}
 
 			std::string file_path = input_line.substr(6);
-			source = load_source(file_path);
-			prog_name = get_prog_name(file_path);
+			source = FlxUtils::load_source(file_path);
+			prog_name = FlxUtils::get_prog_name(file_path);
 			file_load = true;
 		}
 		else if (input_line == "#clear") {
@@ -91,7 +98,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 		}
 
 		try {
-			lexer::Lexer lexer(prog_name, source);
+			Lexer lexer(prog_name, source);
 			parser::Parser parser(prog_name, &lexer);
 			std::shared_ptr<ASTProgramNode> program;
 			std::map<std::string, std::shared_ptr<ASTProgramNode>> programs;
@@ -111,14 +118,14 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 			interpreter_global_scope->owner = program;
 
 			// check if it's all ok using a temp global scope
-			std::shared_ptr<visitor::Scope> temp = std::make_shared<visitor::Scope>(*semantic_global_scope);
-			visitor::SemanticAnalyser temp_semantic_analyser(temp, program, programs, args.program_args);
+			std::shared_ptr<Scope> temp = std::make_shared<Scope>(*semantic_global_scope);
+			SemanticAnalyser temp_semantic_analyser(temp, program, programs, args.program_args);
 			temp_semantic_analyser.start();
 
-			visitor::SemanticAnalyser semantic_analyser(semantic_global_scope, program, programs, args.program_args);
+			SemanticAnalyser semantic_analyser(semantic_global_scope, program, programs, args.program_args);
 			semantic_analyser.start();
 
-			visitor::Interpreter interpreter(interpreter_global_scope, program, programs, args.program_args);
+			Interpreter interpreter(interpreter_global_scope, program, programs, args.program_args);
 			interpreter.visit(program);
 
 			if (file_load) {
@@ -126,7 +133,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 			}
 			else {
 				// not is undefined and it's an expression
-				if (!parser::is_undefined(interpreter.current_expression_value->type)
+				if (!TypeUtils::is_undefined(interpreter.current_expression_value->type)
 					&& source.find(';') == std::string::npos) {
 					std::cout << RuntimeOperations::parse_value_to_string(interpreter.current_expression_value) << std::endl;
 				}

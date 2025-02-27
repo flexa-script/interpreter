@@ -1,9 +1,11 @@
 #include "vm.hpp"
-#include "exception_handler.hpp"
 
+#include "exception_handler.hpp"
 #include "utils.hpp"
 #include "watch.hpp"
+#include "constants.hpp"
 
+using namespace core;
 using namespace core::runtime;
 
 VirtualMachine::VirtualMachine(std::shared_ptr<Scope> global_scope, std::vector<BytecodeInstruction> instructions)
@@ -11,10 +13,10 @@ VirtualMachine::VirtualMachine(std::shared_ptr<Scope> global_scope, std::vector<
 	cleanup_type_set();
 	gc.add_root_container(value_stack);
 
-	push_namespace(default_namespace);
-	scopes[default_namespace].push_back(global_scope);
+	push_namespace(Constants::DEFAULT_NAMESPACE);
+	scopes[Constants::DEFAULT_NAMESPACE].push_back(global_scope);
 
-	built_in_libs["builtin"]->register_functions(this);
+	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 }
 
 void VirtualMachine::run() {
@@ -108,7 +110,7 @@ void VirtualMachine::unary_operation(const std::string& op) {
 			break;
 		default:
 			throw std::runtime_error("incompatible unary operator '" + op +
-				"' in front of " + type_str(value->type) + " expression");
+				"' in front of " + TypeUtils::type_str(value->type) + " expression");
 		}
 	}
 }
@@ -182,10 +184,10 @@ void VirtualMachine::handle_call() {
 void VirtualMachine::handle_throw() {
 	auto value = get_stack_top();
 
-	if (is_struct(value->type)
+	if (TypeUtils::is_struct(value->type)
 		&& value->type_name == "Exception") {
 		try {
-			get_inner_most_struct_definition_scope(nullptr, language_namespace, "Exception");
+			get_inner_most_struct_definition_scope(nullptr, Constants::STD_NAMESPACE, "Exception");
 		}
 		catch (...) {
 			throw std::runtime_error("struct 'flx::Exception' not found");
@@ -193,7 +195,7 @@ void VirtualMachine::handle_throw() {
 
 		throw std::exception(value->get_str()["error"]->get_s().c_str());
 	}
-	else if (is_string(value->type)) {
+	else if (TypeUtils::is_string(value->type)) {
 		throw std::runtime_error(value->get_s());
 	}
 	else {
@@ -330,7 +332,7 @@ void VirtualMachine::handle_store_var() {
 	new_var->set_value(new_value);
 
 	if ((!TypeDefinition::is_any_or_match_type(*new_var, *new_value, evaluate_access_vector_ptr) ||
-		is_array(new_var->type) && !is_any(new_var->array_type)
+		TypeUtils::is_array(new_var->type) && !TypeUtils::is_any(new_var->array_type)
 		&& !TypeDefinition::match_type(*new_var, *new_value, evaluate_access_vector_ptr, false, true))) {
 		ExceptionHandler::throw_declaration_type_err(identifier, *new_var, *new_value, evaluate_access_vector_ptr);
 	}
@@ -375,7 +377,7 @@ void VirtualMachine::handle_load_var() {
 		//	type = Type::T_FUNCTION;
 		//}
 
-		//if (is_undefined(type)) {
+		//if (TypeUtils::is_undefined(type)) {
 		//	std::shared_ptr<Scope> curr_scope;
 		//	try {
 		//		curr_scope = get_inner_most_struct_definition_scope(nmspace, astnode->identifier);
@@ -486,20 +488,20 @@ void VirtualMachine::handle_struct_end() {
 void VirtualMachine::handle_load_sub_id() {
 	auto id = current_instruction.get_string_operand();
 	auto val = get_stack_top();
-	if (!is_struct(val->type)) {
-		throw std::runtime_error("Invalid " + type_str(val->type) + " access, this operation can only be performed on struct values");
+	if (!TypeUtils::is_struct(val->type)) {
+		throw std::runtime_error("Invalid " + TypeUtils::type_str(val->type) + " access, this operation can only be performed on struct values");
 	}
 	value_stack->push_back(val->get_sub(id));
 }
 
 void VirtualMachine::handle_load_sub_ix() {
 	auto i = get_stack_top();
-	if (!is_int(i->type)) {
-		throw std::runtime_error("Invalid type " + type_str(i->type) + " trying to access array");
+	if (!TypeUtils::is_int(i->type)) {
+		throw std::runtime_error("Invalid type " + TypeUtils::type_str(i->type) + " trying to access array");
 	}
 	auto val = get_stack_top();
-	if (!is_array(val->type) && !is_string(val->type)) {
-		throw std::runtime_error("Invalid " + type_str(val->type) + " index access, this operation can only be performed on array or string values");
+	if (!TypeUtils::is_array(val->type) && !TypeUtils::is_string(val->type)) {
+		throw std::runtime_error("Invalid " + TypeUtils::type_str(val->type) + " index access, this operation can only be performed on array or string values");
 	}
 	value_stack->push_back(val->get_sub(i->get_i()));
 }
@@ -560,18 +562,18 @@ void VirtualMachine::handle_is_type() {
 	Type type = static_cast<Type>(current_instruction.get_uint8_operand());
 	auto value = get_stack_top();
 	RuntimeValue* res_value = new RuntimeValue(Type::T_BOOL);
-	if (is_any(type)) {
+	if (TypeUtils::is_any(type)) {
 		res_value->set(flx_bool(
-			(value->ref.lock() && (is_any(value->ref.lock()->type)) ||
-				is_any(value->ref.lock()->array_type))));
+			(value->ref.lock() && (TypeUtils::is_any(value->ref.lock()->type)) ||
+				TypeUtils::is_any(value->ref.lock()->array_type))));
 		return;
 	}
-	else if (is_array(type)) {
-		res_value->set(flx_bool(is_array(value->type) || value->dim.size() > 0));
+	else if (TypeUtils::is_array(type)) {
+		res_value->set(flx_bool(TypeUtils::is_array(value->type) || value->dim.size() > 0));
 		return;
 	}
-	else if (is_struct(type)) {
-		res_value->set(flx_bool(is_struct(value->type) || is_struct(value->array_type)));
+	else if (TypeUtils::is_struct(type)) {
+		res_value->set(flx_bool(TypeUtils::is_struct(value->type) || TypeUtils::is_struct(value->array_type)));
 		return;
 	}
 }

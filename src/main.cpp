@@ -4,10 +4,12 @@
 
 #include <Windows.h>
 
+using namespace interpreter;
+
 int main(int argc, const char* argv[]) {
 	SetConsoleOutputCP(CP_UTF8);
 
-	auto args = parse_args(argc, argv);
+	auto args = FlexaCliArgs(argc, argv);
 
 	if (!args.main_file.empty() && args.workspace_path.empty()) {
 		throw std::runtime_error("workspace must be informed");

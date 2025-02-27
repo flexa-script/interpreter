@@ -2,15 +2,17 @@
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"
+#include "constants.hpp"
 
-using namespace modules;
-using namespace visitor;
+using namespace core::modules;
+using namespace core::runtime;
+using namespace core::analysis;
 
 ModuleFiles::ModuleFiles() {}
 
 ModuleFiles::~ModuleFiles() = default;
 
-void ModuleFiles::register_functions(visitor::SemanticAnalyser* visitor) {
+void ModuleFiles::register_functions(SemanticAnalyser* visitor) {
 	visitor->builtin_functions["open"] = nullptr;
 	visitor->builtin_functions["read"] = nullptr;
 	visitor->builtin_functions["read_line"] = nullptr;
@@ -26,17 +28,17 @@ void ModuleFiles::register_functions(visitor::SemanticAnalyser* visitor) {
 	visitor->builtin_functions["path_exists"] = nullptr;
 }
 
-void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
+void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["open"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("mode"))->value
 		};
 
 		// initialize file struct values
-		RuntimeValue* cpfile = visitor->alocate_value(new RuntimeValue(parser::Type::T_STRUCT));
+		RuntimeValue* cpfile = visitor->alocate_value(new RuntimeValue(Type::T_STRUCT));
 
 		flx_struct str = flx_struct();
 		str["path"] = visitor->alocate_value(new RuntimeValue(vals[0]));
@@ -48,7 +50,7 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 		try {
 			fs = new std::fstream(vals[0]->get_s(), parmode);
 			str[INSTANCE_ID_NAME] = visitor->alocate_value(new RuntimeValue(flx_int(fs)));
-			cpfile->set(str, "File", language_namespace);
+			cpfile->set(str, "File", Constants::STD_NAMESPACE);
 			visitor->current_expression_value = cpfile;
 		}
 		catch (std::exception ex) {
@@ -57,11 +59,11 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["read"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
 
-		if (!parser::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(parser::Type::T_STRING));
+		if (!TypeUtils::is_void(val->type)) {
+			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_STRING));
 
 			std::fstream* fs = ((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i());
 
@@ -79,11 +81,11 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["read_line"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
 
-		if (!parser::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(parser::Type::T_STRING));
+		if (!TypeUtils::is_void(val->type)) {
+			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_STRING));
 
 			std::fstream* fs = ((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i());
 
@@ -96,12 +98,12 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["read_all_bytes"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
 
-		if (!parser::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(parser::Type::T_ARRAY));
-			rval->set_arr_type(parser::Type::T_CHAR);
+		if (!TypeUtils::is_void(val->type)) {
+			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_ARRAY));
+			rval->set_arr_type(Type::T_CHAR);
 
 			std::fstream* fs = ((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i());
 
@@ -120,7 +122,7 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 			// read all bytes
 			if (fs->read(buffer, buffer_size)) {
 				for (size_t i = 0; i < buffer_size; ++i) {
-					RuntimeValue* val = visitor->alocate_value(new RuntimeValue(parser::Type::T_CHAR));
+					RuntimeValue* val = visitor->alocate_value(new RuntimeValue(Type::T_CHAR));
 					val->set(buffer[i]);
 					arr[i] = val;
 				}
@@ -134,28 +136,28 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["write"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("data"))->value
 		};
 
 		RuntimeValue* cpfile = vals[0];
-		if (!parser::is_void(cpfile->type)) {
+		if (!TypeUtils::is_void(cpfile->type)) {
 			std::fstream* fs = ((std::fstream*)cpfile->get_str()[INSTANCE_ID_NAME]->get_i());
 			*fs << vals[1]->get_s();
 		}
 		};
 
 	visitor->builtin_functions["write_bytes"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("bytes"))->value
 		};
 
 		RuntimeValue* cpfile = vals[0];
-		if (!parser::is_void(cpfile->type)) {
+		if (!TypeUtils::is_void(cpfile->type)) {
 			std::fstream* fs = ((std::fstream*)cpfile->get_str()[INSTANCE_ID_NAME]->get_i());
 
 			auto arr = vals[1]->get_arr();
@@ -173,21 +175,21 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["is_open"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
 
-		if (!parser::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(parser::Type::T_BOOL));
+		if (!TypeUtils::is_void(val->type)) {
+			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_BOOL));
 			rval->set(flx_bool(((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i())->is_open()));
 			visitor->current_expression_value = rval;
 		}
 		};
 
 	visitor->builtin_functions["close"] = [this, visitor]() {
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
 
-		if (!parser::is_void(val->type)) {
+		if (!TypeUtils::is_void(val->type)) {
 			if (((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i())) {
 				((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i())->close();
 				((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i())->~basic_fstream();
@@ -218,6 +220,6 @@ void ModuleFiles::register_functions(visitor::Interpreter* visitor) {
 
 }
 
-void ModuleFiles::register_functions(visitor::Compiler* visitor) {}
+void ModuleFiles::register_functions(Compiler* visitor) {}
 
-void ModuleFiles::register_functions(vm::VirtualMachine* vm) {}
+void ModuleFiles::register_functions(VirtualMachine* vm) {}

@@ -1,5 +1,7 @@
 #include "exception_handler.hpp"
 
+#include "constants.hpp"
+
 using namespace core;
 
 void ExceptionHandler::throw_operation_err(const std::string op, const TypeDefinition& ltype, const TypeDefinition& rtype, dim_eval_func_t evaluate_access_vector) {
@@ -96,15 +98,15 @@ std::string ExceptionHandler::buid_type_str(const TypeDefinition& type_def, dim_
 
 	auto type = type_def.type;
 
-	if (is_array(type)) {
+	if (TypeUtils::is_array(type)) {
 		type = type_def.array_type;
 	}
 
-	if (is_struct(type)) {
+	if (TypeUtils::is_struct(type)) {
 		ss = type_def.type_name;
 	}
 	else {
-		ss = type_str(type);
+		ss = TypeUtils::type_str(type);
 	}
 
 	if (type_def.dim.size() > 0) {
@@ -118,7 +120,7 @@ std::string ExceptionHandler::buid_type_str(const TypeDefinition& type_def, dim_
 		}
 	}
 
-	if (is_struct(type) && !type_def.type_name_space.empty()) {
+	if (TypeUtils::is_struct(type) && !type_def.type_name_space.empty()) {
 		ss = type_def.type_name_space + "::" + ss;
 	}
 
@@ -126,5 +128,5 @@ std::string ExceptionHandler::buid_type_str(const TypeDefinition& type_def, dim_
 }
 
 std::string ExceptionHandler::buid_struct_type_name(const std::string& type_name_space, const std::string& type_name) {
-	return (type_name_space == default_namespace ? "" : type_name_space + "::") + type_name;
+	return (type_name_space == Constants::DEFAULT_NAMESPACE ? "" : type_name_space + "::") + type_name;
 }

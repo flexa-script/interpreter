@@ -2,7 +2,7 @@
 
 #include "graphics_utils.hpp"
 
-using namespace utils;
+using namespace core::modules;
 
 Image::~Image() {
 	if (bitmap) {

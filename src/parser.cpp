@@ -3,6 +3,7 @@
 #include "parser.hpp"
 #include "utils.hpp"
 #include "visitor.hpp"
+#include "constants.hpp"
 
 using namespace core;
 using namespace core::parser;
@@ -14,7 +15,7 @@ Parser::Parser(const std::string& name, Lexer* lexer) : name(name), lexer(lexer)
 
 std::shared_ptr<ASTProgramNode> Parser::parse_program() {
 	auto statements = std::vector<std::shared_ptr<ASTNode>>();
-	std::string name_space = default_namespace;
+	std::string name_space = Constants::DEFAULT_NAMESPACE;
 
 	if (current_token.type == TK_NAMESPACE) {
 		consume_token(TK_IDENTIFIER);
@@ -137,9 +138,9 @@ std::shared_ptr<ASTNamespaceManagerNode> Parser::parse_namespace_manager_stateme
 
 	switch (type)
 	{
-	case lexer::TK_INCLUDE:
+	case TK_INCLUDE:
 		return std::make_shared<ASTIncludeNamespaceNode>(name_space, row, col);
-	case lexer::TK_EXCLUDE:
+	case TK_EXCLUDE:
 		return std::make_shared<ASTExcludeNamespaceNode>(name_space, row, col);
 	default:
 		throw std::runtime_error(msg_header() + "invalid token '" + Token::token_image(type) + "'");
@@ -576,7 +577,7 @@ std::shared_ptr<ASTFunctionDefinitionNode> Parser::parse_function_statement() {
 
 TypeDefinition Parser::parse_type_definition(Type default_type) {
 	Type type = Type::T_UNDEFINED;
-	Type array_type = parser::Type::T_UNDEFINED;
+	Type array_type = Type::T_UNDEFINED;
 	auto dim_vector = std::vector<std::shared_ptr<ASTExprNode>>();
 	std::string type_name = "";
 	std::string type_name_space = "";
@@ -1347,7 +1348,7 @@ VariableDefinition* Parser::parse_formal_param() {
 
 	if (is_rest) {
 		auto ndim = std::make_shared<ASTLiteralNode<flx_int>>(0, row, col);
-		if (!is_array(type_def.type)) {
+		if (!TypeUtils::is_array(type_def.type)) {
 			type_def.array_type = type_def.type;
 			type_def.type = Type::T_ARRAY;
 		}
@@ -1438,11 +1439,11 @@ std::shared_ptr<ASTCallOperatorNode> Parser::parse_call_operator_node() {
 
 	switch (type)
 	{
-	case lexer::TK_TYPEOF:
+	case TK_TYPEOF:
 		return std::make_shared<ASTTypeOfNode>(expr, row, col);
-	case lexer::TK_TYPEID:
+	case TK_TYPEID:
 		return std::make_shared<ASTTypeIdNode>(expr, row, col);
-	case lexer::TK_REFID:
+	case TK_REFID:
 		return std::make_shared<ASTRefIdNode>(expr, row, col);
 	default:
 		throw std::runtime_error(msg_header() + "invalid token '" + Token::token_image(type) + "'");

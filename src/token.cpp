@@ -1,6 +1,6 @@
 #include "token.hpp"
 
-using namespace core::parser;
+using namespace core;
 
 Token::Token(LexTokenType type, const std::string& value, unsigned int row, unsigned int col)
 	: type(type), value(value), row(row), col(col) {}

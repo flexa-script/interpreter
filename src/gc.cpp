@@ -1,6 +1,6 @@
 #include "gc.hpp"
 
-using namespace gc;
+using namespace core::runtime;
 
 GarbageCollector::GarbageCollector() {}
 

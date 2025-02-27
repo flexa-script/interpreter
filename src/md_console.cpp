@@ -4,14 +4,17 @@
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"
+#include "constants.hpp"
 
-using namespace modules;
+using namespace core::modules;
+using namespace core::runtime;
+using namespace core::analysis;
 
 ModuleConsole::ModuleConsole() {}
 
 ModuleConsole::~ModuleConsole() = default;
 
-void ModuleConsole::register_functions(visitor::SemanticAnalyser* visitor) {
+void ModuleConsole::register_functions(SemanticAnalyser* visitor) {
 	visitor->builtin_functions["show_console"] = nullptr;
 	visitor->builtin_functions["is_console_visible"] = nullptr;
 	visitor->builtin_functions["set_console_color"] = nullptr;
@@ -19,12 +22,12 @@ void ModuleConsole::register_functions(visitor::SemanticAnalyser* visitor) {
 	visitor->builtin_functions["set_console_font"] = nullptr;
 }
 
-void ModuleConsole::register_functions(visitor::Interpreter* visitor) {
+void ModuleConsole::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["show_console"] = [this, visitor]() {
 		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("show"))->value;
 
 		::ShowWindow(::GetConsoleWindow(), val->get_b());
@@ -39,7 +42,7 @@ void ModuleConsole::register_functions(visitor::Interpreter* visitor) {
 	visitor->builtin_functions["set_console_color"] = [this, visitor]() {
 		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector {
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("background_color"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("foreground_color"))->value
@@ -53,7 +56,7 @@ void ModuleConsole::register_functions(visitor::Interpreter* visitor) {
 	visitor->builtin_functions["set_console_cursor_position"] = [this, visitor]() {
 		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value
@@ -68,7 +71,7 @@ void ModuleConsole::register_functions(visitor::Interpreter* visitor) {
 	visitor->builtin_functions["set_console_font"] = [this, visitor]() {
 		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
-		auto& scope = visitor->scopes[language_namespace].back();
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_name"))->value,
 			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_width"))->value,
@@ -96,6 +99,6 @@ void ModuleConsole::register_functions(visitor::Interpreter* visitor) {
 
 }
 
-void ModuleConsole::register_functions(visitor::Compiler* visitor) {}
+void ModuleConsole::register_functions(Compiler* visitor) {}
 
-void ModuleConsole::register_functions(vm::VirtualMachine* vm) {}
+void ModuleConsole::register_functions(VirtualMachine* vm) {}

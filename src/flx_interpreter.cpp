@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include "flx_interpreter.hpp"
+
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "compiler.hpp"
@@ -8,6 +9,12 @@
 #include "dependency_resolver.hpp"
 #include "interpreter.hpp"
 #include "vm.hpp"
+
+using namespace interpreter;
+using namespace core;
+using namespace core::parser;
+using namespace core::analysis;
+using namespace core::runtime;
 
 FlexaInterpreter::FlexaInterpreter(const FlexaCliArgs& args)
 	: project_root(utils::PathUtils::normalize_path_sep(args.workspace_path)),
@@ -38,7 +45,7 @@ FlexaSource FlexaInterpreter::load_program(const std::string& source) {
 		throw std::runtime_error("file not found: '" + current_file_path + "'");
 	}
 
-	source_program = FlexaSource{ get_lib_name(source), load_source(current_full_path) };
+	source_program = FlexaSource{ FlxUtils::get_lib_name(source), FlxUtils::load_source(current_full_path) };
 
 	return source_program;
 }
@@ -57,7 +64,7 @@ void FlexaInterpreter::parse_programs(const std::vector<FlexaSource>& source_pro
 	std::map<std::string, std::shared_ptr<ASTProgramNode>>* programs) {
 
 	for (const auto& source : source_programs) {
-		lexer::Lexer lexer(source.name, source.source);
+		Lexer lexer(source.name, source.source);
 		parser::Parser parser(source.name , &lexer);
 
 		std::shared_ptr<ASTProgramNode> program = parser.parse_program();
@@ -88,8 +95,8 @@ int FlexaInterpreter::interpreter() {
 		return EXIT_FAILURE;
 	}
 
-	std::shared_ptr<visitor::Scope> semantic_global_scope = std::make_shared<visitor::Scope>(nullptr);
-	std::shared_ptr<visitor::Scope> interpreter_global_scope = std::make_shared<visitor::Scope>(nullptr);
+	std::shared_ptr<Scope> semantic_global_scope = std::make_shared<Scope>(nullptr);
+	std::shared_ptr<Scope> interpreter_global_scope = std::make_shared<Scope>(nullptr);
 
 	try {
 		std::shared_ptr<ASTProgramNode> main_program = nullptr;
@@ -97,7 +104,7 @@ int FlexaInterpreter::interpreter() {
 		parse_programs(source_programs, &main_program, &programs);
 		size_t libs_size = 0;
 		do {
-			visitor::DependencyResolver libfinder(main_program, programs);
+			DependencyResolver libfinder(main_program, programs);
 			libfinder.start();
 
 			libs_size = libfinder.lib_names.size();
@@ -111,19 +118,19 @@ int FlexaInterpreter::interpreter() {
 		semantic_global_scope->owner = main_program;
 		interpreter_global_scope->owner = main_program;
 
-		visitor::SemanticAnalyser semantic_analyser(semantic_global_scope, main_program, programs, args.program_args);
+		SemanticAnalyser semantic_analyser(semantic_global_scope, main_program, programs, args.program_args);
 		semantic_analyser.start();
 
 		long long result = 0;
 
 		if (args.engine == "ast") {
-			visitor::Interpreter interpreter(interpreter_global_scope, main_program, programs, args.program_args);
+			Interpreter interpreter(interpreter_global_scope, main_program, programs, args.program_args);
 			interpreter.start();
 			result = interpreter.current_expression_value->get_i();
 		}
 		else {
 			// compile
-			visitor::Compiler compiler(main_program, programs, args.program_args);
+			Compiler compiler(main_program, programs, args.program_args);
 			compiler.start();
 
 			BytecodeInstruction::write_bytecode_table(compiler.bytecode_program, project_root + "\\" + source_programs[0].name + ".bslt");

@@ -1,9 +1,13 @@
 #include <filesystem>
 
-#include "utils.hpp"
 #include "flx_utils.hpp"
 
-std::string load_source(const std::string& path) {
+#include "utils.hpp"
+
+using namespace interpreter;
+using namespace utils;
+
+std::string FlxUtils::load_source(const std::string& path) {
 	std::string source;
 
 	std::ifstream file;
@@ -28,73 +32,74 @@ std::string load_source(const std::string& path) {
 	return source;
 }
 
-std::string get_lib_name(const std::string& libpath) {
+std::string FlxUtils::get_lib_name(const std::string& libpath) {
 	std::string file_name = libpath;
 	std::string lib_name = file_name.substr(0, file_name.length() - 4);
 	std::replace(lib_name.begin(), lib_name.end(), (char)std::filesystem::path::preferred_separator, '.');
 	return lib_name;
 }
 
-std::string get_prog_name(const std::string& progpath) {
+std::string FlxUtils::get_prog_name(const std::string& progpath) {
 	auto norm_path = utils::PathUtils::normalize_path_sep(progpath);
 	auto index = norm_path.rfind(std::filesystem::path::preferred_separator) + 1;
-	return get_lib_name(progpath.substr(index, progpath.size()));
+	return FlxUtils::get_lib_name(progpath.substr(index, progpath.size()));
 }
 
-void throw_if_not_parameter(int argc, size_t i, std::string parameter) {
-	if (i >= argc) {
-		throw std::runtime_error("expected value after " + parameter);
+FlexaCliArgs::FlexaCliArgs(int argc, const char* argv[]) {
+	for (int i = 0; i < argc; ++i) {
+		args.push_back(argv[i]);
 	}
+	parse_args();
 }
 
-FlexaCliArgs parse_args(int argc, const char* argv[]) {
-	FlexaCliArgs args;
-	args.engine = "ast";
+void FlexaCliArgs::parse_args() {
+	auto args_size = args.size();
+	engine = "ast";
 
 	size_t i = 0;
 
-	args.program_args.push_back(argv[i]);
+	program_args.push_back(args[i]);
 
 	// parse optional parameters
-	while (++i < argc) {
-		std::string arg = argv[i];
+	while (++i < args_size) {
+		std::string arg = args[i];
 		if (arg == "-d" || arg == "--debug") {
-			args.debug = true;
+			debug = true;
 
 			continue;
 		}
 		if (arg == "-e" || arg == "--engine") {
 			++i;
-			throw_if_not_parameter(argc, i, arg);
-			std::string p = argv[i];
+			throw_if_not_parameter(args_size, i, arg);
+			std::string p = args[i];
 			if (p != "ast" && p != "vm") {
 				throw std::runtime_error("invalid " + arg + " parameter value: '" + p + "'");
 			}
-			args.engine = argv[i];
+			engine = args[i];
 			continue;
 		}
 		if (arg == "-w" || arg == "--workspace") {
 			++i;
-			throw_if_not_parameter(argc, i, arg);
-			args.workspace_path = argv[i];
+			throw_if_not_parameter(args_size, i, arg);
+			workspace_path = args[i];
 			continue;
 		}
 		if (arg == "-m" || arg == "--main") {
 			++i;
-			throw_if_not_parameter(argc, i, arg);
-			args.main_file = argv[i];
+			throw_if_not_parameter(args_size, i, arg);
+			main_file = args[i];
 			continue;
 		}
 		if (arg == "-s" || arg == "--source") {
 			++i;
-			throw_if_not_parameter(argc, i, arg);
-			args.source_files.push_back(argv[i]);
+			throw_if_not_parameter(args_size, i, arg);
+			source_files.push_back(args[i]);
 			continue;
 		}
 		if (arg == "-l" || arg == "--libs") {
 			++i;
-			throw_if_not_parameter(argc, i, arg);
-			args.libs_path = argv[i];
+			throw_if_not_parameter(args_size, i, arg);
+			libs_path = args[i];
 			continue;
 		}
 		--i;
@@ -104,21 +109,26 @@ FlexaCliArgs parse_args(int argc, const char* argv[]) {
 
 	// check if the first
 	auto ni = i + 1;
-	if (ni < argc && std::filesystem::is_regular_file(argv[ni]) && args.workspace_path.empty()) {
-		std::filesystem::path full_path(argv[ni]);
-		args.workspace_path = full_path.parent_path().string();
-		args.main_file = full_path.filename().string();
+	if (ni < args_size && std::filesystem::is_regular_file(args[ni]) && workspace_path.empty()) {
+		std::filesystem::path full_path(args[ni]);
+		workspace_path = full_path.parent_path().string();
+		main_file = full_path.filename().string();
 	}
 	else {
-		std::filesystem::path w_path(args.workspace_path);
-		std::filesystem::path m_path(args.main_file);
-		args.program_args.push_back((w_path / m_path).string());
+		std::filesystem::path w_path(workspace_path);
+		std::filesystem::path m_path(main_file);
+		program_args.push_back((w_path / m_path).string());
 	}
 
 	// parse flx arguments
-	while (++i < argc) {
-		args.program_args.push_back(argv[i]);
+	while (++i < args_size) {
+		program_args.push_back(args[i]);
 	}
 
-	return args;
+}
+
+void FlexaCliArgs::throw_if_not_parameter(int argc, size_t i, std::string parameter) {
+	if (i >= argc) {
+		throw std::runtime_error("expected value after " + parameter);
+	}
 }

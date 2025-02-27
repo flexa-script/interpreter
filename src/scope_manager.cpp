@@ -1,15 +1,16 @@
 #include "scope_manager.hpp"
+
 #include "utils.hpp"
 
 using namespace core;
 
 void ScopeManager::validates_reference_type_assignment(TypeDefinition owner, Value* value) {
-	if (is_string(owner.type) && is_char(value->type)
-		&& value->use_ref && value->ref.lock() && !is_any(value->ref.lock()->type)) {
+	if (TypeUtils::is_string(owner.type) && TypeUtils::is_char(value->type)
+		&& value->use_ref && value->ref.lock() && !TypeUtils::is_any(value->ref.lock()->type)) {
 		throw std::runtime_error("cannot reference char to string variable");
 	}
-	else if (is_float(owner.type) && is_int(value->type)
-		&& value->use_ref && value->ref.lock() && !is_any(value->ref.lock()->type)) {
+	else if (TypeUtils::is_float(owner.type) && TypeUtils::is_int(value->type)
+		&& value->use_ref && value->ref.lock() && !TypeUtils::is_any(value->ref.lock()->type)) {
 		throw std::runtime_error("cannot reference int to float variable");
 	}
 }
