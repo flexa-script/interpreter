@@ -70,7 +70,7 @@ void Interpreter::visit(std::shared_ptr<ASTUsingNode> astnode) {
 		Constants::BUILT_IN_LIBS.find(libname)->second->register_functions(this);
 	}
 
-	auto program = programs[libname];
+	const auto& program = programs[libname];
 
 	// if can't parsed yet
 	if (!utils::CollectionUtils::contains(parsed_libs, libname)) {
@@ -470,7 +470,6 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	current_function_defined_parameters.push(declfun.parameters);
 	current_this_name.push(identifier);
 	current_function_signature.push(signature);
-	//current_function_call_identifier_vector.push(identifier_vector);
 	current_function_call_expression_identifier_vector.push(astnode->expression_identifier_vector);
 	current_function_call_expression_call.push(astnode->expression_call);
 	current_function_calling_arguments.push(*function_arguments);
@@ -480,7 +479,6 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	declfun.block->accept(this);
 
 	current_function.pop();
-	//current_function_call_identifier_vector.pop();
 	current_function_call_expression_identifier_vector.pop();
 	current_function_call_expression_call.pop();
 	current_function_signature.pop();
@@ -508,7 +506,7 @@ void Interpreter::visit(std::shared_ptr<ASTBuiltinCallNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	auto name_space = astnode->type_name_space.empty() ? current_program->name_space : astnode->type_name_space;
+	const auto& name_space = astnode->type_name_space.empty() ? current_program->name_space : astnode->type_name_space;
 
 	try {
 		// if its already declared, it's a block definition
@@ -525,7 +523,8 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 			}, astnode->row, astnode->col);
 		}
 
-		scopes[name_space].back()->declare_function(astnode->identifier, FunctionDefinition(astnode->identifier, astnode->type, astnode->type_name, astnode->type_name_space,
+		scopes[name_space].back()->declare_function(astnode->identifier,
+			FunctionDefinition(astnode->identifier, astnode->type, astnode->type_name, astnode->type_name_space,
 			astnode->array_type, astnode->dim, astnode->parameters, block, astnode->row, astnode->row));
 	}
 
@@ -541,7 +540,7 @@ void Interpreter::visit(std::shared_ptr<ASTLambdaFunction> astnode) {
 	// what if...
 	auto fun_name = "lambda@" + utils::UUID::generate();
 	while (scopes[name_space].back()->already_declared_function_name(fun_name)) {
-		fun_name = utils::UUID::generate();
+		fun_name = "lambda@" + utils::UUID::generate();
 	}
 
 	fun->identifier = fun_name;
@@ -2009,8 +2008,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 					rest_name = decl->identifier;
 					// if is last parameter and is array and is not a single parameter
 					if (current_function_defined_parameters.top().size() - 1 == i
-						&& TypeUtils::is_array(current_value->type)
-						&& current_function_defined_parameters.top().size() > 1) {
+						&& TypeUtils::is_array(current_value->type)) {
 						for (size_t i = 0; i < vec.size(); ++i) {
 							vec.push_back(current_value->get_arr()[i]);
 						}

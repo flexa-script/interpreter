@@ -33,7 +33,6 @@ namespace core {
 			std::string function_call_name;
 			std::string return_from_function_name;
 			std::stack<std::vector<TypeDefinition*>> current_function_signature;
-			//std::stack<std::vector<Identifier>> current_function_call_identifier_vector;
 			std::stack<std::vector<Identifier>> current_function_call_expression_identifier_vector;
 			std::stack<std::shared_ptr<ASTFunctionCallNode>> current_function_call_expression_call;
 			std::stack<FunctionDefinition> current_function;

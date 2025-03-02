@@ -15,10 +15,18 @@
     - [X] Adds code error to Exception struct
     - [X] Implements struct array-like constructoror
     - [X] Add struct iterating over in foreach
-- [ ] Super structs
-    - [ ] Add struct functions
-    - [ ] Add init function
-    - [ ] Add struct heritage
+- [ ] Class
+    - [ ] private starts with `_`
+    - [ ] Add properties
+        - [ ] `var`
+        - [ ] `const`
+        - [ ] `static`
+    - [ ] Add `init` to implements constructor
+    - [ ] Add `get` and `set` (same name of property)
+    - [ ] `this` return current object instance
+    - [ ] Add static functions `static`
+    - [ ] Add inheritance `extends`
+    - [ ] `super` call from parent class
 - [X] Implements null
 - [X] Implements type convert support
 - [X] Implements string array-like accessor/assign
@@ -125,7 +133,6 @@
 - [X] Remove namespace queue due to program be available in nodes
 - [X] Adds single file load with full path
 - [X] Change MetaVisitor to ScopeManager
-- [ ] Reduce compile warning
 - [X] Remove unnecessary evaluate_access_vector uses
 - [ ] Change types as string to expression token types
     - Create a special type for types?

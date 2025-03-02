@@ -121,7 +121,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 			// read all bytes
 			if (fs->read(buffer, buffer_size)) {
-				for (size_t i = 0; i < buffer_size; ++i) {
+				for (std::streamsize i = 0; i < buffer_size; ++i) {
 					RuntimeValue* val = visitor->alocate_value(new RuntimeValue(Type::T_CHAR));
 					val->set(buffer[i]);
 					arr[i] = val;
@@ -166,7 +166,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 			char* buffer = new char[buffer_size];
 
-			for (size_t i = 0; i < buffer_size; ++i) {
+			for (std::streamsize i = 0; i < buffer_size; ++i) {
 				buffer[i] = arr[i]->get_c();
 			}
 

@@ -106,7 +106,7 @@ std::shared_ptr<ASTNode> Parser::parse_block_statement() {
 		try {
 			return parse_statement_expression();
 		}
-		catch (const std::exception& ex) {
+		catch (...) {
 			throw std::runtime_error(msg_header() + "expected statement or expression");
 		}
 	}
