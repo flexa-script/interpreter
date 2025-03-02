@@ -95,6 +95,7 @@ namespace core {
 			std::shared_ptr<ASTFunctionCallNode> parse_function_call_node(std::shared_ptr<ASTIdentifierNode> idnode);
 			std::shared_ptr<ASTThisNode> parse_this_node();
 			std::shared_ptr<ASTTypeCastNode> parse_type_parse_node();
+			std::shared_ptr<ASTTypeNode> parse_type_node();
 			std::shared_ptr<ASTCallOperatorNode> parse_call_operator_node();
 
 			// special

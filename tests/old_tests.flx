@@ -1,3 +1,5 @@
+using types.raw_type;
+
 using structs._foreach;
 using structs.reference;
 using structs.array;
@@ -85,5 +87,3 @@ using libs.core.files_test;
 using libs.core.http_test;
 using libs.core.console_test;
 using libs.core.sound_test;
-using libs.core.graphics_test;
-using libs.core.input_test;

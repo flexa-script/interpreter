@@ -775,22 +775,22 @@ void VirtualMachine::decode_operation() {
 		push_constant(new RuntimeValue(flx_int(get_stack_top())));
 		break;
 	case OP_TYPEID:
-		push_constant(
-			new RuntimeValue(
-				flx_string(
-					RuntimeOperations::build_str_type(get_stack_top())
-				)
-			)
-		);
+		//push_constant(
+		//	new RuntimeValue(
+		//		flx_string(
+		//			RuntimeOperations::build_str_type(get_stack_top())
+		//		)
+		//	)
+		//);
 		break;
 	case OP_TYPEOF:
-		push_constant(
-			new RuntimeValue(
-				flx_int(
-					utils::StringUtils::hashcode(RuntimeOperations::build_str_type(get_stack_top()))
-				)
-			)
-		);
+		//push_constant(
+		//	new RuntimeValue(
+		//		flx_int(
+		//			utils::StringUtils::hashcode(RuntimeOperations::build_str_type(get_stack_top()))
+		//		)
+		//	)
+		//);
 		break;
 	case OP_TYPE_PARSE:
 		handle_type_parse();

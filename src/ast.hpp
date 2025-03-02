@@ -482,6 +482,16 @@ namespace core {
 		virtual long long hash(Visitor*) override;
 	};
 
+	class ASTTypeNode : public ASTExprNode {
+	public:
+		TypeDefinition type;
+
+		ASTTypeNode(TypeDefinition type, unsigned int row, unsigned int col);
+
+		void accept(Visitor*) override;
+		virtual long long hash(Visitor*) override;
+	};
+
 	class ASTCallOperatorNode : public ASTExprNode {
 	public:
 		std::shared_ptr<ASTExprNode> expr;

@@ -578,6 +578,9 @@ void Compiler::visit(std::shared_ptr<ASTTypeCastNode> astnode) {
 	add_instruction(OpCode::OP_TYPE_PARSE, uint8_t(astnode->type));
 }
 
+void Compiler::visit(std::shared_ptr<ASTTypeNode> astnode) {
+}
+
 void Compiler::visit(std::shared_ptr<ASTNullNode> astnode) {
 	add_instruction(OpCode::OP_PUSH_VOID, nullptr);
 }

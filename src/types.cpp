@@ -13,101 +13,97 @@
 
 using namespace core;
 
-namespace core {
-
-	std::string TypeUtils::type_str(Type t) {
-		switch (t) {
-		case Type::T_UNDEFINED:
-			return "undefined";
-		case Type::T_VOID:
-			return "void";
-		case Type::T_BOOL:
-			return "bool";
-		case Type::T_INT:
-			return "int";
-		case Type::T_FLOAT:
-			return "float";
-		case Type::T_CHAR:
-			return "char";
-		case Type::T_STRING:
-			return "string";
-		case Type::T_ANY:
-			return "any";
-		case Type::T_ARRAY:
-			return "array";
-		case Type::T_STRUCT:
-			return "struct";
-		case Type::T_FUNCTION:
-			return "function";
-		default:
-			throw std::runtime_error("invalid type encountered");
-		}
+std::string TypeUtils::type_str(Type t) {
+	switch (t) {
+	case Type::T_UNDEFINED:
+		return "undefined";
+	case Type::T_VOID:
+		return "void";
+	case Type::T_BOOL:
+		return "bool";
+	case Type::T_INT:
+		return "int";
+	case Type::T_FLOAT:
+		return "float";
+	case Type::T_CHAR:
+		return "char";
+	case Type::T_STRING:
+		return "string";
+	case Type::T_ANY:
+		return "any";
+	case Type::T_ARRAY:
+		return "array";
+	case Type::T_STRUCT:
+		return "struct";
+	case Type::T_FUNCTION:
+		return "function";
+	default:
+		throw std::runtime_error("invalid type encountered");
 	}
+}
 
-	bool TypeUtils::match_type(Type type1, Type type2) {
-		return type1 == type2;
-	}
+bool TypeUtils::match_type(Type type1, Type type2) {
+	return type1 == type2;
+}
 
-	bool TypeUtils::is_undefined(Type type) {
-		return TypeUtils::match_type(type, Type::T_UNDEFINED);
-	}
+bool TypeUtils::is_undefined(Type type) {
+	return TypeUtils::match_type(type, Type::T_UNDEFINED);
+}
 
-	bool TypeUtils::is_void(Type type) {
-		return TypeUtils::match_type(type, Type::T_VOID);
-	}
+bool TypeUtils::is_void(Type type) {
+	return TypeUtils::match_type(type, Type::T_VOID);
+}
 
-	bool TypeUtils::is_bool(Type type) {
-		return TypeUtils::match_type(type, Type::T_BOOL);
-	}
+bool TypeUtils::is_bool(Type type) {
+	return TypeUtils::match_type(type, Type::T_BOOL);
+}
 
-	bool TypeUtils::is_int(Type type) {
-		return TypeUtils::match_type(type, Type::T_INT);
-	}
+bool TypeUtils::is_int(Type type) {
+	return TypeUtils::match_type(type, Type::T_INT);
+}
 
-	bool TypeUtils::is_float(Type type) {
-		return TypeUtils::match_type(type, Type::T_FLOAT);
-	}
+bool TypeUtils::is_float(Type type) {
+	return TypeUtils::match_type(type, Type::T_FLOAT);
+}
 
-	bool TypeUtils::is_char(Type type) {
-		return TypeUtils::match_type(type, Type::T_CHAR);
-	}
+bool TypeUtils::is_char(Type type) {
+	return TypeUtils::match_type(type, Type::T_CHAR);
+}
 
-	bool TypeUtils::is_string(Type type) {
-		return TypeUtils::match_type(type, Type::T_STRING);
-	}
+bool TypeUtils::is_string(Type type) {
+	return TypeUtils::match_type(type, Type::T_STRING);
+}
 
-	bool TypeUtils::is_any(Type type) {
-		return TypeUtils::match_type(type, Type::T_ANY);
-	}
+bool TypeUtils::is_any(Type type) {
+	return TypeUtils::match_type(type, Type::T_ANY);
+}
 
-	bool TypeUtils::is_array(Type type) {
-		return TypeUtils::match_type(type, Type::T_ARRAY);
-	}
+bool TypeUtils::is_array(Type type) {
+	return TypeUtils::match_type(type, Type::T_ARRAY);
+}
 
-	bool TypeUtils::is_struct(Type type) {
-		return TypeUtils::match_type(type, Type::T_STRUCT);
-	}
+bool TypeUtils::is_struct(Type type) {
+	return TypeUtils::match_type(type, Type::T_STRUCT);
+}
 
-	bool TypeUtils::is_function(Type type) {
-		return TypeUtils::match_type(type, Type::T_FUNCTION);
-	}
+bool TypeUtils::is_function(Type type) {
+	return TypeUtils::match_type(type, Type::T_FUNCTION);
+}
 
-	bool TypeUtils::is_text(Type type) {
-		return TypeUtils::is_string(type) || TypeUtils::is_char(type);
-	}
+bool TypeUtils::is_text(Type type) {
+	return TypeUtils::is_string(type) || TypeUtils::is_char(type);
+}
 
-	bool TypeUtils::is_numeric(Type type) {
-		return TypeUtils::is_int(type) || TypeUtils::is_float(type);
-	}
+bool TypeUtils::is_numeric(Type type) {
+	return TypeUtils::is_int(type) || TypeUtils::is_float(type);
+}
 
-	bool TypeUtils::is_collection(Type type) {
-		return TypeUtils::is_string(type) || TypeUtils::is_array(type);
-	}
+bool TypeUtils::is_collection(Type type) {
+	return TypeUtils::is_string(type) || TypeUtils::is_array(type);
+}
 
-	bool TypeUtils::is_iterable(Type type) {
-		return TypeUtils::is_collection(type) || TypeUtils::is_struct(type);
-	}
-
+bool TypeUtils::is_iterable(Type type) {
+	return TypeUtils::is_collection(type) || TypeUtils::is_struct(type);
 }
 
 TypeDefinition::TypeDefinition(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& expr_dim,
@@ -229,6 +225,44 @@ bool TypeDefinition::match_array_dim(TypeDefinition ltype, TypeDefinition rtype)
 	}
 
 	return true;
+}
+
+std::string TypeDefinition::buid_type_str(const TypeDefinition& type_def) {
+	std::string ss;
+
+	auto type = type_def.type;
+
+	if (TypeUtils::is_array(type)) {
+		type = type_def.array_type;
+	}
+
+	if (TypeUtils::is_struct(type)) {
+		ss = type_def.type_name;
+	}
+	else {
+		ss = TypeUtils::type_str(type);
+	}
+
+	if (type_def.dim.size() > 0) {
+		auto& dim = type_def.dim;
+		for (size_t i = 0; i < dim.size(); ++i) {
+			ss += "[";
+			if (dim[i] > 0) {
+				ss += std::to_string(dim[i]);
+			}
+			ss += "]";
+		}
+	}
+
+	if (TypeUtils::is_struct(type)) {
+		ss = TypeDefinition::buid_struct_type_name(type_def.type_name_space, ss);
+	}
+
+	return ss;
+}
+
+std::string TypeDefinition::buid_struct_type_name(const std::string& type_name_space, const std::string& type_name) {
+	return (type_name_space == Constants::DEFAULT_NAMESPACE || type_name_space.empty() ? "" : type_name_space + "::") + type_name;
 }
 
 void TypeDefinition::reset_ref() {
@@ -527,7 +561,7 @@ RuntimeValue::RuntimeValue(Type array_type, std::vector<unsigned int> dim, std::
 }
 
 RuntimeValue::RuntimeValue(std::string type_name, std::string type_name_space)
-	: Value(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<unsigned int >(), type_name, type_name_space) {
+	: Value(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<unsigned int>(), type_name, type_name_space) {
 }
 
 RuntimeValue::RuntimeValue(RuntimeValue* v) {
@@ -954,9 +988,6 @@ flx_bool RuntimeOperations::equals_value(const RuntimeValue* lval, const Runtime
 		return lval->get_c() == rval->get_c();
 	case Type::T_STRING:
 		return lval->get_s() == rval->get_s();
-		//case Type::T_ARRAY:
-		//case Type::T_STRUCT:
-		//	return lval == rval;
 	case Type::T_ARRAY:
 		return RuntimeOperations::equals_array(lval->get_arr(), rval->get_arr(), compared);
 	case Type::T_STRUCT:
@@ -1577,42 +1608,4 @@ void RuntimeOperations::normalize_type(TypeDefinition* owner, RuntimeValue* valu
 		value->type = owner->type;
 		value->set(flx_float(value->get_i()));
 	}
-}
-
-std::string RuntimeOperations::build_str_type(RuntimeValue* curr_value) {
-	auto dim = std::vector<unsigned int>();
-	auto type = TypeUtils::is_void(curr_value->type) ? curr_value->type : curr_value->type;
-	std::string str_type = "";
-
-	if (TypeUtils::is_array(type)) {
-		dim = curr_value->dim;
-		type = curr_value->array_type;
-	}
-
-	str_type = TypeUtils::type_str(type);
-
-	if (TypeUtils::is_struct(type)) {
-		if (dim.size() > 0) {
-			auto arr = curr_value->get_arr()[0];
-			for (size_t i = 0; i < dim.size() - 1; ++i) {
-				arr = arr->get_arr()[0];
-			}
-			str_type = arr->type_name;
-		}
-		else {
-			str_type = curr_value->type_name;
-		}
-	}
-
-	if (dim.size() > 0) {
-		for (size_t i = 0; i < dim.size(); ++i) {
-			str_type += "[" + std::to_string(dim[i]) + "]";
-		}
-	}
-
-	if (TypeUtils::is_struct(type) && !curr_value->type_name_space.empty()) {
-		str_type = curr_value->type_name_space + "::" + str_type;
-	}
-
-	return str_type;
 }

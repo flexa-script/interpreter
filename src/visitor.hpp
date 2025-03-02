@@ -50,6 +50,7 @@ namespace core {
 	class ASTInNode;
 	class ASTFunctionCallNode;
 	class ASTTypeCastNode;
+	class ASTTypeNode;
 	class ASTNullNode;
 	class ASTThisNode;
 	class ASTTypeOfNode;
@@ -112,6 +113,7 @@ namespace core {
 		virtual void visit(std::shared_ptr<ASTInNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTFunctionCallNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTTypeCastNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTTypeNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTNullNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTThisNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTTypeOfNode>) = 0;

@@ -143,10 +143,13 @@ ASTInNode::ASTInNode(std::shared_ptr<ASTExprNode> value, std::shared_ptr<ASTExpr
 ASTFunctionCallNode::ASTFunctionCallNode(const std::string& name_space, const std::vector<Identifier>& identifier_vector, const std::vector<std::shared_ptr<ASTExprNode>>& parameters,
 	std::vector<Identifier> expression_identifier_vector, std::shared_ptr<ASTFunctionCallNode> expression_call, unsigned int row, unsigned int col)
 	: ASTExprNode(row, col), identifier(identifier_vector[0].identifier), name_space(name_space), parameters(parameters),
-	identifier_vector(identifier_vector), expression_identifier_vector(expression_identifier_vector), expression_call(expression_call) { }
+	identifier_vector(identifier_vector), expression_identifier_vector(expression_identifier_vector), expression_call(expression_call) {}
 
 ASTTypeCastNode::ASTTypeCastNode(Type type, std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
 	: ASTExprNode(row, col), type(type), expr(expr) {}
+
+ASTTypeNode::ASTTypeNode(TypeDefinition type, unsigned int row, unsigned int col)
+	: ASTExprNode(row, col), type(type) {}
 
 ASTCallOperatorNode::ASTCallOperatorNode(std::shared_ptr<ASTExprNode> expr, unsigned int row, unsigned int col)
 	: ASTExprNode(row, col), expr(expr) {}
@@ -279,6 +282,12 @@ void ASTTypeCastNode::accept(Visitor* v) {
 }
 
 long long ASTTypeCastNode::hash(Visitor* v) { return 0; }
+
+void ASTTypeNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTTypeNode>(shared_from_this()));
+}
+
+long long ASTTypeNode::hash(Visitor* v) { return 0; }
 
 void ASTNullNode::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTNullNode>(shared_from_this()));

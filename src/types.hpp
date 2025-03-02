@@ -105,6 +105,9 @@ namespace core {
 		static bool match_type_function(TypeDefinition ltype, TypeDefinition rtype);
 		static bool match_array_dim(TypeDefinition ltype, TypeDefinition rtype);
 
+		static std::string buid_type_str(const TypeDefinition& type);
+		static std::string buid_struct_type_name(const std::string& type_name_space, const std::string& type_name);
+
 		virtual void reset_ref();
 
 	};
@@ -387,8 +390,6 @@ namespace core {
 		static flx_array do_operation(flx_array lval, flx_array rval, const std::string& op);
 
 		static void normalize_type(TypeDefinition* owner, RuntimeValue* value);
-
-		static std::string build_str_type(RuntimeValue* curr_value);
 
 	};
 

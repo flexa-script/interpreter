@@ -3,6 +3,3 @@ using variables.declaration;
 using variables.assignment;
 using types._typeof;
 using types.is_type;
-
-// will be replaced with asserted tests
-using old_tests;

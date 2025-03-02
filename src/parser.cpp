@@ -1410,6 +1410,21 @@ std::vector<std::shared_ptr<ASTExprNode>> Parser::parse_actual_params() {
 	return parameters;
 }
 
+std::shared_ptr<ASTTypeNode> Parser::parse_type_node() {
+	unsigned int row = current_token.row;
+	unsigned int col = current_token.col;
+	auto type = parse_type();
+	auto array_type = Type::T_UNDEFINED;
+	auto dim = parse_dimension_vector();
+
+	if (dim.size() > 0) {
+		array_type = type;
+		type = Type::T_ARRAY;
+	}
+
+	return std::make_shared<ASTTypeNode>(TypeDefinition(type, array_type, dim, "", ""), row, col);
+}
+
 std::shared_ptr<ASTCallOperatorNode> Parser::parse_call_operator_node() {
 	auto type = current_token.type;
 	unsigned int row = current_token.row;
@@ -1426,13 +1441,12 @@ std::shared_ptr<ASTCallOperatorNode> Parser::parse_call_operator_node() {
 	case TK_FLOAT_TYPE:
 	case TK_CHAR_TYPE:
 	case TK_STRING_TYPE:
-	case TK_FUNCTION_TYPE: {
-		auto id = parse_identifier_accessor();
-		expr = std::make_shared<ASTIdentifierNode>(std::vector{ id }, std::string(), row, col);
+	case TK_FUNCTION_TYPE:
+		expr = parse_type_node();
 		break;
-	}
 	default:
 		expr = parse_expression();
+		break;
 	}
 
 	consume_token(TK_RIGHT_BRACKET);

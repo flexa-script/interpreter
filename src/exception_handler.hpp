@@ -25,8 +25,6 @@ namespace core {
 		static std::string buid_signature(const std::vector<Identifier>& identifier_vector, const std::vector<TypeDefinition*> signature);
 		static std::string buid_member_name(const std::vector<Identifier>& identifier_vector);
 		static std::string buid_signature(const std::string& identifier, const std::vector<TypeDefinition*> signature);
-		static std::string buid_type_str(const TypeDefinition& type);
-		static std::string buid_struct_type_name(const std::string& type_name_space, const std::string& type_name);
 
 	};
 

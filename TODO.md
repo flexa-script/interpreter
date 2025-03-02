@@ -134,9 +134,7 @@
 - [X] Adds single file load with full path
 - [X] Change MetaVisitor to ScopeManager
 - [X] Remove unnecessary evaluate_access_vector uses
-- [ ] Change types as string to expression token types
-    - Create a special type for types?
-    - Currently types are considered strings, change typeof return?
+- [X] Create type node to expression types
 - [X] More concise syntax:
     - [X] Remove `var` from catch statement
     - [X] Remove `;` from struct declaration to match function definition

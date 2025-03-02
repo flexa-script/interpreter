@@ -334,6 +334,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		signature.push_back(new TypeDefinition(current_expression));
 	}
 
+	// handle function return
 	if (astnode->identifier.empty()) {
 		if (!TypeUtils::is_function(returned_expression.type)) {
 			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature));
@@ -342,6 +343,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		current_expression = SemanticValue(Type::T_ANY, 0, 0);
 
 	}
+	// handle subvalue call
 	else if (astnode->identifier_vector.size() > 1) {
 		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, astnode->name_space, astnode->row, astnode->col);
 		idnode->accept(this);
@@ -351,6 +353,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		}
 
 	}
+	// handle regular call
 	else {
 		std::shared_ptr<Scope> curr_scope = get_inner_most_function_scope(current_program, name_space, astnode->identifier, &signature, strict);
 		if (!curr_scope) {
@@ -1072,30 +1075,6 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 
 	if (!curr_scope) {
 		current_expression = SemanticValue();
-		if (astnode->identifier == "bool") {
-			current_expression.type = Type::T_BOOL;
-			return;
-		}
-		else if (astnode->identifier == "int") {
-			current_expression.type = Type::T_INT;
-			return;
-		}
-		else if (astnode->identifier == "float") {
-			current_expression.type = Type::T_FLOAT;
-			return;
-		}
-		else if (astnode->identifier == "char") {
-			current_expression.type = Type::T_CHAR;
-			return;
-		}
-		else if (astnode->identifier == "string") {
-			current_expression.type = Type::T_STRING;
-			return;
-		}
-		else if (astnode->identifier == "function") {
-			current_expression.type = Type::T_FUNCTION;
-			return;
-		}
 
 		curr_scope = get_inner_most_struct_definition_scope(current_program, name_space, astnode->identifier);
 
@@ -1110,8 +1089,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 				return;
 			}
 			else {
-				throw std::runtime_error("identifier '" + astnode->identifier +
-					"' was not declared");
+				throw std::runtime_error("identifier '" + astnode->identifier + "' was not declared");
 			}
 		}
 	}
@@ -1291,6 +1269,13 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTypeCastNode> astnode) {
 
 	current_expression = SemanticValue();
 	current_expression.type = astnode->type;
+}
+
+void SemanticAnalyser::visit(std::shared_ptr<ASTTypeNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+	
+	current_expression = SemanticValue(astnode->type, 0, true, astnode->row, astnode->col);
+
 }
 
 void SemanticAnalyser::visit(std::shared_ptr<ASTNullNode> astnode) {
@@ -1556,7 +1541,7 @@ std::shared_ptr<SemanticValue> SemanticAnalyser::access_value(std::shared_ptr<Se
 		else {
 			std::shared_ptr<Scope> curr_scope = get_inner_most_struct_definition_scope(current_program, name_space, next_value->type_name);
 			if (!curr_scope) {
-				throw std::runtime_error("cannot find '" + ExceptionHandler::buid_struct_type_name(name_space, next_value->type_name) + "' struct");
+				throw std::runtime_error("cannot find '" + TypeDefinition::buid_struct_type_name(name_space, next_value->type_name) + "' struct");
 			}
 			auto type_struct = curr_scope->find_declared_structure_definition(next_value->type_name);
 
@@ -1578,7 +1563,7 @@ std::shared_ptr<SemanticValue> SemanticAnalyser::access_value(std::shared_ptr<Se
 void SemanticAnalyser::check_is_struct_exists(Type type, const std::string& name_space, const std::string& type_name) {
 	if (TypeUtils::is_struct(type)) {
 		if (!get_inner_most_struct_definition_scope(current_program_stack.top(), name_space, type_name)) {
-			throw std::runtime_error("struct '" + ExceptionHandler::buid_struct_type_name(name_space, type_name) + "' was not defined");
+			throw std::runtime_error("struct '" + TypeDefinition::buid_struct_type_name(name_space, type_name) + "' was not defined");
 		}
 	}
 }
