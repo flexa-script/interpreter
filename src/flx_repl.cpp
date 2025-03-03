@@ -10,7 +10,7 @@ using namespace core::analysis;
 using namespace core::runtime;
 
 const std::string FlexaRepl::NAME = "Flexa";
-const std::string FlexaRepl::VER = "v0.0.1";
+const std::string FlexaRepl::VER = "v1.0.0";
 const std::string FlexaRepl::YEAR = "2025";
 
 void FlexaRepl::remove_header(std::string& err) {

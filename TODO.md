@@ -16,6 +16,7 @@
     - [X] Implements struct array-like constructoror
     - [X] Add struct iterating over in foreach
 - [ ] Class
+    - [ ] Implements interface
     - [ ] private starts with `_`
     - [ ] Add properties
         - [ ] `var`
