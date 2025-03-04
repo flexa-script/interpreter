@@ -1,4 +1,4 @@
-using flx.std.structs;
+using flx.std.types;
 using structs.definition;
 
 include namespace flx;

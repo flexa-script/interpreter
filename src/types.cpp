@@ -1387,7 +1387,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			break;
 		}
 
-		if (!TypeDefinition::match_type_array(*lval, *rval)) {
+		if (!TypeDefinition::match_type_array(*lval, *rval) && op == "=") {
 			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 

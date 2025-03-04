@@ -1,4 +1,4 @@
-using flx.std.structs;
+using flx.std.types;
 
 struct Foo_unp {
 	var name: string;

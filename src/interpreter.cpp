@@ -234,8 +234,6 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 		new_value = alocate_value(new RuntimeValue(ptr_value));
 	}
 
-	check_build_array(new_value, variable->dim);
-
 	// handle direct assignment
 	if (astnode->op == "="
 		&& astnode->identifier_vector.size() == 1
@@ -1295,9 +1293,9 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 	const auto& current_program = current_program_stack.top();
 	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
 
-	// try handle regular identifier
-	try {
-		auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, name_space, astnode->identifier));
+	// handle regular identifier
+	if (const auto& id_scope = get_inner_most_variable_scope(current_program, name_space, astnode->identifier)) {
+		auto variable = std::dynamic_pointer_cast<RuntimeVariable>(id_scope->find_declared_variable(astnode->identifier));
 		auto sub_val = access_value(variable->get_value(), astnode->identifier_vector);
 		sub_val->reset_ref();
 
@@ -1316,34 +1314,31 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 		}
 
 	}
-	catch (...) {
-		// handle struct type names for type checks
-		if (get_inner_most_struct_definition_scope(current_program, name_space, astnode->identifier)) {
-			const auto& expr_dim = astnode->identifier_vector[0].access_vector;
-			auto expression_value = alocate_value(new RuntimeValue(astnode->identifier, name_space));
+	// handle struct type names for type checks
+	else if (get_inner_most_struct_definition_scope(current_program, name_space, astnode->identifier)) {
+		const auto& expr_dim = astnode->identifier_vector[0].access_vector;
+		auto expression_value = alocate_value(new RuntimeValue(astnode->identifier, name_space));
 
-			if (expr_dim.size() > 0) {
-				auto dim = evaluate_access_vector(expr_dim);
-				flx_array arr = build_array(dim, expression_value, expr_dim.size() - 1);
-				current_expression_value = alocate_value(new RuntimeValue(arr, Type::T_STRUCT, dim, astnode->identifier, name_space));
-
-			}
-			else {
-				current_expression_value = expression_value;
-
-			}
-
-		}
-		// handle expression function calls
-		else if (get_inner_most_function_scope(current_program, name_space, astnode->identifier, nullptr)) {
-			auto fun = flx_function{ name_space, astnode->identifier };
-			current_expression_value = alocate_value(new RuntimeValue(fun));
+		if (expr_dim.size() > 0) {
+			auto dim = evaluate_access_vector(expr_dim);
+			flx_array arr = build_array(dim, expression_value, expr_dim.size() - 1);
+			current_expression_value = alocate_value(new RuntimeValue(arr, Type::T_STRUCT, dim, astnode->identifier, name_space));
 
 		}
 		else {
-			throw std::runtime_error("identifier '" + astnode->identifier + "' was not declared");
+			current_expression_value = expression_value;
 
 		}
+
+	}
+	// handle expression function calls
+	else if (get_inner_most_function_scope(current_program, name_space, astnode->identifier, nullptr)) {
+		auto fun = flx_function{ name_space, astnode->identifier };
+		current_expression_value = alocate_value(new RuntimeValue(fun));
+
+	}
+	else {
+		throw std::runtime_error("identifier '" + astnode->identifier + "' was not declared");
 
 	}
 
@@ -1663,13 +1658,10 @@ RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const
 		return var->get_value();
 	}
 
-	RuntimeValue* before_value = nullptr;
 	RuntimeValue* value = var->get_value();
 	size_t i = 0;
 
 	while (i < identifier_vector.size()) {
-		before_value = value;
-
 		auto access_vector = evaluate_access_vector(identifier_vector[i].access_vector);
 
 		if (access_vector.size() > 0) {
@@ -1741,13 +1733,13 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 
 		for (s = 0; s < access_vector.size() - 1; ++s) {
 			access_pos = access_vector.at(s);
+			if (access_pos >= current_val.size()) {
+				throw std::runtime_error("invalid array access position");
+			}
 			// break if it is a string, and the string access will be handled in identifier node evaluation
 			if (TypeUtils::is_string(current_val[access_pos]->type)) {
 				has_string_access = true;
 				break;
-			}
-			if (access_pos >= current_val.size()) {
-				throw std::runtime_error("invalid array position access");
 			}
 			current_val = current_val[access_pos]->get_arr();
 		}
@@ -1756,6 +1748,9 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 			return next_value;
 		}
 		access_pos = access_vector.at(s);
+		if (access_pos >= current_val.size()) {
+			throw std::runtime_error("invalid array access position");
+		}
 		next_value = current_val[access_pos];
 	}
 
@@ -1792,8 +1787,10 @@ void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigne
 
 		flx_array rarr = build_array(dim, val, dim.size() - 1);
 
-		new_value->set(rarr, current_expression_array_type.type, dim,
-			current_expression_array_type.type_name,
+		new_value->set(rarr,
+			TypeUtils::is_void(current_expression_array_type.type) ?
+			Type::T_ANY : current_expression_array_type.type,
+			dim, current_expression_array_type.type_name,
 			current_expression_array_type.type_name_space);
 	}
 }

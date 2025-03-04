@@ -40,7 +40,7 @@ std::vector<std::string> const Constants::STD_LIBS = {
 	"flx.std.print",
 	"flx.std.random",
 	"flx.std.strings",
-	"flx.std.structs",
+	"flx.std.types",
 	"flx.std.testing",
 	"flx.std.utils",
 	"flx.std.DSL.FML",
