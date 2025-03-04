@@ -768,13 +768,17 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 
 		astnode->block->accept(this);
 
+		if (exit_from_program) {
+			return;
+		}
+
+		if (return_from_function) {
+			break;
+		}
+
 		// always execute after the block
 		if (astnode->dci[2]) {
 			astnode->dci[2]->accept(this);
-		}
-
-		if (exit_from_program) {
-			return;
 		}
 
 		if (continue_block) {
@@ -783,10 +787,6 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 
 		if (break_block) {
 			break_block = false;
-			break;
-		}
-
-		if (return_from_function) {
 			break;
 		}
 	}
