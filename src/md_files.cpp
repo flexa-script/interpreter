@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #include "md_files.hpp"
 
 #include "interpreter.hpp"
@@ -21,11 +23,15 @@ void ModuleFiles::register_functions(SemanticAnalyser* visitor) {
 	visitor->builtin_functions["write_bytes"] = nullptr;
 	visitor->builtin_functions["is_open"] = nullptr;
 	visitor->builtin_functions["close"] = nullptr;
-	visitor->builtin_functions["del_file"] = nullptr;
-	visitor->builtin_functions["create_file"] = nullptr;
-	visitor->builtin_functions["create_folder"] = nullptr;
-	visitor->builtin_functions["del_folder"] = nullptr;
+
+	visitor->builtin_functions["is_file"] = nullptr;
+	visitor->builtin_functions["is_dir"] = nullptr;
+
+	visitor->builtin_functions["create_dir"] = nullptr;
+	visitor->builtin_functions["list_dir"] = nullptr;
+
 	visitor->builtin_functions["path_exists"] = nullptr;
+	visitor->builtin_functions["delete_path"] = nullptr;
 }
 
 void ModuleFiles::register_functions(Interpreter* visitor) {
@@ -198,24 +204,77 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		}
 		};
 
-	visitor->builtin_functions["del_file"] = [this, visitor]() {
-		throw std::runtime_error("'del_file' was not implemented yet");
+	visitor->builtin_functions["is_file"] = [this, visitor]() {
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+
+		std::filesystem::path path = val->get_s();
+
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::filesystem::is_regular_file(path)));
+
 		};
 
-	visitor->builtin_functions["create_file"] = [this, visitor]() {
-		throw std::runtime_error("'create_file' was not implemented yet");
+	visitor->builtin_functions["is_dir"] = [this, visitor]() {
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+
+		std::filesystem::path path = val->get_s();
+
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::filesystem::is_directory(path)));
+
 		};
 
-	visitor->builtin_functions["del_folder"] = [this, visitor]() {
-		throw std::runtime_error("'del_folder' was not implemented yet");
+	visitor->builtin_functions["create_dir"] = [this, visitor]() {
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+
+		std::filesystem::path path = val->get_s();
+
+		if (!std::filesystem::create_directories(path)) {
+			throw std::runtime_error("cannot create directory");
+		}
+
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
-	visitor->builtin_functions["create_folder"] = [this, visitor]() {
-		throw std::runtime_error("'create_folder' was not implemented yet");
+	visitor->builtin_functions["list_dir"] = [this, visitor]() {
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+
+		std::filesystem::path path = val->get_s();
+
+		flx_array entries;
+
+		for (const auto& entry : std::filesystem::directory_iterator(path)) {
+			entries.push_back(visitor->alocate_value(new RuntimeValue(entry.path().filename().string())));
+		}
+
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(entries));
+
 		};
 
 	visitor->builtin_functions["path_exists"] = [this, visitor]() {
-		throw std::runtime_error("'path_exists' was not implemented yet");
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+
+		std::filesystem::path path = val->get_s();
+
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::filesystem::exists(path)));
+
+		};
+
+	visitor->builtin_functions["delete_path"] = [this, visitor]() {
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+
+		std::filesystem::path path = val->get_s();
+
+		std::filesystem::remove_all(path);
+
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
+
 		};
 
 }

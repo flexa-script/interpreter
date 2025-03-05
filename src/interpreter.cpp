@@ -810,12 +810,11 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
 	switch (current_expression_value->type) {
-	case Type::T_ARRAY: {
-		// if the collection is an array
-		const auto& colletion = current_expression_value->get_arr();
-		for (size_t i = 0; i < colletion.size(); ++i) {
-			auto val = colletion[i];
+	case Type::T_ARRAY: { // if the collection is an array
+		auto colletion = std::make_shared<flx_array>(current_expression_value->get_arr());
+		gc.add_root_container(colletion);
 
+		for (auto val : *colletion) {
 			auto exnode = std::make_shared<ASTValueNode>(val, astnode->row, astnode->col);
 
 			// declare each value at meta block
@@ -851,11 +850,14 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 				break;
 			}
 		}
+
+		gc.remove_root_container(colletion);
+
 		break;
 	}
-	case Type::T_STRING: {
-		// if the collection is a string
-		const auto& colletion = current_expression_value->get_s();
+	case Type::T_STRING: { // if the collection is a string
+		auto colletion = current_expression_value->get_s();
+
 		for (auto val : colletion) {
 			auto exnode = std::make_shared<ASTValueNode>(alocate_value(new RuntimeValue(flx_char(val))), astnode->row, astnode->col);
 
@@ -894,9 +896,12 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		}
 		break;
 	}
-	case Type::T_STRUCT: {
-		// if the collection is a struct
-		const auto& colletion = current_expression_value->get_str();
+	case Type::T_STRUCT: { // if the collection is a struct
+		auto coll_expr = current_expression_value;
+		gc.add_ptr_root(&coll_expr);
+
+		const auto& colletion = coll_expr->get_str();
+
 		for (const auto& val : colletion) {
 			auto key = std::make_shared<ASTLiteralNode<flx_string>>(flx_string(val.first), astnode->row, astnode->col);
 			auto value = std::make_shared<ASTValueNode>(val.second, astnode->row, astnode->col);
@@ -950,6 +955,9 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 				break;
 			}
 		}
+
+		gc.remove_ptr_root(&coll_expr);
+
 		break;
 	}
 	default:
