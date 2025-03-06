@@ -224,7 +224,6 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 
 		// remove scope
 		visitor->scopes[Constants::STD_NAMESPACE].pop_back();
-		visitor->gc.collect();
 
 		};
 

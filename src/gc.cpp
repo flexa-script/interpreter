@@ -162,6 +162,10 @@ void GarbageCollector::sweep() {
 }
 
 void GarbageCollector::collect() {
+	if (heap.size() <= 9999) {
+		return;
+	}
+
 	mark();
 	sweep();
 }

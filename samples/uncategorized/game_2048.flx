@@ -1,45 +1,45 @@
-using cp.core.console;
-using cp.std.random;
-using cp.core.datetime;
+using flx.core.console;
+using flx.std.random;
+using flx.core.datetime;
 
-include namespace cp;
+include namespace flx;
 
 const PRINT_HORIZONTAL_LINE = "+---------------------------------------+";
 const PRINT_BLANK_LINE = "                                       ";
 
 fun set_color(val: int) {
     if (val == 2) {
-        set_console_color(CL_BLACK, CL_BLUE);
-    } else if (val == 4) {
-        set_console_color(CL_BLACK, CL_GREEN);
-    } else if (val == 8) {
-        set_console_color(CL_BLACK, CL_AQUA);
-    } else if (val == 16) {
-        set_console_color(CL_BLACK, CL_RED);
-    } else if (val == 32) {
-        set_console_color(CL_BLACK, CL_PURPLE);
-    } else if (val == 64) {
-        set_console_color(CL_BLACK, CL_YELLOW);
-    } else if (val == 128) {
         set_console_color(CL_BLACK, CL_LIGHT_BLUE);
-    } else if (val == 256) {
+    } else if (val == 4) {
         set_console_color(CL_BLACK, CL_LIGHT_GREEN);
-    } else if (val == 512) {
+    } else if (val == 8) {
         set_console_color(CL_BLACK, CL_LIGHT_AQUA);
-    } else if (val == 1024) {
-        set_console_color(CL_BLACK, CL_LIGHT_RED);
-    } else if (val == 2048) {
-        set_console_color(CL_BLACK, CL_LIGHT_PURPLE);
-    } else if (val == 4096) {
+    } else if (val == 16) {
         set_console_color(CL_BLACK, CL_LIGHT_YELLOW);
-    } else if (val == 8192) {
-        set_console_color(CL_BLACK, CL_GRAY);
-    } else {
+    } else if (val == 32) {
         set_console_color(CL_BLACK, CL_WHITE);
+    } else if (val == 64) {
+        set_console_color(CL_BLACK, CL_GREEN);
+    } else if (val == 128) {
+        set_console_color(CL_BLACK, CL_BLUE);
+    } else if (val == 256) {
+        set_console_color(CL_BLACK, CL_PURPLE);
+    } else if (val == 512) {
+        set_console_color(CL_BLACK, CL_YELLOW);
+    } else if (val == 1024) {
+        set_console_color(CL_BLACK, CL_RED);
+    } else if (val == 2048) {
+        set_console_color(CL_BLACK, CL_RED);
+    } else if (val == 4096) {
+        set_console_color(CL_BLACK, CL_RED);
+    } else if (val == 8192) {
+        set_console_color(CL_BLACK, CL_RED);
+    } else {
+        set_console_color(CL_BLACK, CL_GRAY);
     }
 }
 
-fun print_board(board[4][4]: int) {
+fun print_board(board: int[4][4]) {
     system("cls");
     print(PRINT_HORIZONTAL_LINE);
     for (var i: int = 0; i < 4; i++) {
@@ -55,7 +55,7 @@ fun print_board(board[4][4]: int) {
     print(PRINT_HORIZONTAL_LINE);
 }
 
-fun moves_up(board[4][4]: int) {
+fun moves_up(board: int[4][4]) {
     for (var j: int = 0; j < 4; j++) {
         // moves everything close together
         for (var l: int = 0; l < 3; l++) {
@@ -91,7 +91,7 @@ fun moves_up(board[4][4]: int) {
     }
 }
 
-fun moves_down(board[4][4]: int) {
+fun moves_down(board: int[4][4]) {
     for (var j: int = 0; j < 4; j++) {
         // moves everything close together
         for (var l: int = 0; l < 3; l++) {
@@ -127,7 +127,7 @@ fun moves_down(board[4][4]: int) {
     }
 }
 
-fun moves_left(board[4][4]: int) {
+fun moves_left(board: int[4][4]) {
     for (var i: int = 0; i < 4; i++) {
         // moves everything close together
         for (var l: int = 0; l < 3; l++) {
@@ -163,7 +163,7 @@ fun moves_left(board[4][4]: int) {
     }
 }
 
-fun moves_right(board[4][4]: int) {
+fun moves_right(board: int[4][4]) {
     for (var i: int = 0; i < 4; i++) {
         // moves everything close together
         for (var l: int = 0; l < 3; l++) {
@@ -199,7 +199,7 @@ fun moves_right(board[4][4]: int) {
     }
 }
 
-fun is_valid_move(v: bool, board[4][4]: int, boardcopy[4][4]: int): bool {
+fun is_valid_move(v: bool, board: int[4][4], boardcopy: int[4][4]): bool {
     for (var i: int = 0; i < 4; i++) {
         for (var j: int = 0; j < 4; j++) {
             if (board[i][j] != boardcopy[i][j]) {
@@ -211,7 +211,7 @@ fun is_valid_move(v: bool, board[4][4]: int, boardcopy[4][4]: int): bool {
     return v;
 }
 
-fun counts_zero(board[4][4]: int): int {
+fun counts_zero(board: int[4][4]): int {
     var n: int = 0;
     for (var i: int = 0; i < 4; i++) {
         for (var j: int = 0; j < 4; j++) {
@@ -222,8 +222,8 @@ fun counts_zero(board[4][4]: int): int {
     return n;
 }
 
-fun spawn_random(n: int, board[4][4]: int) {
-    var spawn: int = 1 + (cp::randi() % n);
+fun spawn_random(n: int, board: int[4][4]) {
+    var spawn: int = 1 + (flx::randi() % n);
     var p: int = 0;
     var spawn2: bool = true;
     for (var i: int = 0; i < 4; i++) {
@@ -239,7 +239,7 @@ fun spawn_random(n: int, board[4][4]: int) {
     }
 }
 
-fun is_end_game(c1: bool, c2: bool, board[4][4]: int): bool {
+fun is_end_game(c1: bool, c2: bool, board: int[4][4]): bool {
     c1 = false;
     c2 = true;
     for (var i: int = 0; i < 4; i++) {
@@ -257,10 +257,10 @@ fun is_end_game(c1: bool, c2: bool, board[4][4]: int): bool {
     return c2;
 }
 
-if (this == "__default__") {
+if (this == "main") {
     randomize(create_date_time().timestamp);
     
-    var grid[4][4]: int = { 0 };
+    var grid: int[4][4] = { 0 };
 
     grid[3][3] = 2;
 
@@ -270,7 +270,7 @@ if (this == "__default__") {
     var end: bool = false;
 
     while (not end) {
-        var gridcopy[4][4]: int = { 0 };
+        var gridcopy: int[4][4] = { 0 };
         
         for (var i: int = 0; i < 4; i++) {
             for (var j: int = 0; j < 4; j++) {

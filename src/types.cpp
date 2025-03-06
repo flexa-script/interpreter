@@ -209,7 +209,7 @@ bool TypeDefinition::match_array_dim(TypeDefinition ltype, TypeDefinition rtype)
 	std::vector<unsigned int> var_dim = ltype.dim;
 	std::vector<unsigned int> expr_dim = rtype.dim;
 
-	if ((var_dim.size() == 1 && var_dim[0] == 0) || (expr_dim.size() == 1 && expr_dim[0] == 0)
+	if ((var_dim.size() == 1 && var_dim[0] >= 0 && var_dim[0] <= 1) || (expr_dim.size() == 1 && expr_dim[0] >= 0 && expr_dim[0] <= 1)
 		|| var_dim.size() == 0 || expr_dim.size() == 0) {
 		return true;
 	}

@@ -72,7 +72,7 @@ void Interpreter::visit(std::shared_ptr<ASTUsingNode> astnode) {
 
 	const auto& program = programs[libname];
 
-	// if can't parsed yet
+	// if not parsed yet
 	if (!utils::CollectionUtils::contains(parsed_libs, libname)) {
 		parsed_libs.push_back(libname);
 
@@ -385,7 +385,6 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 			pop_program = true;
 		}
 
-
 	}
 	else if (astnode->identifier_vector.size() > 1) {
 		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, name_space, astnode->row, astnode->col);
@@ -499,6 +498,9 @@ void Interpreter::visit(std::shared_ptr<ASTBuiltinCallNode> astnode) {
 	if (expression_identifier_vector.size() > 0) {
 		current_expression_value = access_value(current_expression_value, expression_identifier_vector);
 	}
+
+	gc.collect();
+
 }
 
 void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
@@ -677,8 +679,8 @@ void Interpreter::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 	}
 
 	scopes[name_space].pop_back();
-	--is_switch;
 	gc.collect();
+	--is_switch;
 }
 
 void Interpreter::visit(std::shared_ptr<ASTElseIfNode> astnode) {
@@ -792,8 +794,8 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 	}
 
 	scopes[name_space].pop_back();
-	--is_loop;
 	gc.collect();
+	--is_loop;
 }
 
 void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
@@ -965,8 +967,8 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	}
 
 	scopes[name_space].pop_back();
-	--is_loop;
 	gc.collect();
+	--is_loop;
 }
 
 void Interpreter::visit(std::shared_ptr<ASTTryCatchNode> astnode) {
@@ -1013,7 +1015,9 @@ void Interpreter::visit(std::shared_ptr<ASTTryCatchNode> astnode) {
 		astnode->catch_block->accept(this);
 		scopes[name_space].pop_back();
 		gc.collect();
+
 	}
+
 }
 
 void Interpreter::visit(std::shared_ptr<ASTThrowNode> astnode) {
