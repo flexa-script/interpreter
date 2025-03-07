@@ -25,15 +25,15 @@ namespace core {
 
 	class Constants {
 	public:
+		std::string static const NAME;
+		std::string static const VER;
+		std::string static const YEAR;
 
 		std::string static const DEFAULT_NAMESPACE;
-
 		std::string static const STD_NAMESPACE;
 
 		std::unordered_map<BuintinFuncs, std::string> static const BUILTIN_NAMES;
-
 		std::vector<std::string> static const STD_LIBS;
-
 		std::unordered_map<std::string, std::shared_ptr<modules::Module>> static const BUILT_IN_LIBS;
 
 	};

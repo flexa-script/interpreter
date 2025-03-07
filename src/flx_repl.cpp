@@ -2,16 +2,13 @@
 
 #include "utils.hpp"
 #include "types.hpp"
+#include "constants.hpp"
 
 using namespace interpreter;
 using namespace core;
 using namespace core::parser;
 using namespace core::analysis;
 using namespace core::runtime;
-
-const std::string FlexaRepl::NAME = "Flexa";
-const std::string FlexaRepl::VER = "v1.0.0";
-const std::string FlexaRepl::YEAR = "2025";
 
 void FlexaRepl::remove_header(std::string& err) {
 	size_t pos = err.rfind(':');
@@ -33,7 +30,7 @@ void FlexaRepl::count_scopes(const std::string& input_line, unsigned int& open_s
 }
 
 int FlexaRepl::execute(const FlexaCliArgs& args) {
-	std::cout << NAME << " " << VER << " [" << YEAR << "]\n";
+	std::cout << Constants::NAME << " " << Constants::VER << " [" << Constants::YEAR << "]\n";
 	std::cout << "Type \"#help\" for more information.\n";
 
 	std::shared_ptr<Scope> semantic_global_scope = std::make_shared<Scope>(nullptr);
@@ -53,7 +50,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 			break;
 		}
 		else if (input_line == "#help") {
-			std::cout << "\n" << "Welcome to " << NAME << " " << VER << "! \n";
+			std::cout << "\n" << "Welcome to " << Constants::NAME << " " << Constants::VER << "! \n";
 			std::cout << "To use this interactive REPL, just type in regular Flexa commands and hit\n";
 			std::cout << "enter. You can also make use of the following commands: \n\n";
 

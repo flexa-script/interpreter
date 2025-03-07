@@ -11,6 +11,12 @@
 
 using namespace core;
 
+std::string const Constants::NAME = "Flexa";
+
+std::string const Constants::VER = "v1.5.0";
+
+std::string const Constants::YEAR = "2025";
+
 std::string const Constants::STD_NAMESPACE = "flx";
 
 std::string const Constants::DEFAULT_NAMESPACE = "__default__";

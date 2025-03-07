@@ -3,8 +3,29 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 namespace utils {
+
+#ifdef __unix__
+
+#ifndef __max
+#define __max(a,b) max(a,b)
+#endif // !__max
+#ifndef __min
+#define __min(a,b) min(a,b)
+#endif // !__min
+
+#elif defined(_WIN32) || defined(WIN32)
+
+#ifndef __max
+#define __max(a,b) (((a) > (b)) ? (a) : (b))
+#endif // !__max
+#ifndef __min
+#define __min(a,b) (((a) < (b)) ? (a) : (b))
+#endif // !__min
+
+#endif // !__unix__
 
 	class StringUtils {
 	public:

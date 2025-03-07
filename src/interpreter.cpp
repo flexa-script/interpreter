@@ -225,7 +225,7 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	// evaluate assignment expression
 	astnode->expr->accept(this);
 
-	auto ptr_value = current_expression_value; // saves the ptr into and variable to use after
+	auto ptr_value = current_expression_value; // saves the ptr into a variable to use after
 
 	// check if it's reference
 	RuntimeValue* new_value = ptr_value;
@@ -344,6 +344,10 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	bool pop_program = false;
 	auto returned_expression_value = current_expression_value;
 
+	if (astnode->identifier == "print") {
+		int x = 0;
+	}
+
 	// adds function args container to root, to prevent values sweep while evaluating each one
 	gc.add_root_container(function_arguments);
 
@@ -365,6 +369,8 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	if (astnode->identifier.empty()) {
 		name_space = returned_expression_value->get_fun().first;
 		identifier = returned_expression_value->get_fun().second;
+
+		// todo: unify
 
 		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
 
@@ -813,11 +819,11 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 
 	switch (current_expression_value->type) {
 	case Type::T_ARRAY: { // if the collection is an array
-		auto colletion = std::make_shared<flx_array>(current_expression_value->get_arr());
-		gc.add_root_container(colletion);
+		auto colletion = current_expression_value->get_arr();
+		//gc.add_root_container(colletion); // TODO
 
-		for (auto val : *colletion) {
-			auto exnode = std::make_shared<ASTValueNode>(val, astnode->row, astnode->col);
+		for (size_t i = 0; i < colletion.size(); ++i) {
+			auto exnode = std::make_shared<ASTValueNode>(colletion[i], astnode->row, astnode->col);
 
 			// declare each value at meta block
 			if (auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl)) {
@@ -853,7 +859,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 			}
 		}
 
-		gc.remove_root_container(colletion);
+		//gc.add_ptr_root(colletion);
 
 		break;
 	}
@@ -1267,7 +1273,8 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 		RuntimeValue* str_value = current_expression_value;
 
 		if (!TypeDefinition::is_any_or_match_type(var_type_struct, *current_expression_value)) {
-			ExceptionHandler::throw_struct_type_err(astnode->name_space, astnode->type_name, var_type_struct);
+			ExceptionHandler::throw_struct_value_assign_type_err(astnode->name_space, astnode->type_name,
+				expr.first, var_type_struct, *current_expression_value);
 		}
 
 		// check if it's a reference
@@ -1763,6 +1770,11 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 		if (access_pos >= current_val.size()) {
 			throw std::runtime_error("invalid array access position");
 		}
+
+		if (!current_val[access_pos]) {
+			current_val[access_pos] = alocate_value(new RuntimeValue(Type::T_VOID));
+		}
+
 		next_value = current_val[access_pos];
 	}
 
@@ -1794,17 +1806,34 @@ void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigne
 	auto arr = new_value->get_arr();
 	auto arrsize = arr.size();
 
-	if (TypeUtils::is_array(new_value->type) && dim.size() > 0 && dim[0] > 0 && arrsize >= 0 && arrsize <= 1) {
-		auto val = arrsize == 1 ? arr[0] : alocate_value(new RuntimeValue(Type::T_VOID));
+	if (TypeUtils::is_array(new_value->type) && dim.size() > 0 && dim[0] > 0) {
 
-		flx_array rarr = build_array(dim, val, dim.size() - 1);
+		switch (arrsize)
+		{
+		case 0: {
+			flx_array rarr = flx_array(dim[0]);
 
-		new_value->set(rarr,
-			TypeUtils::is_void(current_expression_array_type.type) ?
-			Type::T_ANY : current_expression_array_type.type,
-			dim, current_expression_array_type.type_name,
-			current_expression_array_type.type_name_space);
+			new_value->set(rarr, TypeUtils::is_void(new_value->array_type) ? Type::T_ANY : new_value->array_type, dim);
+
+			break;
+		}
+		case 1: {
+			auto val = arrsize == 1 ? arr[0] : alocate_value(new RuntimeValue(Type::T_VOID));
+
+			flx_array rarr = build_array(dim, val, dim.size() - 1);
+
+			new_value->set(rarr,
+				TypeUtils::is_void(current_expression_array_type.type) ?
+				Type::T_ANY : current_expression_array_type.type,
+				dim, current_expression_array_type.type_name,
+				current_expression_array_type.type_name_space);
+
+			break;
+		}
+		}
+
 	}
+
 }
 
 flx_array Interpreter::build_array(const std::vector<unsigned int>& dim, RuntimeValue* init_value, long long i) {
@@ -2043,7 +2072,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 		}
 		auto rest = alocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<unsigned int>{(unsigned int)arr.size()}));
 		auto var = std::make_shared<RuntimeVariable>(rest_name, *rest);
-		gc.add_var_root(var);
+		//gc.add_var_root(var); // TODO: remove from root
 		var->set_value(rest);
 		curr_scope->declare_variable(rest_name, var);
 	}
@@ -2058,9 +2087,9 @@ void Interpreter::build_args(const std::vector<std::string>& args) {
 	auto var = std::make_shared<RuntimeVariable>("args", Type::T_ARRAY, Type::T_STRING, dim, "", "");
 	gc.add_var_root(var);
 
-	auto arr = flx_array();
+	auto arr = flx_array(args.size());
 	for (size_t i = 0; i < args.size(); ++i) {
-		arr.push_back(alocate_value(new RuntimeValue(args[i])));
+		arr[i] = alocate_value(new RuntimeValue(args[i]));
 	}
 
 	var->set_value(alocate_value(new RuntimeValue(arr, Type::T_STRING, dim)));

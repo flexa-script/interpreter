@@ -244,13 +244,20 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 		std::filesystem::path path = val->get_s();
 
-		flx_array entries;
+		std::vector<std::string> files;
 
 		for (const auto& entry : std::filesystem::directory_iterator(path)) {
-			entries.push_back(visitor->alocate_value(new RuntimeValue(entry.path().filename().string())));
+			files.push_back(entry.path().filename().string());
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(entries));
+		flx_array values = flx_array(files.size());
+
+		for (size_t i = 0; i < files.size(); ++i) {
+			const auto& file = files[i];
+			values[i] = visitor->alocate_value(new RuntimeValue(file));
+		}
+
+		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(values));
 
 		};
 
@@ -278,7 +285,3 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		};
 
 }
-
-void ModuleFiles::register_functions(Compiler* visitor) {}
-
-void ModuleFiles::register_functions(VirtualMachine* vm) {}

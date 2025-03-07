@@ -38,11 +38,18 @@ void ExceptionHandler::throw_condition_type_err() {
 
 void ExceptionHandler::throw_struct_type_err(const std::string& type_name_space, const std::string& type_name, const TypeDefinition& type) {
 	throw std::runtime_error("invalid type " + TypeDefinition::buid_type_str(type) +
-		" trying to assign '" + (type_name_space.empty() ? "" : type_name_space + "::") + type_name + "' struct");
+		" trying to assign '" + TypeDefinition::buid_struct_type_name(type_name_space, type_name) + "' struct");
+}
+
+void ExceptionHandler::throw_struct_value_assign_type_err(const std::string& type_name_space, const std::string& type_name,
+	const std::string& identifier, const TypeDefinition& ltype, const TypeDefinition& rtype) {
+	throw std::runtime_error("invalid type " + TypeDefinition::buid_type_str(rtype) +
+		" trying to assign '" + identifier + "' member of '" + TypeDefinition::buid_struct_type_name(type_name_space, type_name) + "' struct, "
+		"expected " + TypeDefinition::buid_type_str(rtype));
 }
 
 void ExceptionHandler::throw_struct_member_err(const std::string& type_name_space, const std::string& type_name, const std::string& variable) {
-	throw std::runtime_error("'" + variable + "' is not a member of '" + (type_name_space.empty() ? "" : type_name_space + "::") + type_name + "'");
+	throw std::runtime_error("'" + variable + "' is not a member of '" + TypeDefinition::buid_struct_type_name(type_name_space, type_name) + "'");
 }
 
 std::string ExceptionHandler::buid_member_name(const std::vector<Identifier>& identifier_vector) {

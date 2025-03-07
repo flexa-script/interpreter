@@ -12,6 +12,14 @@
 
 namespace core {
 
+	class ASTExprNode;
+	class ASTBlockNode;
+
+	class SemanticVariable;
+	class RuntimeVariable;
+
+	class RuntimeValue;
+
 	enum class Type {
 		T_UNDEFINED, T_VOID, T_BOOL, T_INT, T_FLOAT, T_CHAR, T_STRING, T_ARRAY, T_STRUCT, T_ANY, T_FUNCTION
 	};
@@ -32,31 +40,77 @@ namespace core {
 		static bool is_array(Type);
 		static bool is_struct(Type);
 		static bool is_function(Type);
-		static bool is_text(Type);
+		static bool is_textual(Type);
 		static bool is_numeric(Type);
 		static bool is_collection(Type);
 		static bool is_iterable(Type);
 
 	};
 
-	class ASTExprNode;
-	class ASTBlockNode;
-
 	typedef std::function<std::vector<unsigned int>(const std::vector<std::shared_ptr<ASTExprNode>>&)> dim_eval_func_t;
 
-	class RuntimeValue;
-
+	// boolean standarrized type
 	typedef bool flx_bool;
-	typedef int64_t flx_int;
-	typedef long double flx_float;
-	typedef char flx_char;
-	typedef std::string flx_string;
-	typedef std::vector<RuntimeValue*> flx_array;
-	typedef std::unordered_map<std::string, RuntimeValue*> flx_struct;
-	typedef std::pair<std::string, std::string> flx_function;
 
-	class SemanticVariable;
-	class RuntimeVariable;
+	// integer standarized type
+	typedef int64_t flx_int;
+
+	// floating point standarized type
+	typedef long double flx_float;
+
+	// character standarized type
+	typedef char flx_char;
+
+	// string standarized type
+	typedef std::string flx_string;
+
+	// array standarized type
+	class flx_array {
+	private:
+		size_t _size;
+		std::shared_ptr<RuntimeValue*[]> _data;
+
+	public:
+		flx_array();
+		flx_array(size_t size);
+
+		size_t size() const;
+
+		RuntimeValue*& operator[](size_t index);
+		const RuntimeValue* operator[](size_t index) const;
+		
+		void resize(size_t new_size) {
+			if (new_size == _size) return;
+
+			auto new_data = std::shared_ptr<RuntimeValue * []>(new RuntimeValue * [new_size]);
+			size_t min_size = __min(_size, new_size);
+
+			for (size_t i = 0; i < min_size; ++i) {
+				new_data[i] = _data[i];
+			}
+
+			_size = new_size;
+			_data = new_data;
+		}
+
+		void append(flx_array& other) {
+			size_t old_size = _size;
+			resize(_size + other.size());
+
+			for (size_t i = 0; i < other.size(); ++i) {
+				_data[old_size + i] = other[i];
+			}
+		}
+	
+	};
+	//typedef std::pair<RuntimeValue**, size_t> flx_array;
+	//typedef std::vector<RuntimeValue*> flx_array;
+
+	// structure standarized type
+	typedef std::unordered_map<std::string, RuntimeValue*> flx_struct;
+
+	// function standarized type
+	typedef std::pair<std::string, std::string> flx_function;
 
 	class CodePosition {
 	public:

@@ -90,7 +90,7 @@ bool TypeUtils::is_function(Type type) {
 	return TypeUtils::match_type(type, Type::T_FUNCTION);
 }
 
-bool TypeUtils::is_text(Type type) {
+bool TypeUtils::is_textual(Type type) {
 	return TypeUtils::is_string(type) || TypeUtils::is_char(type);
 }
 
@@ -104,6 +104,26 @@ bool TypeUtils::is_collection(Type type) {
 
 bool TypeUtils::is_iterable(Type type) {
 	return TypeUtils::is_collection(type) || TypeUtils::is_struct(type);
+}
+
+flx_array::flx_array()
+	: _size(0), _data(nullptr) {
+}
+
+flx_array::flx_array(size_t size)
+	: _size(size), _data(std::make_unique<RuntimeValue* []>(size)){
+}
+
+size_t flx_array::size() const {
+	return _size;
+}
+
+RuntimeValue*& flx_array::operator[](size_t index) {
+	return _data[index];
+}
+
+const RuntimeValue* flx_array::operator[](size_t index) const {
+	return _data[index];
 }
 
 TypeDefinition::TypeDefinition(Type type, Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& expr_dim,
@@ -181,7 +201,7 @@ bool TypeDefinition::match_type_char(TypeDefinition ltype, TypeDefinition rtype)
 bool TypeDefinition::match_type_string(TypeDefinition ltype, TypeDefinition rtype, bool strict) {
 	return TypeUtils::is_string(ltype.type)
 		&& (strict && TypeUtils::is_string(rtype.type) ||
-			!strict && TypeUtils::is_text(rtype.type));
+			!strict && TypeUtils::is_textual(rtype.type));
 }
 
 bool TypeDefinition::match_type_array(TypeDefinition ltype, TypeDefinition rtype, bool strict, bool strict_array) {
@@ -827,7 +847,9 @@ long double RuntimeValue::value_hash() const {
 		throw std::runtime_error("value is any");
 	case Type::T_ARRAY: {
 		long double h = 0;
-		for (const auto& v : get_arr()) {
+		auto arr = get_arr();
+		for (size_t i = 0; i < arr.size(); ++i) {
+			const auto& v = arr[i];
 			h = h * 31 + v->value_hash();
 		}
 		return h;
@@ -888,8 +910,10 @@ std::vector<runtime::GCObject*> RuntimeValue::get_references() {
 	std::vector<GCObject*> references;
 
 	if (TypeUtils::is_array(type)) {
-		for (const auto& val : get_arr()) {
-			references.push_back(val);
+		auto arr = get_arr();
+		for (size_t i = 0; i < arr.size(); ++i) {
+			const auto& v = arr[i];
+			references.push_back(v);
 		}
 	}
 	if (TypeUtils::is_struct(type)) {
@@ -1029,6 +1053,10 @@ flx_bool RuntimeOperations::equals_array(const flx_array& larr, const flx_array&
 }
 
 std::string RuntimeOperations::parse_value_to_string(const RuntimeValue* value, std::vector<uintptr_t> printed) {
+	if (!value) {
+		return "null";
+	}
+
 	std::string str = "";
 	switch (value->type) {
 	case Type::T_VOID:
@@ -1090,8 +1118,8 @@ std::string RuntimeOperations::parse_array_to_string(const flx_array& arr_value,
 	std::stringstream s = std::stringstream();
 	s << "[";
 	for (auto i = 0; i < arr_value.size(); ++i) {
-		bool isc = TypeUtils::is_char(arr_value[i]->type);
-		bool iss = TypeUtils::is_string(arr_value[i]->type);
+		bool isc = arr_value[i] && TypeUtils::is_char(arr_value[i]->type);
+		bool iss = arr_value[i] && TypeUtils::is_string(arr_value[i]->type);
 
 		if (isc) s << "'";
 		else if (iss) s << '"';
@@ -1392,7 +1420,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		}
 
 		bool match_arr_t = lval->array_type == rval->array_type;
-		if (!match_arr_t && !TypeUtils::is_any(l_var_array_type)) {
+		if (!match_arr_t && !TypeUtils::is_any(l_var_array_type) && !is_expr) {
 			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
@@ -1591,7 +1619,7 @@ flx_array RuntimeOperations::do_operation(flx_array lval, flx_array rval, const 
 		return rval;
 	}
 	else if (op == "+=" || op == "+") {
-		lval.insert(lval.end(), rval.begin(), rval.end());
+		lval.append(rval);
 
 		return lval;
 	}
