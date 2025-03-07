@@ -62,12 +62,9 @@
     <ClInclude Include="ast.hpp" />
     <ClInclude Include="constants.hpp" />
     <ClInclude Include="graphics_utils.hpp" />
-    <ClInclude Include="logging.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="watch.hpp" />
     <ClInclude Include="md_builtin.hpp" />
-    <ClInclude Include="bytecode.hpp" />
-    <ClInclude Include="compiler.hpp" />
     <ClInclude Include="md_console.hpp" />
     <ClInclude Include="md_datetime.hpp" />
     <ClInclude Include="exception_handler.hpp" />
@@ -92,19 +89,14 @@
     <ClInclude Include="md_sound.hpp" />
     <ClInclude Include="token.hpp" />
     <ClInclude Include="types.hpp" />
-    <ClInclude Include="vm.hpp" />
     <ClInclude Include="visitor.hpp" />
-    <ClInclude Include="vm_constants.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ast.cpp" />
     <ClCompile Include="constants.cpp" />
     <ClCompile Include="utils.cpp" />
-    <ClCompile Include="logging.cpp" />
     <ClCompile Include="graphics_utils.cpp" />
     <ClCompile Include="md_builtin.cpp" />
-    <ClCompile Include="bytecode.cpp" />
-    <ClCompile Include="compiler.cpp" />
     <ClCompile Include="md_console.cpp" />
     <ClCompile Include="md_datetime.cpp" />
     <ClCompile Include="exception_handler.cpp" />
@@ -132,9 +124,7 @@
     <ClCompile Include="token_constants.cpp" />
     <ClCompile Include="token_constants.hpp" />
     <ClCompile Include="types.cpp" />
-    <ClCompile Include="vm.cpp" />
     <ClCompile Include="visitor.cpp" />
-    <ClCompile Include="vm_constants.cpp" />
     <ClCompile Include="watch.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <thread>
 #include <conio.h>
 
@@ -6,8 +7,6 @@
 #include "types.hpp"
 #include "semantic_analysis.hpp"
 #include "interpreter.hpp"
-#include "compiler.hpp"
-#include "vm.hpp"
 #include "constants.hpp"
 #include "visitor.hpp"
 
@@ -181,109 +180,6 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 		);
 
 		};
-
-}
-
-void ModuleBuiltin::register_functions(Compiler* visitor) {
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINTLN)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::READ)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::READCH)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::LEN)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::SLEEP)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)] = nullptr;
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)] = nullptr;
-}
-
-void ModuleBuiltin::register_functions(VirtualMachine* vm) {
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)] = [this, vm]() {
-		try {
-			flx_array args;
-			while (vm->param_count-- > 0) {
-				args.push_back(vm->get_stack_top());
-			}
-
-			for (size_t i = 0; i < args.size(); ++i) {
-				std::cout << RuntimeOperations::parse_value_to_string(args[i]);
-			}
-		}
-		catch (...) {}
-
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINTLN), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINTLN)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINTLN)] = [this, vm]() {
-		vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)]();
-		std::cout << std::endl;
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::READ), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::READ)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::READ)] = [this, vm]() {
-		vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)]();
-		std::string line;
-		std::getline(std::cin, line);
-		vm->push_constant(new RuntimeValue(flx_string(std::move(line))));
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::READCH), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::READCH)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::READCH)] = [this, vm]() {
-		while (!_kbhit());
-		char ch = _getch();
-		vm->push_constant(new RuntimeValue(flx_char(ch)));
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::LEN), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::LEN) + "A"]);
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::LEN), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::LEN) + "S"]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::LEN)] = [this, vm]() {
-		auto itval = vm->get_stack_top();
-
-		auto val = new RuntimeValue(Type::T_INT);
-
-		if (TypeUtils::is_array(itval->type)) {
-			val->set(flx_int(itval->get_arr().size()));
-		}
-		else {
-			val->set(flx_int(itval->get_s().size()));
-		}
-
-		vm->push_constant(val);
-
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::SLEEP), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::SLEEP)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::SLEEP)] = [this, vm]() {
-		auto ms = vm->get_stack_top()->get_i();
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM)] = [this, vm]() {
-		auto cmd = vm->get_stack_top()->get_s();
-
-		system(cmd.c_str());
-
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)] = [this, vm]() {
-
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)] = [this, vm]() {
-
-		};
-
-	vm->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)]);
-	vm->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)] = [this, vm]() {
-
-		};
-
 
 }
 

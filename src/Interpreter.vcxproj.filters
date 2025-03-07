@@ -43,12 +43,6 @@
     <Filter Include="Source Files\modules\builtin">
       <UniqueIdentifier>{e6d03087-f488-47a9-ae62-e91af6a68a76}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\core\vm">
-      <UniqueIdentifier>{7aca452e-b161-4886-8c02-cd5e50e7efc9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\core\vm">
-      <UniqueIdentifier>{36e3625e-54ff-4a32-9625-883ffbcf4489}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\core\gc">
       <UniqueIdentifier>{6a357d25-5c1f-481b-a15d-4408888fe872}</UniqueIdentifier>
     </Filter>
@@ -111,15 +105,6 @@
     <ClInclude Include="types.hpp">
       <Filter>Header Files\core</Filter>
     </ClInclude>
-    <ClInclude Include="vm_constants.hpp">
-      <Filter>Header Files\core\vm</Filter>
-    </ClInclude>
-    <ClInclude Include="bytecode.hpp">
-      <Filter>Header Files\core\vm</Filter>
-    </ClInclude>
-    <ClInclude Include="compiler.hpp">
-      <Filter>Header Files\core\visitor</Filter>
-    </ClInclude>
     <ClInclude Include="gc.hpp">
       <Filter>Header Files\core\gc</Filter>
     </ClInclude>
@@ -134,9 +119,6 @@
     </ClInclude>
     <ClInclude Include="namespace_manager.hpp">
       <Filter>Header Files\core\visitor</Filter>
-    </ClInclude>
-    <ClInclude Include="vm.hpp">
-      <Filter>Header Files\core\vm</Filter>
     </ClInclude>
     <ClInclude Include="scope.hpp">
       <Filter>Header Files\core\visitor</Filter>
@@ -162,17 +144,11 @@
     <ClInclude Include="graphics_utils.hpp">
       <Filter>Header Files\modules\flx.core\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="logging.hpp">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
     <ClInclude Include="watch.hpp">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="utils.hpp">
       <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="flx_interpreter.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="flx_repl.hpp">
       <Filter>Header Files</Filter>
@@ -188,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="constants.hpp">
       <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="flx_interpreter.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -227,15 +206,6 @@
     <ClCompile Include="token_constants.hpp">
       <Filter>Header Files\core\lexer</Filter>
     </ClCompile>
-    <ClCompile Include="vm_constants.cpp">
-      <Filter>Source Files\core\vm</Filter>
-    </ClCompile>
-    <ClCompile Include="bytecode.cpp">
-      <Filter>Source Files\core\vm</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler.cpp">
-      <Filter>Source Files\core\visitor</Filter>
-    </ClCompile>
     <ClCompile Include="gc.cpp">
       <Filter>Source Files\core\gc</Filter>
     </ClCompile>
@@ -253,9 +223,6 @@
     </ClCompile>
     <ClCompile Include="scope.cpp">
       <Filter>Source Files\core\visitor</Filter>
-    </ClCompile>
-    <ClCompile Include="vm.cpp">
-      <Filter>Source Files\core\vm</Filter>
     </ClCompile>
     <ClCompile Include="token_constants.cpp">
       <Filter>Source Files\core\lexer</Filter>
@@ -288,9 +255,6 @@
       <Filter>Source Files\modules\flx.core\graphics</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="logging.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
     <ClCompile Include="flx_utils.cpp">

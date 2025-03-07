@@ -98,7 +98,3 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 		};
 
 }
-
-void ModuleConsole::register_functions(Compiler* visitor) {}
-
-void ModuleConsole::register_functions(VirtualMachine* vm) {}

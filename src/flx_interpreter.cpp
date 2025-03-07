@@ -4,11 +4,9 @@
 
 #include "lexer.hpp"
 #include "parser.hpp"
-#include "compiler.hpp"
 #include "utils.hpp"
 #include "dependency_resolver.hpp"
 #include "interpreter.hpp"
-#include "vm.hpp"
 
 using namespace interpreter;
 using namespace core;
@@ -129,17 +127,7 @@ int FlexaInterpreter::interpreter() {
 			result = interpreter.current_expression_value->get_i();
 		}
 		else {
-			// compile
-			Compiler compiler(main_program, programs, args.program_args);
-			compiler.start();
-
-			BytecodeInstruction::write_bytecode_table(compiler.bytecode_program, project_root + "\\" + source_programs[0].name + ".bslt");
-
-			// execute
-			VirtualMachine vm(interpreter_global_scope, compiler.bytecode_program);
-			vm.run();
-
-			result = vm.value_stack->back()->get_i();
+			throw std::runtime_error("not implemented yet");
 		}
 
 		return result;

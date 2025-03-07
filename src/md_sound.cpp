@@ -60,7 +60,3 @@ void ModuleSound::register_functions(Interpreter* visitor) {
 
 		};
 }
-
-void ModuleSound::register_functions(Compiler* visitor) {}
-
-void ModuleSound::register_functions(VirtualMachine* vm) {}

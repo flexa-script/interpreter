@@ -138,7 +138,3 @@ void ModuleInput::stop() {
 		}
 	}
 }
-
-void ModuleInput::register_functions(Compiler* visitor) {}
-
-void ModuleInput::register_functions(VirtualMachine* vm) {}

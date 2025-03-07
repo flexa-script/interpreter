@@ -524,7 +524,3 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 		};
 }
-
-void ModuleGraphics::register_functions(Compiler* visitor) {}
-
-void ModuleGraphics::register_functions(VirtualMachine* vm) {}

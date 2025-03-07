@@ -173,7 +173,3 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 		};
 
 }
-
-void ModuleDateTime::register_functions(Compiler* visitor) {}
-
-void ModuleDateTime::register_functions(VirtualMachine* vm) {}

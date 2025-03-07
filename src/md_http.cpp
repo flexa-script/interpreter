@@ -228,7 +228,3 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 		};
 
 }
-
-void ModuleHTTP::register_functions(Compiler* visitor) {}
-
-void ModuleHTTP::register_functions(VirtualMachine* vm) {}
