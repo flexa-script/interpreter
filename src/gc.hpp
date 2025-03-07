@@ -17,6 +17,7 @@ namespace core {
 			std::vector<RuntimeValue**> ptr_roots;
 			std::vector<std::weak_ptr<GCObject>> var_roots;
 			std::vector<std::weak_ptr<std::vector<RuntimeValue*>>> root_containers;
+			std::vector<std::weak_ptr<flx_array>> array_roots;
 
 		public:
 			GarbageCollector();
@@ -35,6 +36,9 @@ namespace core {
 
 			void add_root_container(std::weak_ptr<std::vector<RuntimeValue*>> root_container);
 			void remove_root_container(std::weak_ptr<std::vector<RuntimeValue*>> root_container);
+
+			void add_array_root(std::weak_ptr<flx_array> array_root);
+			void remove_array_root(std::weak_ptr<flx_array> array_root);
 
 			void mark();
 			void mark_object(GCObject* obj);

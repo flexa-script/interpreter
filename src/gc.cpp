@@ -1,5 +1,6 @@
 #include "gc.hpp"
 
+using namespace core;
 using namespace core::runtime;
 
 GarbageCollector::GarbageCollector() {}
@@ -77,6 +78,25 @@ void GarbageCollector::remove_root_container(std::weak_ptr<std::vector<RuntimeVa
 	}
 }
 
+void GarbageCollector::add_array_root(std::weak_ptr<flx_array> array_root) {
+	array_roots.emplace_back(array_root);
+}
+
+void GarbageCollector::remove_array_root(std::weak_ptr<flx_array> array_root) {
+	if (auto obj_ptr = array_root.lock()) {
+		auto it = std::find_if(array_roots.begin(), array_roots.end(), [&obj_ptr](const std::weak_ptr<flx_array>& root) {
+			if (auto root_ptr = root.lock()) {
+				return root_ptr == obj_ptr;
+			}
+			return false;
+			});
+
+		if (it != array_roots.end()) {
+			array_roots.erase(it);
+		}
+	}
+}
+
 void GarbageCollector::mark() {
 	for (auto it = roots.begin(); it != roots.end();) {
 		if (*it) {
@@ -119,6 +139,19 @@ void GarbageCollector::mark() {
 			it = root_containers.erase(it);
 		}
 	}
+
+	for (auto it = array_roots.begin(); it != array_roots.end();) {
+		if (auto root = it->lock()) {
+			auto ptr_root = root.get();
+			for (size_t i = 0; i < ptr_root->size(); ++i) {
+				mark_object((*ptr_root)[i]);
+			}
+			++it;
+		}
+		else {
+			it = array_roots.erase(it);
+		}
+	}
 }
 
 void GarbageCollector::mark_object(GCObject* obj) {
@@ -156,6 +189,15 @@ void GarbageCollector::sweep() {
 		if (auto root = iterable_ptr.lock()) {
 			for (auto item : *root) {
 				item->marked = false;
+			}
+		}
+	}
+
+	for (const auto& iterable_ptr : array_roots) {
+		if (auto root = iterable_ptr.lock()) {
+			auto ptr_root = root.get();
+			for (size_t i = 0; i < ptr_root->size(); ++i) {
+				(*ptr_root)[i]->marked = false;
 			}
 		}
 	}

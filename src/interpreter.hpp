@@ -69,6 +69,11 @@ namespace core {
 			RuntimeValue* set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<Identifier>& identifier_vector, RuntimeValue* new_value);
 			RuntimeValue* access_value(RuntimeValue* value, const std::vector<Identifier>& identifier_vector, size_t i = 0);
 
+			std::shared_ptr<Scope> find_declared_function(const std::shared_ptr<ASTProgramNode>& current_program, const std::string& name_space,
+				const std::string& identifier, const std::vector<TypeDefinition*>& signature, bool& strict, bool& pop_program);
+			std::shared_ptr<Scope> find_declared_function_strict(const std::shared_ptr<ASTProgramNode>& current_program, const std::string& name_space,
+				const std::string& identifier, const std::vector<TypeDefinition*>& signature, bool& strict, bool& pop_program);
+
 			long long hash(RuntimeValue* value);
 
 			void declare_function_block_parameters(const std::string& name_space);

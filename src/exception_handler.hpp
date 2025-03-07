@@ -23,6 +23,7 @@ namespace core {
 		static void throw_struct_member_err(const std::string& type_name_space, const std::string& type_name, const std::string& variable);
 		static void throw_struct_value_assign_type_err(const std::string& type_name_space, const std::string& type_name,
 			const std::string& identifier, const TypeDefinition& ltype, const TypeDefinition& rtype);
+		static void undeclared_function(const std::string& identifier, const std::vector<TypeDefinition*> signature);
 
 		static std::string buid_signature(const std::vector<Identifier>& identifier_vector, const std::vector<TypeDefinition*> signature);
 		static std::string buid_member_name(const std::vector<Identifier>& identifier_vector);

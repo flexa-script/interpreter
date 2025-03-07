@@ -52,6 +52,11 @@ void ExceptionHandler::throw_struct_member_err(const std::string& type_name_spac
 	throw std::runtime_error("'" + variable + "' is not a member of '" + TypeDefinition::buid_struct_type_name(type_name_space, type_name) + "'");
 }
 
+void ExceptionHandler::undeclared_function(const std::string& identifier, const std::vector<TypeDefinition*> signature) {
+	std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
+	throw std::runtime_error("function '" + func_name + "' was never declared");
+}
+
 std::string ExceptionHandler::buid_member_name(const std::vector<Identifier>& identifier_vector) {
 	std::string ss;
 	

@@ -344,10 +344,6 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	bool pop_program = false;
 	auto returned_expression_value = current_expression_value;
 
-	if (astnode->identifier == "print") {
-		int x = 0;
-	}
-
 	// adds function args container to root, to prevent values sweep while evaluating each one
 	gc.add_root_container(function_arguments);
 
@@ -366,32 +362,19 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 	std::shared_ptr<Scope> func_scope;
 
+	// handle function return
 	if (astnode->identifier.empty()) {
 		name_space = returned_expression_value->get_fun().first;
 		identifier = returned_expression_value->get_fun().second;
 
-		// todo: unify
+		func_scope = find_declared_function_strict(current_program, name_space, identifier, signature, strict, pop_program);
 
-		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
-
-		if (func_scope) {
-			current_program_stack.push(func_scope->owner);
-			pop_program = true;
-		}
-		else {
-			strict = false;
-			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
-
-			if (!func_scope) {
-				std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
-				throw std::runtime_error("function '" + func_name + "' was never declared");
-			}
-
-			current_program_stack.push(func_scope->owner);
-			pop_program = true;
+		if (!func_scope) {
+			ExceptionHandler::undeclared_function(identifier, signature);
 		}
 
 	}
+	// handle subvalue call
 	else if (astnode->identifier_vector.size() > 1) {
 		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, name_space, astnode->row, astnode->col);
 		idnode->accept(this);
@@ -399,70 +382,48 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		name_space = current_expression_value->get_fun().first;
 		identifier = current_expression_value->get_fun().second;
 
-		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
+		func_scope = find_declared_function_strict(current_program, name_space, identifier, signature, strict, pop_program);
 
-		if (func_scope) {
-			current_program_stack.push(func_scope->owner);
-			pop_program = true;
-		}
-		else {
-			strict = false;
-			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
-
-			if (!func_scope) {
-				std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
-				throw std::runtime_error("function '" + func_name + "' was never declared");
-			}
-
-			current_program_stack.push(func_scope->owner);
-			pop_program = true;
+		if (!func_scope) {
+			ExceptionHandler::undeclared_function(identifier, signature);
 		}
 
 	}
+	// handle regular call
 	else {
-		func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
-		if (func_scope) {
-			current_program_stack.push(func_scope->owner);
-			pop_program = true;
-		}
-		else {
-			strict = false;
-			func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
-			if (func_scope) {
-				current_program_stack.push(func_scope->owner);
-				pop_program = true;
+		// check if is a common declared function
+		func_scope = find_declared_function_strict(current_program, name_space, identifier, signature, strict, pop_program);
+
+		if (!func_scope) {
+			// set strict to true again to try find from variable
+			strict = true;
+
+			auto var_scope = get_inner_most_variable_scope(current_program, name_space, identifier);
+
+			// if there's no variable
+			if (!var_scope) {
+				ExceptionHandler::undeclared_function(identifier, signature);
 			}
-			else {
-				auto var_scope = get_inner_most_variable_scope(current_program, name_space, identifier);
 
-				if (!var_scope) {
-					std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
-					throw std::runtime_error("function '" + func_name + "' was never declared");
-				}
+			// gets variable value
+			auto var = std::dynamic_pointer_cast<RuntimeVariable>(var_scope->find_declared_variable(identifier));
+			auto var_value = var->get_value();
 
-				auto var = std::dynamic_pointer_cast<RuntimeVariable>(var_scope->find_declared_variable(identifier));
-				name_space = var->value->get_fun().first;
-				identifier = var->value->get_fun().second;
-
-				func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
-
-				if (func_scope) {
-					current_program_stack.push(func_scope->owner);
-					pop_program = true;
-				}
-				else {
-					strict = false;
-					func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
-
-					if (!func_scope) {
-						std::string func_name = ExceptionHandler::buid_signature(identifier, signature);
-						throw std::runtime_error("function '" + func_name + "' was never declared");
-					}
-
-					current_program_stack.push(func_scope->owner);
-					pop_program = true;
-				}
+			// if variable is not a function type, throw error
+			if (!TypeUtils::is_function(var_value->type)) {
+				ExceptionHandler::undeclared_function(identifier, signature);
 			}
+			
+			// get function namespace and name
+			name_space = var_value->get_fun().first;
+			identifier = var_value->get_fun().second;
+
+			func_scope = find_declared_function_strict(current_program, name_space, identifier, signature, strict, pop_program);
+
+			if (!func_scope) {
+				ExceptionHandler::undeclared_function(identifier, signature);
+			}
+
 		}
 
 	}
@@ -820,7 +781,8 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	switch (current_expression_value->type) {
 	case Type::T_ARRAY: { // if the collection is an array
 		auto colletion = current_expression_value->get_arr();
-		//gc.add_root_container(colletion); // TODO
+		auto root_colletion = std::make_shared<flx_array>(colletion);
+		gc.add_array_root(root_colletion);
 
 		for (size_t i = 0; i < colletion.size(); ++i) {
 			auto exnode = std::make_shared<ASTValueNode>(colletion[i], astnode->row, astnode->col);
@@ -859,7 +821,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 			}
 		}
 
-		//gc.add_ptr_root(colletion);
+		gc.add_array_root(root_colletion);
 
 		break;
 	}
@@ -1800,6 +1762,38 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 	}
 
 	return next_value;
+}
+
+std::shared_ptr<Scope> Interpreter::find_declared_function(const std::shared_ptr<ASTProgramNode>& current_program,
+	const std::string& name_space, const std::string& identifier, const std::vector<TypeDefinition*>& signature,
+	bool& strict, bool& pop_program) {
+
+	std::shared_ptr<Scope> func_scope = get_inner_most_function_scope(current_program, name_space, identifier, &signature, strict);
+
+	if (func_scope) {
+		current_program_stack.push(func_scope->owner);
+		pop_program = true;
+	}
+
+	return func_scope;
+
+}
+
+std::shared_ptr<Scope> Interpreter::find_declared_function_strict(const std::shared_ptr<ASTProgramNode>& current_program,
+	const std::string& name_space, const std::string& identifier, const std::vector<TypeDefinition*>& signature,
+	bool& strict, bool& pop_program) {
+
+	std::shared_ptr<Scope> func_scope = find_declared_function(current_program, name_space, identifier, signature, strict, pop_program);
+
+	if (!func_scope) {
+		strict = false;
+
+		func_scope = find_declared_function(current_program, name_space, identifier, signature, strict, pop_program);
+
+	}
+
+	return func_scope;
+
 }
 
 void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigned int> dim) {
