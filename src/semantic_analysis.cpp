@@ -1273,7 +1273,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTTypeCastNode> astnode) {
 
 void SemanticAnalyser::visit(std::shared_ptr<ASTTypeNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	
+
 	current_expression = SemanticValue(astnode->type, 0, true, astnode->row, astnode->col);
 
 }
@@ -1585,58 +1585,82 @@ std::vector<unsigned int> SemanticAnalyser::evaluate_access_vector(const std::ve
 	return access_vector;
 }
 
+bool is_return_node(std::shared_ptr<ASTNode> astnode) {
+	return std::dynamic_pointer_cast<ASTReturnNode>(astnode)
+		|| std::dynamic_pointer_cast<ASTThrowNode>(astnode);
+}
+
 bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
-	if (std::dynamic_pointer_cast<ASTReturnNode>(astnode)
-		|| std::dynamic_pointer_cast<ASTThrowNode>(astnode)) {
+	if (is_return_node(astnode)) {
 		return true;
 	}
 
-	if (const auto& block = std::dynamic_pointer_cast<ASTBlockNode>(astnode)) {
-		for (const auto& blk_stmt : block->statements) {
-			if (returns(blk_stmt)) {
-				return true;
+	if (const auto& block_node = std::dynamic_pointer_cast<ASTBlockNode>(astnode)) {
+		bool block_return = false;
+		bool sub_return = block_node->statements.size() > 0;
+		for (const auto& block_stmt : block_node->statements) {
+			if (is_return_node(block_stmt) && returns(block_stmt)) {
+				block_return = true;
+				break;
+			}
+
+			if (sub_return) {
+				if (const auto& if_node = std::dynamic_pointer_cast<ASTIfNode>(block_stmt)) {
+					if (if_node->else_block) {
+						if (!returns(if_node->else_block)) {
+							sub_return = false;
+						}
+					}
+					else {
+						sub_return = false;
+					}
+				}
+				else if (!returns(block_stmt)) {
+					sub_return = false;
+				}
 			}
 		}
+		return block_return || sub_return;
 	}
 
-	if (const auto& ifstmt = std::dynamic_pointer_cast<ASTIfNode>(astnode)) {
-		bool ifreturn = returns(ifstmt->if_block);
-		bool elifreturn = true;
-		bool elsereturn = true;
-		for (const auto& elif : ifstmt->else_ifs) {
-			if (!returns(elif->block)) {
-				elifreturn = false;
+	if (const auto& if_node = std::dynamic_pointer_cast<ASTIfNode>(astnode)) {
+		bool if_return = returns(if_node->if_block);
+		bool elif_return = true;
+		bool else_return = true;
+		for (const auto& elif_stmt : if_node->else_ifs) {
+			if (!returns(elif_stmt->block)) {
+				elif_return = false;
 				break;
 			}
 		}
-		if (ifstmt->else_block) {
-			elsereturn = returns(ifstmt->else_block);
+		if (if_node->else_block) {
+			else_return = returns(if_node->else_block);
 		}
-		return ifreturn && elifreturn && elsereturn;
+		return if_return && elif_return && else_return;
 	}
 
-	if (const auto& trycatchstmt = std::dynamic_pointer_cast<ASTTryCatchNode>(astnode)) {
-		return returns(trycatchstmt->try_block) && returns(trycatchstmt->catch_block);
+	if (const auto& trycatch_node = std::dynamic_pointer_cast<ASTTryCatchNode>(astnode)) {
+		return returns(trycatch_node->try_block) && returns(trycatch_node->catch_block);
 	}
 
-	if (const auto& switchstmt = std::dynamic_pointer_cast<ASTSwitchNode>(astnode)) {
-		for (const auto& blk_stmt : switchstmt->statements) {
-			if (returns(blk_stmt)) {
+	if (const auto& switch_node = std::dynamic_pointer_cast<ASTSwitchNode>(astnode)) {
+		for (const auto& switch_stmt : switch_node->statements) {
+			if (returns(switch_stmt)) {
 				return true;
 			}
 		}
 	}
 
-	if (const auto& forstmt = std::dynamic_pointer_cast<ASTForNode>(astnode)) {
-		return returns(forstmt->block);
+	if (const auto& for_node = std::dynamic_pointer_cast<ASTForNode>(astnode)) {
+		return returns(for_node->block);
 	}
 
-	if (const auto& forstmt = std::dynamic_pointer_cast<ASTForEachNode>(astnode)) {
-		return returns(forstmt->block);
+	if (const auto& foreach_node = std::dynamic_pointer_cast<ASTForEachNode>(astnode)) {
+		return returns(foreach_node->block);
 	}
 
-	if (const auto& whilestmt = std::dynamic_pointer_cast<ASTWhileNode>(astnode)) {
-		return returns(whilestmt->block);
+	if (const auto& while_node = std::dynamic_pointer_cast<ASTWhileNode>(astnode)) {
+		return returns(while_node->block);
 	}
 
 	return false;

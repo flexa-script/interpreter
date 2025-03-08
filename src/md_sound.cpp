@@ -28,7 +28,7 @@ void ModuleSound::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["play_sound"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		auto file_path = val->get_s();
 		std::wstring wfile_path = std::wstring(file_path.begin(), file_path.end());
@@ -38,7 +38,7 @@ void ModuleSound::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["play_sound_once"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		auto file_path = val->get_s();
 		std::wstring wfile_path = std::wstring(file_path.begin(), file_path.end());
@@ -53,7 +53,7 @@ void ModuleSound::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["set_volume"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("volume"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("volume"))->get_value();
 
 		unsigned long volume = val->get_f() * 65535;
 		waveOutSetVolume(0, MAKELONG(volume, volume));

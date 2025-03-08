@@ -63,7 +63,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
 		if (scope->already_declared_variable("args")) {
 			auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("args"));
-			auto args = var->value->get_arr();
+			auto args = var->get_value()->get_arr();
 
 			for (size_t i = 0; i < args.size(); ++i) {
 				std::cout << RuntimeOperations::parse_value_to_string(args[i]);
@@ -100,7 +100,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::LEN)] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("it"));
-		auto itval = var->value;
+		auto itval = var->get_value();
 
 		auto val = visitor->alocate_value(new RuntimeValue(Type::T_INT));
 
@@ -121,7 +121,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 
 		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("ms"));
-		auto ms = var->value->get_i();
+		auto ms = var->get_value()->get_i();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 
@@ -133,7 +133,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 
 		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("cmd"));
-		auto cmd = var->value->get_s();
+		auto cmd = var->get_value()->get_s();
 
 		system(cmd.c_str());
 
@@ -142,12 +142,16 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)]);
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)] = [this, visitor]() {
 
+		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
+		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
+		auto check_expr = var->get_value();
+
 		visitor->current_expression_value = visitor->alocate_value(
 			new RuntimeValue(
 				flx_bool(
-					visitor->current_expression_value->ref.lock()
+					check_expr->ref.lock()
 					&& (
-						TypeUtils::is_any(visitor->current_expression_value->ref.lock()->type) || TypeUtils::is_any(visitor->current_expression_value->ref.lock()->array_type)
+						TypeUtils::is_any(check_expr->ref.lock()->type) || TypeUtils::is_any(check_expr->ref.lock()->array_type)
 					)
 				)
 			)
@@ -158,10 +162,14 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)]);
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)] = [this, visitor]() {
 
+		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
+		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
+		auto check_expr = var->get_value();
+
 		visitor->current_expression_value = visitor->alocate_value(
 			new RuntimeValue(
 				flx_bool(
-					TypeUtils::is_array(visitor->current_expression_value->type) || visitor->current_expression_value->dim.size() > 0
+					TypeUtils::is_array(check_expr->type) || check_expr->dim.size() > 0
 				)
 			)
 		);
@@ -171,10 +179,14 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)]);
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)] = [this, visitor]() {
 
+		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
+		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
+		auto check_expr = var->get_value();
+
 		visitor->current_expression_value = visitor->alocate_value(
 			new RuntimeValue(
 				flx_bool(
-					TypeUtils::is_struct(visitor->current_expression_value->type)
+					TypeUtils::is_struct(check_expr->type)
 				)
 			)
 		);

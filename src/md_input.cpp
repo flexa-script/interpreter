@@ -40,7 +40,7 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["is_key_pressed"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("key"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("key"))->get_value();
 
 		int key = val->get_i();
 		bool is_pressed = false;
@@ -56,7 +56,7 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["is_key_released"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("key"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("key"))->get_value();
 
 		int key = val->get_i();
 
@@ -88,8 +88,8 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["set_mouse_position"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->get_value()
 		};
 
 		int x = vals[0]->get_i();
@@ -100,7 +100,7 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["is_mouse_button_pressed"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("button"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("button"))->get_value();
 
 		int button = val->get_i();
 		bool is_pressed = (GetAsyncKeyState(button) & 0x8000) != 0;

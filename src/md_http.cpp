@@ -26,7 +26,7 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["request"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("req"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("req"))->get_value();
 
 		RuntimeValue* config_value = val;
 		if (TypeUtils::is_void(config_value->type)) {

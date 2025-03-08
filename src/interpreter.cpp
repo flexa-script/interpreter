@@ -141,14 +141,15 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 		astnode->expr->accept(this);
 	}
 	else {
-		current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		clear_current_expression();
 	}
 
 	// check if it's reference
 	RuntimeValue* new_value = current_expression_value;
+	clear_current_expression();
 
-	if (!current_expression_value->use_ref) {
-		new_value = alocate_value(new RuntimeValue(current_expression_value));
+	if (!new_value->use_ref) {
+		new_value = alocate_value(new RuntimeValue(new_value));
 	}
 
 	auto ev_dim = evaluate_access_vector(astnode->expr_dim);
@@ -191,6 +192,7 @@ void Interpreter::visit(std::shared_ptr<ASTUnpackedDeclarationNode> astnode) {
 		if (!TypeDefinition::is_any_or_match_type(*astnode, *current_expression_value)) {
 			ExceptionHandler::throw_mismatched_type_err(*astnode, *current_expression_value);
 		}
+		clear_current_expression();
 	}
 
 	for (auto& declaration : astnode->declarations) {
@@ -264,6 +266,7 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 			if (has_string_access) {
 				std::dynamic_pointer_cast<ASTExprNode>(astnode->identifier_vector.back().access_vector[astnode->identifier_vector.back().access_vector.size() - 1])->accept(this);
 				pos = current_expression_value->get_i();
+				clear_current_expression();
 			}
 
 			RuntimeOperations::normalize_type(variable.get(), new_value);
@@ -289,6 +292,7 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 		astnode->expr->accept(this);
 		// keeps return value
 		RuntimeValue* returned_value = current_expression_value;
+		clear_current_expression();
 
 		// check types match
 		if (!TypeDefinition::is_any_or_match_type(curr_func_ret_type, *returned_value)) {
@@ -343,6 +347,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	std::shared_ptr<std::vector<RuntimeValue*>> function_arguments = std::make_shared<std::vector<RuntimeValue*>>();
 	bool pop_program = false;
 	auto returned_expression_value = current_expression_value;
+	clear_current_expression();
 
 	// adds function args container to root, to prevent values sweep while evaluating each one
 	gc.add_root_container(function_arguments);
@@ -352,8 +357,9 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 		// check if it's reference
 		RuntimeValue* pvalue = current_expression_value;
-		if (!current_expression_value->use_ref) {
-			pvalue = alocate_value(new RuntimeValue(current_expression_value));
+		clear_current_expression();
+		if (!pvalue->use_ref) {
+			pvalue = alocate_value(new RuntimeValue(pvalue));
 		}
 
 		function_arguments->push_back(pvalue);
@@ -381,6 +387,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 		name_space = current_expression_value->get_fun().first;
 		identifier = current_expression_value->get_fun().second;
+		clear_current_expression();
 
 		func_scope = find_declared_function_strict(current_program, name_space, identifier, signature, strict, pop_program);
 
@@ -594,6 +601,8 @@ void Interpreter::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 		// here it'll validates if matches type
 		astnode->condition->accept(this);
 		TypeDefinition cond_type = *current_expression_value;
+		clear_current_expression();
+
 		// as all cases have same type (guaranted by constant values in semantic analysis),
 		// we just need to evaluate first case to get type
 		for (const auto& expr : astnode->case_blocks) {
@@ -601,6 +610,7 @@ void Interpreter::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 			break;
 		}
 		TypeDefinition case_type = *current_expression_value;
+		clear_current_expression();
 
 		if (!TypeDefinition::match_type(cond_type, case_type)) {
 			ExceptionHandler::throw_mismatched_type_err(cond_type, case_type);
@@ -662,6 +672,7 @@ void Interpreter::visit(std::shared_ptr<ASTElseIfNode> astnode) {
 	}
 
 	bool result = current_expression_value->get_b();
+	clear_current_expression();
 
 	if (result) {
 		astnode->block->accept(this);
@@ -679,6 +690,7 @@ void Interpreter::visit(std::shared_ptr<ASTIfNode> astnode) {
 	}
 
 	bool result = current_expression_value->get_b();
+	clear_current_expression();
 
 	if (result) {
 		// execute if block
@@ -730,8 +742,11 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 			current_expression_value = alocate_value(new RuntimeValue(flx_bool(true)));
 		}
 
+		auto result = current_expression_value->get_b();
+		clear_current_expression();
+
 		// if result is false
-		if (!current_expression_value->get_b()) {
+		if (!result) {
 			break;
 		}
 
@@ -781,6 +796,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	switch (current_expression_value->type) {
 	case Type::T_ARRAY: { // if the collection is an array
 		auto colletion = current_expression_value->get_arr();
+		clear_current_expression();
 		auto root_colletion = std::make_shared<flx_array>(colletion);
 		gc.add_array_root(root_colletion);
 
@@ -827,6 +843,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	}
 	case Type::T_STRING: { // if the collection is a string
 		auto colletion = current_expression_value->get_s();
+		clear_current_expression();
 
 		for (auto val : colletion) {
 			auto exnode = std::make_shared<ASTValueNode>(alocate_value(new RuntimeValue(flx_char(val))), astnode->row, astnode->col);
@@ -868,6 +885,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 	}
 	case Type::T_STRUCT: { // if the collection is a struct
 		auto coll_expr = current_expression_value;
+		clear_current_expression();
 		gc.add_ptr_root(&coll_expr);
 
 		const auto& colletion = coll_expr->get_str();
@@ -993,19 +1011,22 @@ void Interpreter::visit(std::shared_ptr<ASTThrowNode> astnode) {
 
 	astnode->error->accept(this);
 
+	auto throw_expression = current_expression_value;
+	clear_current_expression();
+
 	// handle Exception struct
-	if (TypeUtils::is_struct(current_expression_value->type)) {
+	if (TypeUtils::is_struct(throw_expression->type)) {
 		// check struct type
-		if (current_expression_value->type_name != "Exception"
-			|| current_expression_value->type_name_space != Constants::STD_NAMESPACE) {
-			throw std::runtime_error("expected flx::Exception not " + TypeDefinition::buid_type_str(*current_expression_value));
+		if (throw_expression->type_name != "Exception"
+			|| throw_expression->type_name_space != Constants::STD_NAMESPACE) {
+			throw std::runtime_error("expected flx::Exception not " + TypeDefinition::buid_type_str(*throw_expression));
 		}
 
-		throw std::exception(current_expression_value->get_str()["error"]->get_s().c_str());
+		throw std::exception(throw_expression->get_str()["error"]->get_s().c_str());
 	}
 	// handle bare string
-	else if (TypeUtils::is_string(current_expression_value->type)) {
-		throw std::runtime_error(current_expression_value->get_s());
+	else if (TypeUtils::is_string(throw_expression->type)) {
+		throw std::runtime_error(throw_expression->get_s());
 	}
 	else {
 		throw std::runtime_error("expected flx::Exception struct or string in throw");
@@ -1031,7 +1052,10 @@ void Interpreter::visit(std::shared_ptr<ASTWhileNode> astnode) {
 			ExceptionHandler::throw_condition_type_err();
 		}
 
-		if (!current_expression_value->get_b()) {
+		auto result = current_expression_value->get_b();
+		clear_current_expression();
+
+		if (!result) {
 			break;
 		}
 
@@ -1063,6 +1087,8 @@ void Interpreter::visit(std::shared_ptr<ASTDoWhileNode> astnode) {
 
 	++is_loop;
 
+	bool result = false;
+
 	do {
 		astnode->block->accept(this);
 
@@ -1086,11 +1112,16 @@ void Interpreter::visit(std::shared_ptr<ASTDoWhileNode> astnode) {
 		// executes condition at the end of block
 		astnode->condition->accept(this);
 
-		if (!TypeUtils::is_bool(current_expression_value->type)) {
+		auto result_expr = current_expression_value;
+		clear_current_expression();
+
+		if (!TypeUtils::is_bool(result_expr->type)) {
 			ExceptionHandler::throw_condition_type_err();
 		}
 
-	} while (current_expression_value->get_b());
+		result = result_expr->get_b();
+
+	} while (result);
 
 	--is_loop;
 }
@@ -1165,23 +1196,25 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 
 		expr->accept(this);
 
+		// check if it's a reference
+		RuntimeValue* arr_value = current_expression_value;
+		clear_current_expression();
+
+		if (!arr_value->use_ref) {
+			arr_value = alocate_value(new RuntimeValue(arr_value));
+		}
+
 		// if it's undefined or array (nested), it's accepts the first type encountered
 		if (TypeUtils::is_undefined(current_expression_array_type.type) || TypeUtils::is_array(current_expression_array_type.type)) {
-			current_expression_array_type = *current_expression_value;
+			current_expression_array_type = *arr_value;
 		}
 		else {
 			// else check if is any array
-			if (!TypeUtils::match_type(current_expression_array_type.type, current_expression_value->type)
-				&& !TypeUtils::is_any(current_expression_value->type) && !TypeUtils::is_void(current_expression_value->type)
-				&& !TypeUtils::is_array(current_expression_value->type)) {
+			if (!TypeUtils::match_type(current_expression_array_type.type, arr_value->type)
+				&& !TypeUtils::is_any(arr_value->type) && !TypeUtils::is_void(arr_value->type)
+				&& !TypeUtils::is_array(arr_value->type)) {
 				current_expression_array_type = TypeDefinition::get_basic(Type::T_ANY);
 			}
-		}
-
-		// check if it's a reference
-		RuntimeValue* arr_value = current_expression_value;
-		if (!current_expression_value->use_ref) {
-			arr_value = alocate_value(new RuntimeValue(current_expression_value));
 		}
 
 		arr[i] = arr_value;
@@ -1233,14 +1266,15 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 		expr.second->accept(this);
 
 		RuntimeValue* str_value = current_expression_value;
+		clear_current_expression();
 
-		if (!TypeDefinition::is_any_or_match_type(var_type_struct, *current_expression_value)) {
+		if (!TypeDefinition::is_any_or_match_type(var_type_struct, *str_value)) {
 			ExceptionHandler::throw_struct_value_assign_type_err(astnode->name_space, astnode->type_name,
-				expr.first, var_type_struct, *current_expression_value);
+				expr.first, var_type_struct, *str_value);
 		}
 
 		// check if it's a reference
-		if (!current_expression_value->use_ref) {
+		if (!str_value->use_ref) {
 			str_value = alocate_value(new RuntimeValue(str_value));
 		}
 
@@ -1330,19 +1364,25 @@ void Interpreter::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 
 	astnode->left->accept(this);
 	RuntimeValue* l_value = current_expression_value;
-	if (!current_expression_value->use_ref) {
-		l_value = alocate_value(new RuntimeValue(current_expression_value));
+	clear_current_expression();
+
+	if (!l_value->use_ref) {
+		l_value = alocate_value(new RuntimeValue(l_value));
 	}
 	gc.add_root(l_value);
 
-	if (TypeUtils::is_bool(current_expression_value->type) && astnode->op == "and" && !current_expression_value->get_b()) {
+	if (TypeUtils::is_bool(l_value->type) && astnode->op == "and" && !l_value->get_b()) {
+		current_expression_value = l_value;
+		gc.remove_root(l_value);
 		return;
 	}
 
 	astnode->right->accept(this);
 	RuntimeValue* r_value = current_expression_value;
-	if (!current_expression_value->use_ref) {
-		r_value = alocate_value(new RuntimeValue(current_expression_value));
+	clear_current_expression();
+
+	if (!r_value->use_ref) {
+		r_value = alocate_value(new RuntimeValue(r_value));
 	}
 	gc.add_root(r_value);
 
@@ -1360,7 +1400,15 @@ void Interpreter::visit(std::shared_ptr<ASTTernaryNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	astnode->condition->accept(this);
-	if (current_expression_value->get_b()) {
+	
+	RuntimeValue* condition_expr = current_expression_value;
+	clear_current_expression();
+
+	if (!TypeUtils::is_bool(condition_expr->type)) {
+		ExceptionHandler::throw_condition_type_err();
+	}
+
+	if (condition_expr->get_b()) {
 		astnode->value_if_true->accept(this);
 	}
 	else {
@@ -1372,12 +1420,19 @@ void Interpreter::visit(std::shared_ptr<ASTInNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	astnode->value->accept(this);
+
 	RuntimeValue expr_val = RuntimeValue(current_expression_value);
+	clear_current_expression();
+
 	astnode->collection->accept(this);
+
+	RuntimeValue coll_val = RuntimeValue(current_expression_value);
+	clear_current_expression();
+
 	bool res = false;
 
-	if (TypeUtils::is_array(current_expression_value->type)) {
-		flx_array expr_col = current_expression_value->get_arr();
+	if (TypeUtils::is_array(coll_val.type)) {
+		flx_array expr_col = coll_val.get_arr();
 
 		for (size_t i = 0; i < expr_col.size(); ++i) {
 			res = RuntimeOperations::equals_value(&expr_val, expr_col[i]);
@@ -1387,13 +1442,13 @@ void Interpreter::visit(std::shared_ptr<ASTInNode> astnode) {
 		}
 	}
 	else {
-		const auto& expr_col = current_expression_value->get_s();
+		const auto& expr_col = coll_val.get_s();
 
 		if (TypeUtils::is_char(expr_val.type)) {
-			res = current_expression_value->get_s().find(expr_val.get_c()) != std::string::npos;
+			res = coll_val.get_s().find(expr_val.get_c()) != std::string::npos;
 		}
 		else {
-			res = current_expression_value->get_s().find(expr_val.get_s()) != std::string::npos;
+			res = expr_val.get_s().find(expr_val.get_s()) != std::string::npos;
 		}
 	}
 
@@ -1604,7 +1659,6 @@ void Interpreter::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 
 	astnode->expr->accept(this);
 
-	//auto str_type = RuntimeOperations::build_str_type(current_expression_value);
 	auto str_type = TypeDefinition::buid_type_str(*current_expression_value);
 
 	auto value = alocate_value(new RuntimeValue(Type::T_STRING));
@@ -1617,7 +1671,6 @@ void Interpreter::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
 
 	astnode->expr->accept(this);
 
-	//auto str_type = RuntimeOperations::build_str_type(current_expression_value);
 	auto str_type = TypeDefinition::buid_type_str(*current_expression_value);
 
 	auto value = alocate_value(new RuntimeValue(Type::T_INT));
@@ -1796,6 +1849,61 @@ std::shared_ptr<Scope> Interpreter::find_declared_function_strict(const std::sha
 
 }
 
+long long Interpreter::hash(RuntimeValue* value) {
+	switch (value->type) {
+	case Type::T_BOOL:
+		return static_cast<long long>(value->get_b());
+	case Type::T_INT:
+		return static_cast<long long>(value->get_i());
+	case Type::T_FLOAT:
+		return static_cast<long long>(value->get_f());
+	case Type::T_CHAR:
+		return static_cast<long long>(value->get_c());
+	case Type::T_STRING:
+		return utils::StringUtils::hashcode(value->get_s());
+	default:
+		throw std::runtime_error("cannot determine type");
+	}
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTExprNode> astnode) {
+	astnode->accept(this);
+	return hash(current_expression_value);
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTValueNode> astnode) {
+	return hash(dynamic_cast<RuntimeValue*>(astnode->value));
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
+	return static_cast<long long>(astnode->val);
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
+	return static_cast<long long>(astnode->val);
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
+	return static_cast<long long>(astnode->val);
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
+	return static_cast<long long>(astnode->val);
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
+	return utils::StringUtils::hashcode(astnode->val);
+}
+
+long long Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
+	auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, name_space, astnode->identifier_vector[0].identifier));
+	auto value = access_value(variable->get_value(), astnode->identifier_vector);
+
+	return hash(value);
+}
+
 void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigned int> dim) {
 	auto arr = new_value->get_arr();
 	auto arrsize = arr.size();
@@ -1896,10 +2004,12 @@ std::vector<unsigned int> Interpreter::evaluate_access_vector(const std::vector<
 		unsigned int val = 0;
 		if (expr) {
 			std::dynamic_pointer_cast<ASTExprNode>(expr)->accept(this);
-			if (!TypeUtils::is_int(current_expression_value->type)) {
+			auto size_expr = current_expression_value;
+			clear_current_expression();
+			if (!TypeUtils::is_int(size_expr->type)) {
 				throw std::runtime_error("array index access must be a integer value");
 			}
-			val = current_expression_value->get_i();
+			val = size_expr->get_i();
 		}
 		access_vector.push_back(val);
 	}
@@ -1910,59 +2020,8 @@ RuntimeValue* Interpreter::alocate_value(RuntimeValue* value) {
 	return dynamic_cast<RuntimeValue*>(gc.allocate(value));
 }
 
-long long Interpreter::hash(RuntimeValue* value) {
-	switch (value->type) {
-	case Type::T_BOOL:
-		return static_cast<long long>(value->get_b());
-	case Type::T_INT:
-		return static_cast<long long>(value->get_i());
-	case Type::T_FLOAT:
-		return static_cast<long long>(value->get_f());
-	case Type::T_CHAR:
-		return static_cast<long long>(value->get_c());
-	case Type::T_STRING:
-		return utils::StringUtils::hashcode(value->get_s());
-	default:
-		throw std::runtime_error("cannot determine type");
-	}
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTExprNode> astnode) {
-	astnode->accept(this);
-	return hash(current_expression_value);
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTValueNode> astnode) {
-	return hash(dynamic_cast<RuntimeValue*>(astnode->value));
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
-	return static_cast<long long>(astnode->val);
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
-	return static_cast<long long>(astnode->val);
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
-	return static_cast<long long>(astnode->val);
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
-	return static_cast<long long>(astnode->val);
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
-	return utils::StringUtils::hashcode(astnode->val);
-}
-
-long long Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
-	const auto& current_program = current_program_stack.top();
-	const auto& name_space = current_program->name_space;
-	auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, name_space, astnode->identifier_vector[0].identifier));
-	auto value = access_value(variable->get_value(), astnode->identifier_vector);
-
-	return hash(value);
+void Interpreter::clear_current_expression() {
+	current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 }
 
 void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value) {
@@ -2054,6 +2113,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 
 			std::dynamic_pointer_cast<ASTExprNode>(decl->default_value)->accept(this);
 			auto current_value = alocate_value(new RuntimeValue(current_expression_value));
+			clear_current_expression();
 
 			declare_function_parameter(curr_scope, decl->identifier, current_value);
 		}

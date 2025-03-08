@@ -39,8 +39,8 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["open"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("mode"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("mode"))->get_value()
 		};
 
 		// initialize file struct values
@@ -66,7 +66,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["read"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
 			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_STRING));
@@ -88,7 +88,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["read_line"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
 			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_STRING));
@@ -105,7 +105,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["read_all_bytes"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
 			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_ARRAY));
@@ -144,8 +144,8 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["write"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("data"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("data"))->get_value()
 		};
 
 		RuntimeValue* cpfile = vals[0];
@@ -158,8 +158,8 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["write_bytes"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("bytes"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("bytes"))->get_value()
 		};
 
 		RuntimeValue* cpfile = vals[0];
@@ -182,7 +182,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["is_open"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
 			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_BOOL));
@@ -193,7 +193,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["close"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
 			if (((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i())) {
@@ -206,7 +206,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["is_file"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		std::filesystem::path path = val->get_s();
 
@@ -216,7 +216,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["is_dir"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		std::filesystem::path path = val->get_s();
 
@@ -226,7 +226,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["create_dir"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		std::filesystem::path path = val->get_s();
 
@@ -240,7 +240,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["list_dir"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		std::filesystem::path path = val->get_s();
 
@@ -263,7 +263,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["path_exists"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		std::filesystem::path path = val->get_s();
 
@@ -273,7 +273,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["delete_path"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		std::filesystem::path path = val->get_s();
 

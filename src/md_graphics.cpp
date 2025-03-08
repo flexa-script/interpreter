@@ -40,9 +40,9 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["create_window"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("title"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("width"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("height"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("title"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("width"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("height"))->get_value()
 		};
 
 		// initialize window struct values
@@ -77,8 +77,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["clear_screen"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -98,7 +98,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["get_current_width"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value();
 
 		RuntimeValue* win = val;
 		if (TypeUtils::is_void(win->type)) {
@@ -113,7 +113,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["get_current_height"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value();
 
 		RuntimeValue* win = val;
 		if (TypeUtils::is_void(win->type)) {
@@ -129,10 +129,10 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["draw_pixel"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -155,12 +155,12 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["draw_line"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x1"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y1"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x2"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y2"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x1"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y1"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x2"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y2"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -185,12 +185,12 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["draw_rect"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("width"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("height"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("width"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("height"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -215,12 +215,12 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["fill_rect"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("width"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("height"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("width"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("height"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -245,11 +245,11 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["draw_circle"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("xc"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("yc"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("radius"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("xc"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("yc"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("radius"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -273,11 +273,11 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["fill_circle"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("xc"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("yc"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("radius"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("xc"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("yc"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("radius"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -301,13 +301,13 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["create_font"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("size"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("name"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("weight"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("italic"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("underline"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("strike"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("orientation"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("size"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("name"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("weight"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("italic"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("underline"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("strike"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("orientation"))->get_value()
 		};
 
 		// initialize image struct values
@@ -346,12 +346,12 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["draw_text"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("text"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("text"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("color"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -384,9 +384,9 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["get_text_size"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("text"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("text"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -420,7 +420,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["load_image"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("path"))->get_value();
 
 		// initialize image struct values
 		RuntimeValue* img = visitor->alocate_value(new RuntimeValue(Type::T_STRUCT));
@@ -450,10 +450,10 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions["draw_image"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("image"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("image"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->get_value()
 		};
 
 		RuntimeValue* win = vals[0];
@@ -480,7 +480,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["update"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value();
 
 		RuntimeValue* win = val;
 		if (!TypeUtils::is_void(win->type)) {
@@ -493,7 +493,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["destroy_window"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value();
 
 		RuntimeValue* win = val;
 		if (!TypeUtils::is_void(win->type)) {
@@ -507,7 +507,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["is_quit"] = [this, visitor]() {
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		RuntimeValue* win = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->value;
+		RuntimeValue* win = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("window"))->get_value();
 		auto val = visitor->alocate_value(new RuntimeValue(Type::T_BOOL));
 		if (!TypeUtils::is_void(win->type)) {
 			if (((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())) {

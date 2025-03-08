@@ -28,7 +28,7 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
-		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("show"))->value;
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("show"))->get_value();
 
 		::ShowWindow(::GetConsoleWindow(), val->get_b());
 		
@@ -44,8 +44,8 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector {
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("background_color"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("foreground_color"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("background_color"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("foreground_color"))->get_value()
 		};
 
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -58,8 +58,8 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("x"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("y"))->get_value()
 		};
 
 		COORD pos = { vals[0]->get_i(), vals[1]->get_i() };
@@ -73,9 +73,9 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_name"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_width"))->value,
-			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_height"))->value
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_name"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_width"))->get_value(),
+			std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font_height"))->get_value()
 		};
 
 		auto nfontname = vals[0]->get_s();

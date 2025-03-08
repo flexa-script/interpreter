@@ -127,6 +127,8 @@
     - [X] 2048
 
 ## Refactoring
+- [ ] Remove unnecessary runtime values allocation (used inside node accept only)
+- [ ] Adds lambda to garbage collector or change lambda to block node?
 - [X] Split ASTTypingNode to more specific responsabilities:
     - [X] is_array, is_struct and is_any will became builtins
     - [X] refid, typeid and typeof will have exclusive ast nodes
@@ -145,7 +147,7 @@
         - `var arr[];` to `var arr: [];`
 
 ## Known bugs
-- [ ] Adds lambda to garbage collector
+- [ ] `typeof(value) == "Dictionary"` works, but `typeof(value) == typeof(Dictionary)` seems not working
 - [X] Can't executes returned function from another function eg: `here_is_returning_a_function()();`
 - [X] Fix HTTP core lib
 - [X] Check behaviour of rest arrays and why join and print haven't the same signature

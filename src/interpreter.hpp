@@ -58,6 +58,8 @@ namespace core {
 			std::vector<uintptr_t> printed;
 
 		private:
+			void clear_current_expression();
+
 			void declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value);
 
 			std::vector<unsigned int> evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector);
