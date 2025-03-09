@@ -89,8 +89,8 @@ ASTThrowNode::ASTThrowNode(std::shared_ptr<ASTExprNode> error, unsigned int row,
 ASTEllipsisNode::ASTEllipsisNode(unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col) {}
 
-ASTForNode::ASTForNode(const std::array<std::shared_ptr<ASTNode>, 3>& dci, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)
-	: ASTStatementNode(row, col), dci(dci), block(block) {}
+ASTForNode::ASTForNode(const std::array<std::shared_ptr<ASTNode>, 3>& expressions, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)
+	: ASTStatementNode(row, col), expressions(expressions), block(block) {}
 
 ASTForEachNode::ASTForEachNode(std::shared_ptr<ASTNode> itdecl, std::shared_ptr<ASTNode> collection, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col)
 	: ASTStatementNode(row, col), itdecl(itdecl), collection(collection), block(block) {}

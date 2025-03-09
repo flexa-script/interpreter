@@ -723,15 +723,15 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 	scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
 	// the first statement executes once at start
-	if (astnode->dci[0]) {
-		astnode->dci[0]->accept(this);
+	if (astnode->expressions[0]) {
+		astnode->expressions[0]->accept(this);
 	}
 
 	for (;;) {
 		// the second statement executes after each block execution
 		// and defines the condition for executing the block
-		if (astnode->dci[1]) {
-			astnode->dci[1]->accept(this);
+		if (astnode->expressions[1]) {
+			astnode->expressions[1]->accept(this);
 
 			if (!TypeUtils::is_bool(current_expression_value->type)) {
 				ExceptionHandler::throw_condition_type_err();
@@ -761,8 +761,8 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 		}
 
 		// always execute after the block
-		if (astnode->dci[2]) {
-			astnode->dci[2]->accept(this);
+		if (astnode->expressions[2]) {
+			astnode->expressions[2]->accept(this);
 		}
 
 		if (continue_block) {

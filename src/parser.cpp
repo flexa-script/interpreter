@@ -454,7 +454,7 @@ std::shared_ptr<ASTThrowNode> Parser::parse_throw_statement() {
 }
 
 std::shared_ptr<ASTForNode> Parser::parse_for_statement() {
-	std::array<std::shared_ptr<ASTNode>, 3> dci = { nullptr };
+	std::array<std::shared_ptr<ASTNode>, 3> expressions = { nullptr };
 	std::shared_ptr<ASTBlockNode> block;
 	unsigned int row = current_token.row;
 	unsigned int col = current_token.col;
@@ -465,7 +465,7 @@ std::shared_ptr<ASTForNode> Parser::parse_for_statement() {
 		if (next_token.type != TK_SEMICOLON && next_token.type != TK_RIGHT_BRACKET) {
 			consume_token();
 			consume_semicolon.push(i < 2);
-			dci[i] = parse_block_statement();
+			expressions[i] = parse_block_statement();
 			consume_semicolon.pop();
 
 		}
@@ -481,7 +481,7 @@ std::shared_ptr<ASTForNode> Parser::parse_for_statement() {
 
 	block = parse_block();
 
-	return std::make_shared<ASTForNode>(dci, block, row, col);
+	return std::make_shared<ASTForNode>(expressions, block, row, col);
 }
 
 std::shared_ptr<ASTNode> Parser::parse_foreach_collection() {

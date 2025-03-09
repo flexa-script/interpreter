@@ -266,10 +266,10 @@ namespace core {
 
 	class ASTForNode : public ASTStatementNode {
 	public:
-		std::array<std::shared_ptr<ASTNode>, 3> dci;
+		std::array<std::shared_ptr<ASTNode>, 3> expressions;
 		std::shared_ptr<ASTBlockNode> block;
 
-		ASTForNode(const std::array<std::shared_ptr<ASTNode>, 3>& dci, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col);
+		ASTForNode(const std::array<std::shared_ptr<ASTNode>, 3>& expressions, std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col);
 
 		void accept(Visitor*) override;
 	};
