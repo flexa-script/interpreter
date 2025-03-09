@@ -34,8 +34,8 @@ std::shared_ptr<ASTProgramNode> Parser::parse_program() {
 
 std::shared_ptr<ASTUsingNode> Parser::parse_using_statement() {
 	auto library = std::vector<std::string>();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	do {
 		consume_token(TK_IDENTIFIER);
@@ -128,8 +128,8 @@ std::shared_ptr<ASTNode> Parser::parse_decl_or_assign_statement() {
 std::shared_ptr<ASTNamespaceManagerNode> Parser::parse_namespace_manager_statement() {
 	auto type = current_token.type;
 	std::string name_space = "";
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token();
 	consume_token(TK_IDENTIFIER);
@@ -157,8 +157,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_statement_expression() {
 }
 
 std::shared_ptr<ASTReturnNode> Parser::parse_return_statement() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	std::shared_ptr<ASTExprNode> expr = nullptr;
 
 	if (next_token.type != TK_SEMICOLON) {
@@ -172,8 +172,8 @@ std::shared_ptr<ASTReturnNode> Parser::parse_return_statement() {
 }
 
 std::shared_ptr<ASTExitNode> Parser::parse_exit_statement() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_BRACKET);
 
@@ -189,8 +189,8 @@ std::shared_ptr<ASTExitNode> Parser::parse_exit_statement() {
 
 std::shared_ptr<ASTEnumNode> Parser::parse_enum_statement() {
 	auto identifiers = std::vector<std::string>();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_CURLY);
 
@@ -211,8 +211,8 @@ std::shared_ptr<ASTEnumNode> Parser::parse_enum_statement() {
 
 std::shared_ptr<ASTBlockNode> Parser::parse_block() {
 	auto statements = std::vector<std::shared_ptr<ASTNode>>();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token();
 	while (current_token.type != TK_RIGHT_CURLY
@@ -232,8 +232,8 @@ std::shared_ptr<ASTBlockNode> Parser::parse_block() {
 
 std::shared_ptr<ASTBlockNode> Parser::parse_struct_block() {
 	auto statements = std::vector<std::shared_ptr<ASTNode>>();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token();
 	while (current_token.type != TK_RIGHT_CURLY
@@ -264,8 +264,8 @@ VariableDefinition* Parser::parse_struct_var_def() {
 	Type type = Type::T_UNDEFINED;
 	TypeDefinition type_def = Type::T_UNDEFINED;
 	std::shared_ptr<ASTExprNode> expr_size;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	identifier = current_token.value;
 
@@ -276,8 +276,8 @@ VariableDefinition* Parser::parse_struct_var_def() {
 };
 
 std::shared_ptr<ASTContinueNode> Parser::parse_continue_statement() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	check_consume_semicolon();
 
@@ -285,8 +285,8 @@ std::shared_ptr<ASTContinueNode> Parser::parse_continue_statement() {
 }
 
 std::shared_ptr<ASTBreakNode> Parser::parse_break_statement() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	check_consume_semicolon();
 
@@ -295,11 +295,11 @@ std::shared_ptr<ASTBreakNode> Parser::parse_break_statement() {
 
 std::shared_ptr<ASTSwitchNode> Parser::parse_switch_statement() {
 	std::shared_ptr<ASTExprNode> condition;
-	std::map<std::shared_ptr<ASTExprNode>, unsigned int> case_blocks = std::map<std::shared_ptr<ASTExprNode>, unsigned int>();
+	std::map<std::shared_ptr<ASTExprNode>, size_t> case_blocks = std::map<std::shared_ptr<ASTExprNode>, size_t>();
 	long default_block = 0;
 	std::vector<std::shared_ptr<ASTNode>> statements = std::vector<std::shared_ptr<ASTNode>>();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_BRACKET);
 	consume_token();
@@ -360,8 +360,8 @@ std::shared_ptr<ASTSwitchNode> Parser::parse_switch_statement() {
 std::shared_ptr<ASTElseIfNode> Parser::parse_else_if_statement() {
 	std::shared_ptr<ASTExprNode> condition;
 	std::shared_ptr<ASTBlockNode> if_block;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_BRACKET);
 	consume_token();
@@ -378,8 +378,8 @@ std::shared_ptr<ASTIfNode> Parser::parse_if_statement() {
 	std::shared_ptr<ASTBlockNode> if_block;
 	std::vector<std::shared_ptr<ASTElseIfNode>> else_ifs = std::vector<std::shared_ptr<ASTElseIfNode>>();
 	std::shared_ptr<ASTBlockNode> else_block = nullptr;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_BRACKET);
 	consume_token();
@@ -414,8 +414,8 @@ std::shared_ptr<ASTTryCatchNode> Parser::parse_try_catch_statement() {
 	std::shared_ptr<ASTStatementNode> decl;
 	std::shared_ptr<ASTBlockNode> try_block;
 	std::shared_ptr<ASTBlockNode> catch_block;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_CURLY);
 	try_block = parse_block();
@@ -442,8 +442,8 @@ std::shared_ptr<ASTTryCatchNode> Parser::parse_try_catch_statement() {
 }
 
 std::shared_ptr<ASTThrowNode> Parser::parse_throw_statement() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	std::shared_ptr<ASTExprNode> expr;
 
 	consume_token();
@@ -456,8 +456,8 @@ std::shared_ptr<ASTThrowNode> Parser::parse_throw_statement() {
 std::shared_ptr<ASTForNode> Parser::parse_for_statement() {
 	std::array<std::shared_ptr<ASTNode>, 3> expressions = { nullptr };
 	std::shared_ptr<ASTBlockNode> block;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_BRACKET);
 
@@ -507,8 +507,8 @@ std::shared_ptr<ASTForEachNode> Parser::parse_foreach_statement() {
 	std::shared_ptr<ASTNode> itdecl;
 	std::shared_ptr<ASTNode> collection;
 	std::shared_ptr<ASTBlockNode> block;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_BRACKET);
 	consume_token();
@@ -528,8 +528,8 @@ std::shared_ptr<ASTForEachNode> Parser::parse_foreach_statement() {
 std::shared_ptr<ASTWhileNode> Parser::parse_while_statement() {
 	std::shared_ptr<ASTExprNode> condition;
 	std::shared_ptr<ASTBlockNode> block;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_BRACKET);
 	consume_token();
@@ -544,8 +544,8 @@ std::shared_ptr<ASTWhileNode> Parser::parse_while_statement() {
 std::shared_ptr<ASTDoWhileNode> Parser::parse_do_while_statement() {
 	std::shared_ptr<ASTExprNode> condition;
 	std::shared_ptr<ASTBlockNode> block;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_LEFT_CURLY);
 	block = parse_block();
@@ -562,8 +562,8 @@ std::shared_ptr<ASTDoWhileNode> Parser::parse_do_while_statement() {
 }
 
 std::shared_ptr<ASTLambdaFunction> Parser::parse_function_expression() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	consume_token();
 	return std::make_shared<ASTLambdaFunction>(parse_function_definition(""), row, col);
 }
@@ -631,8 +631,8 @@ std::shared_ptr<ASTFunctionDefinitionNode> Parser::parse_function_definition(con
 	std::vector<TypeDefinition*> parameters;
 	TypeDefinition type_def;
 	std::shared_ptr<ASTBlockNode> block = nullptr;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	if (next_token.type != TK_RIGHT_BRACKET) {
 		do {
@@ -687,8 +687,8 @@ std::shared_ptr<ASTFunctionDefinitionNode> Parser::parse_function_definition(con
 std::shared_ptr<ASTStructDefinitionNode> Parser::parse_struct_definition() {
 	std::string identifier;
 	std::map<std::string, VariableDefinition> variables;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	consume_token(TK_IDENTIFIER);
 	identifier = current_token.value;
@@ -714,8 +714,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_ternary_expression() {
 	auto expr = parse_in_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	if (next_token.type == TK_QMARK) {
 		std::shared_ptr<ASTExprNode> value_if_true;
@@ -734,8 +734,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_ternary_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_in_expression() {
 	auto expr = parse_logical_or_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	if (next_token.type == TK_IN) {
 		std::shared_ptr<ASTExprNode> collection;
@@ -750,8 +750,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_in_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_logical_or_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_logical_and_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_LOGICAL_OR_OP) {
 		consume_token();
@@ -766,8 +766,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_logical_or_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_logical_and_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_bitwise_or_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_LOGICAL_AND_OP) {
 		consume_token();
@@ -782,8 +782,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_logical_and_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_bitwise_or_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_bitwise_xor_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_BITWISE_OR) {
 		consume_token();
@@ -798,8 +798,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_bitwise_or_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_bitwise_xor_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_bitwise_and_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_BITWISE_XOR) {
 		consume_token();
@@ -814,8 +814,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_bitwise_xor_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_bitwise_and_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_equality_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_BITWISE_AND) {
 		consume_token();
@@ -830,8 +830,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_bitwise_and_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_equality_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_relational_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_EQUALITY_OP) {
 		consume_token();
@@ -846,8 +846,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_equality_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_relational_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_spaceship_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_RELATIONAL_OP) {
 		consume_token();
@@ -862,8 +862,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_relational_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_spaceship_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_bitwise_shift_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_THREE_WAY_OP) {
 		consume_token();
@@ -878,8 +878,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_spaceship_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_bitwise_shift_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_simple_expression();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_BITWISE_SHIFT) {
 		consume_token();
@@ -894,8 +894,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_bitwise_shift_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_simple_expression() {
 	std::shared_ptr<ASTExprNode> lhs = parse_term();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_ADDITIVE_OP) {
 		consume_token();
@@ -910,8 +910,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_simple_expression() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_term() {
 	std::shared_ptr<ASTExprNode> lhs = parse_exponentiation();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_MULTIPLICATIVE_OP) {
 		consume_token();
@@ -926,8 +926,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_term() {
 
 std::shared_ptr<ASTExprNode> Parser::parse_exponentiation() {
 	std::shared_ptr<ASTExprNode> lhs = parse_factor();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	while (next_token.type == TK_EXPONENTIATION_OP) {
 		consume_token();
@@ -941,8 +941,8 @@ std::shared_ptr<ASTExprNode> Parser::parse_exponentiation() {
 }
 
 std::shared_ptr<ASTExprNode> Parser::parse_factor() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	switch (current_token.type) {
 
@@ -1121,8 +1121,8 @@ std::shared_ptr<ASTUnaryExprNode> Parser::parse_increment_expression(std::shared
 }
 
 std::shared_ptr<ASTIdentifierNode> Parser::parse_identifier_node() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	std::string name_space = "";
 	auto identifier_vector = std::vector<Identifier>();
 
@@ -1209,8 +1209,8 @@ std::shared_ptr<ASTDeclarationNode> Parser::parse_declaration_statement() {
 	TypeDefinition type_def;
 	std::string identifier;
 	std::shared_ptr<ASTExprNode> expr;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	bool is_const = current_token.type == TK_CONST;
 
 	consume_token(TK_IDENTIFIER);
@@ -1236,8 +1236,8 @@ std::shared_ptr<ASTDeclarationNode> Parser::parse_param_declaration_statement() 
 	Type type = Type::T_UNDEFINED;
 	TypeDefinition type_def;
 	std::string identifier;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	identifier = current_token.value;
 
@@ -1254,8 +1254,8 @@ std::shared_ptr<ASTStatementNode> Parser::parse_unpacked_declaration_statement()
 		TypeDefinition type_def;
 		std::vector<std::shared_ptr<ASTDeclarationNode>> declarations;
 		std::shared_ptr<ASTExprNode> expr;
-		unsigned int row = current_token.row;
-		unsigned int col = current_token.col;
+		size_t row = current_token.row;
+		size_t col = current_token.col;
 
 		consume_token();
 
@@ -1300,8 +1300,8 @@ std::shared_ptr<ASTStatementNode> Parser::parse_param_statement() {
 		TypeDefinition type_def;
 		std::vector<std::shared_ptr<ASTDeclarationNode>> declarations;
 		std::shared_ptr<ASTExprNode> expr;
-		unsigned int row = current_token.row;
-		unsigned int col = current_token.col;
+		size_t row = current_token.row;
+		size_t col = current_token.col;
 
 		while (next_token.type == TK_IDENTIFIER) {
 			consume_token();
@@ -1331,8 +1331,8 @@ VariableDefinition* Parser::parse_formal_param() {
 	bool is_rest = false;
 	std::string identifier;
 	std::shared_ptr<ASTExprNode> def_expr;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	if (current_token.type == TK_ELLIPSIS) {
 		is_rest = true;
@@ -1376,8 +1376,8 @@ VariableDefinition* Parser::parse_unpacked_formal_param() {
 	Type array_type = Type::T_UNDEFINED;
 	std::shared_ptr<ASTExprNode> def_expr;
 	auto dim = std::vector<std::shared_ptr<ASTExprNode>>();
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	check_current_token(TK_IDENTIFIER);
 
@@ -1411,8 +1411,8 @@ std::vector<std::shared_ptr<ASTExprNode>> Parser::parse_actual_params() {
 }
 
 std::shared_ptr<ASTTypeNode> Parser::parse_type_node() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	auto type = parse_type();
 	auto array_type = Type::T_UNDEFINED;
 	auto dim = parse_dimension_vector();
@@ -1427,8 +1427,8 @@ std::shared_ptr<ASTTypeNode> Parser::parse_type_node() {
 
 std::shared_ptr<ASTCallOperatorNode> Parser::parse_call_operator_node() {
 	auto type = current_token.type;
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	std::shared_ptr<ASTExprNode> expr = nullptr;
 
 	consume_token(TK_LEFT_BRACKET);
@@ -1465,8 +1465,8 @@ std::shared_ptr<ASTCallOperatorNode> Parser::parse_call_operator_node() {
 }
 
 std::shared_ptr<ASTArrayConstructorNode> Parser::parse_array_constructor_node() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	std::vector<std::shared_ptr<ASTExprNode>> values = std::vector<std::shared_ptr<ASTExprNode>>();
 
 	if (next_token.type != TK_RIGHT_CURLY) {
@@ -1488,8 +1488,8 @@ std::shared_ptr<ASTArrayConstructorNode> Parser::parse_array_constructor_node() 
 }
 
 std::shared_ptr<ASTStructConstructorNode> Parser::parse_struct_constructor_node(std::shared_ptr<ASTIdentifierNode> idnode) {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	std::map<std::string, std::shared_ptr<ASTExprNode>> values = std::map<std::string, std::shared_ptr<ASTExprNode>>();
 	std::string name_space = std::move(idnode->name_space);
 	std::string type_name = std::move(idnode->identifier_vector[0].identifier);
@@ -1636,8 +1636,8 @@ flx_string Parser::parse_string_literal() {
 }
 
 std::shared_ptr<ASTTypeCastNode> Parser::parse_type_parse_node() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 	Type type = parse_type();
 
 	consume_token(TK_LEFT_BRACKET);
@@ -1651,8 +1651,8 @@ std::shared_ptr<ASTTypeCastNode> Parser::parse_type_parse_node() {
 }
 
 std::shared_ptr<ASTThisNode> Parser::parse_this_node() {
-	unsigned int row = current_token.row;
-	unsigned int col = current_token.col;
+	size_t row = current_token.row;
+	size_t col = current_token.col;
 
 	return std::make_shared<ASTThisNode>(row, col);
 }

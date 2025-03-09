@@ -29,7 +29,7 @@ namespace core {
 			bool is_switch = false;
 			bool is_loop = false;
 
-			std::vector<unsigned int> current_expression_array_dim;
+			std::vector<size_t> current_expression_array_dim;
 			int current_expression_array_dim_max;
 			TypeDefinition current_expression_array_type;
 			bool is_max;
@@ -41,7 +41,7 @@ namespace core {
 
 			void equals_value(const SemanticValue& lval, const SemanticValue& rval);
 
-			std::vector<unsigned int> evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector);
+			std::vector<size_t> evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector);
 
 			TypeDefinition do_operation(const std::string& op, TypeDefinition lvtype, TypeDefinition ltype, TypeDefinition rtype, bool is_expr = true);
 			std::shared_ptr<SemanticValue> access_value(std::shared_ptr<SemanticValue> value, const std::vector<Identifier>& identifier_vector, size_t i = 0);
@@ -52,7 +52,7 @@ namespace core {
 			bool namespace_exists(const std::string& name_space);
 			void validate_namespace(const std::string& name_space) const;
 
-			void set_curr_pos(unsigned int row, unsigned int col) override;
+			void set_curr_pos(size_t row, size_t col) override;
 			std::string msg_header() override;
 
 		public:
@@ -111,14 +111,14 @@ namespace core {
 			void visit(std::shared_ptr<ASTValueNode>) override;
 			void visit(std::shared_ptr<ASTBuiltinCallNode>) override;
 
-			long long hash(std::shared_ptr<ASTExprNode>) override;
-			long long hash(std::shared_ptr<ASTValueNode>) override;
-			long long hash(std::shared_ptr<ASTIdentifierNode>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_int>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_float>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_char>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_string>>) override;
+			intmax_t hash(std::shared_ptr<ASTExprNode>) override;
+			intmax_t hash(std::shared_ptr<ASTValueNode>) override;
+			intmax_t hash(std::shared_ptr<ASTIdentifierNode>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_int>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_float>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_char>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_string>>) override;
 		};
 
 	}

@@ -543,7 +543,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 
 	scopes[name_space].push_back(std::make_shared<Scope>(current_program));
 
-	astnode->parsed_case_blocks = std::map<unsigned int, unsigned int>();
+	astnode->parsed_case_blocks = std::map<size_t, size_t>();
 
 	astnode->condition->accept(this);
 
@@ -715,13 +715,13 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		SemanticValue* value;
 
 		if (TypeUtils::is_struct(col_value.type)) {
-			value = new SemanticValue(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<unsigned int>(), "Pair", Constants::STD_NAMESPACE, 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Pair", Constants::STD_NAMESPACE, 0, false, astnode->row, astnode->col);
 		}
 		else if (TypeUtils::is_string(col_value.type)) {
-			value = new SemanticValue(Type::T_CHAR, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(Type::T_CHAR, Type::T_UNDEFINED, std::vector<size_t>(), "", "", 0, false, astnode->row, astnode->col);
 		}
 		else if (TypeUtils::is_any(col_value.type)) {
-			value = new SemanticValue(Type::T_ANY, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(Type::T_ANY, Type::T_UNDEFINED, std::vector<size_t>(), "", "", 0, false, astnode->row, astnode->col);
 		}
 		else if (col_value.dim.size() > 1) {
 			auto dim = col_value.dim;
@@ -742,7 +742,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTForEachNode> astnode) {
 			}
 		}
 		else {
-			value = new SemanticValue(col_value.array_type, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(col_value.array_type, Type::T_UNDEFINED, std::vector<size_t>(), "", "", 0, false, astnode->row, astnode->col);
 			if (!current_expression.type_name.empty()) {
 				value->type_name = current_expression.type_name;
 				value->type_name_space = current_expression.type_name_space;
@@ -766,16 +766,16 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		SemanticValue* value;
 
 		if (TypeUtils::is_struct(col_value.type)) {
-			value = new SemanticValue(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<unsigned int>(), "Pair", Constants::STD_NAMESPACE, 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Pair", Constants::STD_NAMESPACE, 0, false, astnode->row, astnode->col);
 		}
 		else if (TypeUtils::is_string(col_value.type)) {
-			value = new SemanticValue(Type::T_CHAR, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(Type::T_CHAR, Type::T_UNDEFINED, std::vector<size_t>(), "", "", 0, false, astnode->row, astnode->col);
 		}
 		else if (TypeUtils::is_any(col_value.type)) {
-			value = new SemanticValue(Type::T_ANY, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(Type::T_ANY, Type::T_UNDEFINED, std::vector<size_t>(), "", "", 0, false, astnode->row, astnode->col);
 		}
 		else {
-			value = new SemanticValue(col_value.array_type, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "", 0, false, astnode->row, astnode->col);
+			value = new SemanticValue(col_value.array_type, Type::T_UNDEFINED, std::vector<size_t>(), "", "", 0, false, astnode->row, astnode->col);
 			if (!current_expression.type_name.empty()) {
 				value->type_name = current_expression.type_name;
 				value->type_name_space = current_expression.type_name_space;
@@ -1014,7 +1014,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 	current_expression.is_const = is_const;
 	--current_expression_array_dim_max;
 	size_t stay = current_expression_array_dim.size() - current_expression_array_dim_max;
-	std::vector<unsigned int> current_expression_array_dim_aux;
+	std::vector<size_t> current_expression_array_dim_aux;
 	size_t curr_dim_i = current_expression_array_dim.size() - 1;
 	for (size_t i = 0; i < stay; ++i) {
 		current_expression_array_dim_aux.emplace(current_expression_array_dim_aux.begin(), current_expression_array_dim.at(curr_dim_i));
@@ -1521,13 +1521,13 @@ std::shared_ptr<SemanticValue> SemanticAnalyser::access_value(std::shared_ptr<Se
 	if (access_vector.size() > 0) {
 		if (access_vector.size() == value->dim.size()) {
 			next_value = std::make_shared<SemanticValue>(next_value->array_type, Type::T_UNDEFINED,
-				std::vector<unsigned int>(), next_value->type_name, next_value->type_name_space,
+				std::vector<size_t>(), next_value->type_name, next_value->type_name_space,
 				0, false, next_value->row, next_value->col);
 		}
 		else if (access_vector.size() - 1 == value->dim.size()
 			&& TypeUtils::is_string(next_value->type)) {
 			next_value = std::make_shared<SemanticValue>(Type::T_CHAR, Type::T_UNDEFINED,
-				std::vector<unsigned int>(), "", "",
+				std::vector<size_t>(), "", "",
 				0, false, next_value->row, next_value->col);
 		}
 	}
@@ -1568,11 +1568,11 @@ void SemanticAnalyser::check_is_struct_exists(Type type, const std::string& name
 	}
 }
 
-std::vector<unsigned int> SemanticAnalyser::evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector) {
-	auto access_vector = std::vector<unsigned int>();
+std::vector<size_t> SemanticAnalyser::evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector) {
+	auto access_vector = std::vector<size_t>();
 	for (const auto& expr_ptr : expr_access_vector) {
 		auto expr = std::dynamic_pointer_cast<ASTExprNode>(expr_ptr);
-		unsigned int val = 0;
+		size_t val = 0;
 		if (expr) {
 			expr->accept(this);
 			val = expr->hash(this);
@@ -1668,7 +1668,7 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 
 void SemanticAnalyser::build_args(const std::vector<std::string>& args) {
 	// program args
-	auto dim = std::vector<unsigned int>{ (unsigned int)args.size() };
+	auto dim = std::vector<size_t>{ (size_t)args.size() };
 	auto var = std::make_shared<SemanticVariable>("args", Type::T_ARRAY, Type::T_STRING, dim, "", "", true, 0, 0);
 	var->set_value(std::make_shared<SemanticValue>(Type::T_ARRAY, Type::T_STRING, dim, "", "", 0, true, 0, 0));
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("args", var);
@@ -1679,42 +1679,42 @@ void SemanticAnalyser::build_args(const std::vector<std::string>& args) {
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("cwd", cwd_var);
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTExprNode> astnode) {
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTExprNode> astnode) {
 	astnode->accept(this);
 	return 0;
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
 	return utils::StringUtils::hashcode(astnode->value);
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
 	astnode->accept(this);
 	return current_expression.hash;
 }
 
-long long SemanticAnalyser::hash(std::shared_ptr<ASTValueNode> astnode) {
+intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTValueNode> astnode) {
 	astnode->accept(this);
 	return current_expression.hash;
 }
 
-void SemanticAnalyser::set_curr_pos(unsigned int row, unsigned int col) {
+void SemanticAnalyser::set_curr_pos(size_t row, size_t col) {
 	curr_row = row;
 	curr_col = col;
 }

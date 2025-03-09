@@ -101,14 +101,14 @@ void DependencyResolver::visit(std::shared_ptr<ASTNullNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTThisNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTValueNode>) {}
 
-long long DependencyResolver::hash(std::shared_ptr<ASTExprNode>) { return 0; }
-long long DependencyResolver::hash(std::shared_ptr<ASTValueNode>) { return 0; }
-long long DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) { return 0; }
-long long DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_int>>) { return 0; }
-long long DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_float>>) { return 0; }
-long long DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_char>>) { return 0; }
-long long DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_string>>) { return 0; }
-long long DependencyResolver::hash(std::shared_ptr<ASTIdentifierNode>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTExprNode>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTValueNode>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_int>>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_float>>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_char>>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTLiteralNode<flx_string>>) { return 0; }
+intmax_t DependencyResolver::hash(std::shared_ptr<ASTIdentifierNode>) { return 0; }
 
-void DependencyResolver::set_curr_pos(unsigned int, unsigned int) {}
+void DependencyResolver::set_curr_pos(size_t, size_t) {}
 std::string DependencyResolver::msg_header() { return ""; }

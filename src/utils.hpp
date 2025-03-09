@@ -42,7 +42,7 @@ namespace utils {
 		static std::vector<std::string> split(const std::string& str, char delimiter);
 		static std::vector<std::string> split(std::string s, const std::string& delimiter);
 
-		static long long hashcode(const std::string& str);
+		static intmax_t hashcode(const std::string& str);
 
 	};
 

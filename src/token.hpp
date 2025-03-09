@@ -11,10 +11,10 @@ namespace core {
 	public:
 		LexTokenType type;
 		std::string value;
-		unsigned int row;
-		unsigned int col;
+		size_t row;
+		size_t col;
 
-		Token(LexTokenType type, const std::string& value, unsigned int row = 0, unsigned int col = 0);
+		Token(LexTokenType type, const std::string& value, size_t row = 0, size_t col = 0);
 		Token();
 
 		static const std::string& token_image(LexTokenType type);

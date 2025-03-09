@@ -13,7 +13,7 @@ namespace core {
 		class Lexer {
 		public:
 			Lexer(const std::string& name, const std::string& source);
-			Lexer(const std::string& name, const std::string& source, unsigned int start_row, unsigned int start_col);
+			Lexer(const std::string& name, const std::string& source, size_t start_row, size_t start_col);
 			~Lexer();
 
 			Token next_token();
@@ -22,11 +22,11 @@ namespace core {
 			char before_char;
 			char current_char;
 			char next_char;
-			unsigned int current_token = 0;
-			long long current_index = 0;
-			unsigned int current_row = 1;
-			unsigned int start_col = 0;
-			unsigned int current_col = 0;
+			size_t current_token = 0;
+			intmax_t current_index = 0;
+			size_t current_row = 1;
+			size_t start_col = 0;
+			size_t current_col = 0;
 			std::string source;
 			std::string name;
 			std::vector<Token> tokens;

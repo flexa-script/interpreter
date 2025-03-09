@@ -40,7 +40,7 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_variable_scope_aux(const std
 	}
 	visited.push_back(name_space);
 
-	long long i;
+	intmax_t i;
 	for (i = scopes[name_space].size() - 1; i >= 0 && !scopes[name_space][i]->already_declared_variable(identifier); i--);
 	if (i < 0) {
 		return nullptr;
@@ -90,7 +90,7 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_struct_definition_scope_aux(
 	}
 	visited.push_back(name_space);
 
-	long long i;
+	intmax_t i;
 	for (i = scopes[name_space].size() - 1; i >= 0 && !scopes[name_space][i]->already_declared_structure_definition(identifier); i--);
 	if (i < 0) {
 		return nullptr;
@@ -140,7 +140,7 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_functions_scope_aux(const st
 	}
 	visited.push_back(name_space);
 
-	long long i;
+	intmax_t i;
 	for (i = scopes[name_space].size() - 1; i >= 0 && !scopes[name_space][i]->already_declared_function_name(identifier); i--);
 	if (i < 0) {
 		return nullptr;
@@ -192,7 +192,7 @@ std::shared_ptr<Scope> ScopeManager::get_inner_most_function_scope_aux(const std
 	}
 	visited.push_back(name_space);
 
-	long long i;
+	intmax_t i;
 	for (i = scopes[name_space].size() - 1; i >= 0 && !scopes[name_space][i]->already_declared_function(identifier, signature, strict); i--);
 	if (i < 0) {
 		return nullptr;

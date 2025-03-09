@@ -47,24 +47,24 @@ namespace core {
 
 	};
 
-	typedef std::function<std::vector<unsigned int>(const std::vector<std::shared_ptr<ASTExprNode>>&)> dim_eval_func_t;
+	typedef std::function<std::vector<size_t>(const std::vector<std::shared_ptr<ASTExprNode>>&)> dim_eval_func_t;
 
-	// boolean standarrized type
+	// boolean standardized type
 	typedef bool flx_bool;
 
-	// integer standarized type
+	// integer standardized type
 	typedef int64_t flx_int;
 
-	// floating point standarized type
+	// floating point standardized type
 	typedef long double flx_float;
 
-	// character standarized type
+	// character standardized type
 	typedef char flx_char;
 
-	// string standarized type
+	// string standardized type
 	typedef std::string flx_string;
 
-	// array standarized type
+	// array standardized type
 	class flx_array {
 	private:
 		size_t _size;
@@ -103,21 +103,19 @@ namespace core {
 		}
 	
 	};
-	//typedef std::pair<RuntimeValue**, size_t> flx_array;
-	//typedef std::vector<RuntimeValue*> flx_array;
 
-	// structure standarized type
+	// structure standardized type
 	typedef std::unordered_map<std::string, RuntimeValue*> flx_struct;
 
-	// function standarized type
+	// function standardized type
 	typedef std::pair<std::string, std::string> flx_function;
 
 	class CodePosition {
 	public:
-		unsigned int row;
-		unsigned int col;
+		size_t row;
+		size_t col;
 
-		CodePosition(unsigned int row = 0, unsigned int col = 0) : row(row), col(col) {};
+		CodePosition(size_t row = 0, size_t col = 0) : row(row), col(col) {};
 	};
 
 	class TypeDefinition {
@@ -127,14 +125,14 @@ namespace core {
 		std::string type_name_space;
 		Type array_type;
 		std::vector<std::shared_ptr<ASTExprNode>> expr_dim;
-		std::vector<unsigned int> dim;
+		std::vector<size_t> dim;
 		bool use_ref;
 
 		TypeDefinition(Type type, Type array_type,
 			const std::vector<std::shared_ptr<ASTExprNode>>& expr_dim,
 			const std::string& type_name, const std::string& type_name_space);
 
-		TypeDefinition(Type type, Type array_type, const std::vector<unsigned int>& dim,
+		TypeDefinition(Type type, Type array_type, const std::vector<size_t>& dim,
 			const std::string& type_name, const std::string& type_name_space);
 
 		TypeDefinition(Type type);
@@ -143,7 +141,7 @@ namespace core {
 
 		static TypeDefinition get_basic(Type type);
 		static TypeDefinition get_array(Type array_type,
-			const std::vector<unsigned int>& dim = std::vector<unsigned int>());
+			const std::vector<size_t>& dim = std::vector<size_t>());
 		static TypeDefinition get_struct(const std::string& type_name,
 			const std::string& type_name_space);
 
@@ -177,23 +175,23 @@ namespace core {
 		VariableDefinition(const std::string& identifier, Type type,
 			const std::string& type_name, const std::string& type_name_space,
 			Type array_type, const std::vector<std::shared_ptr<ASTExprNode>>& dim,
-			std::shared_ptr<ASTExprNode> default_value, bool is_rest, unsigned int row, unsigned int col);
+			std::shared_ptr<ASTExprNode> default_value, bool is_rest, size_t row, size_t col);
 
 		VariableDefinition(const std::string& identifier, Type type,
 			const std::string& type_name, const std::string& type_name_space,
-			Type array_type, const std::vector<unsigned int>& dim,
-			std::shared_ptr<ASTExprNode> default_value, bool is_rest, unsigned int row, unsigned int col);
+			Type array_type, const std::vector<size_t>& dim,
+			std::shared_ptr<ASTExprNode> default_value, bool is_rest, size_t row, size_t col);
 
 		VariableDefinition(const std::string& identifier, Type type,
-			std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, unsigned int row = 0, unsigned int col = 0);
+			std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, size_t row = 0, size_t col = 0);
 
 		VariableDefinition(const std::string& identifier,
-			Type array_type, const std::vector<unsigned int>& dim,
+			Type array_type, const std::vector<size_t>& dim,
 			const std::string& type_name = "", const std::string& type_name_space = "",
-			std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, unsigned int row = 0, unsigned int col = 0);
+			std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, size_t row = 0, size_t col = 0);
 
 		VariableDefinition(const std::string& identifier, const std::string& type_name, const std::string& type_name_space,
-			std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, unsigned int row = 0, unsigned int col = 0);
+			std::shared_ptr<ASTExprNode> default_value = nullptr, bool is_rest = false, size_t row = 0, size_t col = 0);
 	};
 
 	class UnpackedVariableDefinition : public TypeDefinition {
@@ -201,7 +199,7 @@ namespace core {
 		std::vector<VariableDefinition> variables;
 		std::shared_ptr<ASTExprNode> assign_value;
 
-		UnpackedVariableDefinition(Type type, Type array_type, const std::vector<unsigned int>& dim, const std::string& type_name,
+		UnpackedVariableDefinition(Type type, Type array_type, const std::vector<size_t>& dim, const std::string& type_name,
 			const std::string& type_name_space, const std::vector<VariableDefinition>& variables);
 
 		UnpackedVariableDefinition(TypeDefinition type_definition, const std::vector<VariableDefinition>& variables);
@@ -216,17 +214,17 @@ namespace core {
 		bool is_var = false;
 
 		FunctionDefinition(const std::string& identifier, Type type, const std::string& type_name,
-			const std::string& type_name_space, Type array_type, const std::vector<unsigned int>& dim,
+			const std::string& type_name_space, Type array_type, const std::vector<size_t>& dim,
 			const std::vector<TypeDefinition*>& parameters,
-			std::shared_ptr<ASTBlockNode> block, unsigned int row, unsigned int col);
+			std::shared_ptr<ASTBlockNode> block, size_t row, size_t col);
 
 		FunctionDefinition(const std::string& identifier, Type type,
 			const std::vector<TypeDefinition*>& parameters, std::shared_ptr<ASTBlockNode> block);
 
 		FunctionDefinition(const std::string& identifier, Type type, const std::string& type_name,
-			const std::string& type_name_space, Type array_type, const std::vector<unsigned int>& dim);
+			const std::string& type_name_space, Type array_type, const std::vector<size_t>& dim);
 
-		FunctionDefinition(const std::string& identifier, unsigned int row, unsigned int col);
+		FunctionDefinition(const std::string& identifier, size_t row, size_t col);
 
 		FunctionDefinition();
 
@@ -239,7 +237,7 @@ namespace core {
 		std::map<std::string, VariableDefinition> variables;
 
 		StructureDefinition(const std::string& identifier, const std::map<std::string, VariableDefinition>& variables,
-			unsigned int row, unsigned int col);
+			size_t row, size_t col);
 
 		StructureDefinition(const std::string& identifier);
 
@@ -250,7 +248,7 @@ namespace core {
 	public:
 		std::string identifier;
 
-		Variable(const std::string& identifier, Type type, Type array_type, const std::vector<unsigned int>& dim,
+		Variable(const std::string& identifier, Type type, Type array_type, const std::vector<size_t>& dim,
 			const std::string& type_name, const std::string& type_name_space);
 
 		Variable(TypeDefinition value);
@@ -264,7 +262,7 @@ namespace core {
 	public:
 		std::weak_ptr<Variable> ref;
 
-		Value(Type type, Type array_type, std::vector<unsigned int> dim,
+		Value(Type type, Type array_type, std::vector<size_t> dim,
 			const std::string& type_name, const std::string& type_name_space);
 		Value(TypeDefinition type);
 		Value();
@@ -273,25 +271,25 @@ namespace core {
 
 	class SemanticValue : public Value, public CodePosition {
 	public:
-		long long hash;
+		intmax_t hash;
 		bool is_const;
 		bool is_sub;
 
 		// complete constructor
-		SemanticValue(Type type, Type array_type, const std::vector<unsigned int>& dim,
-			const std::string& type_name, const std::string& type_name_space, long long hash,
-			bool is_const, unsigned int row, unsigned int col);
+		SemanticValue(Type type, Type array_type, const std::vector<size_t>& dim,
+			const std::string& type_name, const std::string& type_name_space, intmax_t hash,
+			bool is_const, size_t row, size_t col);
 
-		SemanticValue(Type type, long long hash, bool is_const, unsigned int row, unsigned int col);
+		SemanticValue(Type type, intmax_t hash, bool is_const, size_t row, size_t col);
 
-		SemanticValue(TypeDefinition type_definition, long long hash,
-			bool is_const, unsigned int row, unsigned int col);
+		SemanticValue(TypeDefinition type_definition, intmax_t hash,
+			bool is_const, size_t row, size_t col);
 
-		SemanticValue(VariableDefinition variable_definition, long long hash,
-			bool is_const, unsigned int row, unsigned int col);
+		SemanticValue(VariableDefinition variable_definition, intmax_t hash,
+			bool is_const, size_t row, size_t col);
 
 		// simplified constructor
-		SemanticValue(Type type, unsigned int row, unsigned int col);
+		SemanticValue(Type type, size_t row, size_t col);
 
 		SemanticValue();
 
@@ -303,11 +301,11 @@ namespace core {
 		std::shared_ptr<SemanticValue> value;
 		bool is_const;
 
-		SemanticVariable(const std::string& identifier, Type type, Type array_type, const std::vector<unsigned int>& dim,
+		SemanticVariable(const std::string& identifier, Type type, Type array_type, const std::vector<size_t>& dim,
 			const std::string& type_name, const std::string& type_name_space,
-			bool is_const, unsigned int row, unsigned int col);
+			bool is_const, size_t row, size_t col);
 
-		SemanticVariable(const std::string& identifier, Type type, bool is_const, unsigned int row, unsigned int col);
+		SemanticVariable(const std::string& identifier, Type type, bool is_const, size_t row, size_t col);
 
 		SemanticVariable();
 
@@ -315,7 +313,7 @@ namespace core {
 		std::shared_ptr<SemanticValue> get_value();
 
 		Type def_type(Type type);
-		Type def_array_type(Type array_type, const std::vector<unsigned int>& dim);
+		Type def_array_type(Type array_type, const std::vector<size_t>& dim);
 
 		void reset_ref() override;
 	};
@@ -334,20 +332,20 @@ namespace core {
 	public:
 		RuntimeValue* value_ref = nullptr;
 
-		RuntimeValue(Type type, Type array_type, std::vector<unsigned int> dim,
+		RuntimeValue(Type type, Type array_type, std::vector<size_t> dim,
 			const std::string& type_name, const std::string& type_name_space,
-			unsigned int row, unsigned int col);
+			size_t row, size_t col);
 		RuntimeValue(flx_bool);
 		RuntimeValue(flx_int);
 		RuntimeValue(flx_float);
 		RuntimeValue(flx_char);
 		RuntimeValue(flx_string);
 		RuntimeValue(flx_array);
-		RuntimeValue(flx_array, Type array_type, std::vector<unsigned int> dim, std::string type_name = "", std::string type_name_space = "");
+		RuntimeValue(flx_array, Type array_type, std::vector<size_t> dim, std::string type_name = "", std::string type_name_space = "");
 		RuntimeValue(flx_struct, std::string type_name, std::string type_name_space);
 		RuntimeValue(flx_function);
 		RuntimeValue(Type type);
-		RuntimeValue(Type array_type, std::vector<unsigned int> dim, std::string type_name = "", std::string type_name_space = "");
+		RuntimeValue(Type array_type, std::vector<size_t> dim, std::string type_name = "", std::string type_name_space = "");
 		RuntimeValue(std::string type_name, std::string type_name_space);
 		RuntimeValue(RuntimeValue*);
 		RuntimeValue(TypeDefinition type);
@@ -360,7 +358,7 @@ namespace core {
 		void set(flx_char);
 		void set(flx_string);
 		void set(flx_array);
-		void set(flx_array, Type array_type, std::vector<unsigned int> dim, std::string type_name = "", std::string type_name_space = "");
+		void set(flx_array, Type array_type, std::vector<size_t> dim, std::string type_name = "", std::string type_name_space = "");
 		void set(flx_struct, std::string type_name, std::string type_name_space);
 		void set(flx_function);
 		void set_sub(std::string identifier, RuntimeValue* sub_value);
@@ -387,14 +385,9 @@ namespace core {
 		flx_function* get_raw_fun();
 
 		void set_null();
-		void set_undefined();
 
 		void set_type(Type type);
 		void set_arr_type(Type arr_type);
-
-		bool has_value();
-
-		long double value_hash() const;
 
 		void copy_from(RuntimeValue* value);
 
@@ -408,7 +401,7 @@ namespace core {
 	public:
 		RuntimeValue* value;
 
-		RuntimeVariable(const std::string& identifier, Type type, Type array_type, std::vector<unsigned int> dim,
+		RuntimeVariable(const std::string& identifier, Type type, Type array_type, std::vector<size_t> dim,
 			const std::string& type_name, const std::string& type_name_space);
 		RuntimeVariable(const std::string& identifier, TypeDefinition value);
 		RuntimeVariable();
@@ -418,7 +411,7 @@ namespace core {
 		RuntimeValue* get_value();
 
 		Type def_type(Type type);
-		Type def_array_type(Type array_type, const std::vector<unsigned int>& dim);
+		Type def_array_type(Type array_type, const std::vector<size_t>& dim);
 
 		void reset_ref() override;
 

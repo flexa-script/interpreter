@@ -24,7 +24,7 @@ std::string FlexaRepl::read(const std::string& msg) {
 	return input_line;
 }
 
-void FlexaRepl::count_scopes(const std::string& input_line, unsigned int& open_scopes) {
+void FlexaRepl::count_scopes(const std::string& input_line, size_t& open_scopes) {
 	open_scopes += std::count(input_line.begin(), input_line.end(), '{');
 	open_scopes -= std::count(input_line.begin(), input_line.end(), '}');
 }
@@ -83,7 +83,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 		else {
 			source += input_line;
 
-			unsigned int open_scopes = 0;
+			size_t open_scopes = 0;
 			count_scopes(input_line, open_scopes);
 
 			while (open_scopes) {

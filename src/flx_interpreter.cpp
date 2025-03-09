@@ -119,7 +119,7 @@ int FlexaInterpreter::interpreter() {
 		SemanticAnalyser semantic_analyser(semantic_global_scope, main_program, programs, args.program_args);
 		semantic_analyser.start();
 
-		long long result = 0;
+		intmax_t result = 0;
 
 		if (args.engine == "ast") {
 			Interpreter interpreter(interpreter_global_scope, main_program, programs, args.program_args);

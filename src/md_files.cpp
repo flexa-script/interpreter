@@ -133,7 +133,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 					arr[i] = val;
 				}
 			}
-			rval->set(arr, Type::T_CHAR, std::vector<unsigned int>{(unsigned int)arr.size()});
+			rval->set(arr, Type::T_CHAR, std::vector<size_t>{(size_t)arr.size()});
 
 			delete[] buffer;
 

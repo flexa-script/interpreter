@@ -91,10 +91,10 @@ std::vector<std::string> StringUtils::split(std::string s, const std::string& de
 	return tokens;
 }
 
-long long StringUtils::hashcode(const std::string& str) {
-	long long h = 0;
+intmax_t StringUtils::hashcode(const std::string& str) {
+	intmax_t h = 0;
 	for (size_t i = 0; i < str.size(); ++i) {
-		h = h * 31 + static_cast<long long>(str[i]);
+		h = h * 31 + static_cast<intmax_t>(str[i]);
 	}
 	return h;
 }

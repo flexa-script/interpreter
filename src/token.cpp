@@ -2,7 +2,7 @@
 
 using namespace core;
 
-Token::Token(LexTokenType type, const std::string& value, unsigned int row, unsigned int col)
+Token::Token(LexTokenType type, const std::string& value, size_t row, size_t col)
 	: type(type), value(value), row(row), col(col) {}
 
 Token::Token()

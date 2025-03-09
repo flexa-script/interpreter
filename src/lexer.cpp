@@ -11,7 +11,7 @@ Lexer::Lexer(const std::string& name, const std::string& source)
 	tokenize();
 }
 
-Lexer::Lexer(const std::string& name, const std::string& source, unsigned int start_row, unsigned int start_col)
+Lexer::Lexer(const std::string& name, const std::string& source, size_t start_row, size_t start_col)
 	: source(source), name(name), current_row(start_row), current_col(start_col) {
 	tokenize();
 }

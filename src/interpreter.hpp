@@ -49,7 +49,7 @@ namespace core {
 			bool has_string_access = false;
 			bool exception = false;
 
-			std::vector<unsigned int> current_expression_array_dim;
+			std::vector<size_t> current_expression_array_dim;
 			int current_expression_array_dim_max = 0;
 			TypeDefinition current_expression_array_type;
 			bool is_max = false;
@@ -62,11 +62,11 @@ namespace core {
 
 			void declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value);
 
-			std::vector<unsigned int> evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector);
-			std::vector<unsigned int> calculate_array_dim_size(const flx_array& arr);
+			std::vector<size_t> evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector);
+			std::vector<size_t> calculate_array_dim_size(const flx_array& arr);
 
-			void check_build_array(RuntimeValue* new_value, std::vector<unsigned int> dim);
-			flx_array build_array(const std::vector<unsigned int>& dim, RuntimeValue* init_value, long long i);
+			void check_build_array(RuntimeValue* new_value, std::vector<size_t> dim);
+			flx_array build_array(const std::vector<size_t>& dim, RuntimeValue* init_value, intmax_t i);
 
 			RuntimeValue* set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<Identifier>& identifier_vector, RuntimeValue* new_value);
 			RuntimeValue* access_value(RuntimeValue* value, const std::vector<Identifier>& identifier_vector, size_t i = 0);
@@ -76,12 +76,12 @@ namespace core {
 			std::shared_ptr<Scope> find_declared_function_strict(const std::shared_ptr<ASTProgramNode>& current_program, const std::string& name_space,
 				const std::string& identifier, const std::vector<TypeDefinition*>& signature, bool& strict, bool& pop_program);
 
-			long long hash(RuntimeValue* value);
+			intmax_t hash(RuntimeValue* value);
 
 			void declare_function_block_parameters(const std::string& name_space);
 			void build_args(const std::vector<std::string>& args);
 
-			void set_curr_pos(unsigned int row, unsigned int col) override;
+			void set_curr_pos(size_t row, size_t col) override;
 			std::string msg_header() override;
 
 		public:
@@ -141,14 +141,14 @@ namespace core {
 			void visit(std::shared_ptr<ASTValueNode>) override;
 			void visit(std::shared_ptr<ASTBuiltinCallNode>) override;
 
-			long long hash(std::shared_ptr<ASTExprNode>) override;
-			long long hash(std::shared_ptr<ASTValueNode>) override;
-			long long hash(std::shared_ptr<ASTIdentifierNode>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_int>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_float>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_char>>) override;
-			long long hash(std::shared_ptr<ASTLiteralNode<flx_string>>) override;
+			intmax_t hash(std::shared_ptr<ASTExprNode>) override;
+			intmax_t hash(std::shared_ptr<ASTValueNode>) override;
+			intmax_t hash(std::shared_ptr<ASTIdentifierNode>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_int>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_float>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_char>>) override;
+			intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_string>>) override;
 
 		};
 

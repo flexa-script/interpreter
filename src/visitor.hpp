@@ -70,7 +70,7 @@ namespace core {
 
 		Visitor(const std::map<std::string, std::shared_ptr<ASTProgramNode>>& programs, std::shared_ptr<ASTProgramNode> main_program, const std::string& current_this_name);
 
-		virtual void set_curr_pos(unsigned int row, unsigned int col) = 0;
+		virtual void set_curr_pos(size_t row, size_t col) = 0;
 		virtual std::string msg_header() = 0;
 
 		virtual void visit(std::shared_ptr<ASTProgramNode>) = 0;
@@ -122,14 +122,14 @@ namespace core {
 		virtual void visit(std::shared_ptr<ASTValueNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTBuiltinCallNode>) = 0;
 
-		virtual long long hash(std::shared_ptr<ASTExprNode>) = 0;
-		virtual long long hash(std::shared_ptr<ASTValueNode>) = 0;
-		virtual long long hash(std::shared_ptr<ASTIdentifierNode>) = 0;
-		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) = 0;
-		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_int>>) = 0;
-		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_float>>) = 0;
-		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_char>>) = 0;
-		virtual long long hash(std::shared_ptr<ASTLiteralNode<flx_string>>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTExprNode>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTValueNode>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTIdentifierNode>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_bool>>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_int>>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_float>>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_char>>) = 0;
+		virtual intmax_t hash(std::shared_ptr<ASTLiteralNode<flx_string>>) = 0;
 
 	};
 

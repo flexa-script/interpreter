@@ -125,7 +125,7 @@ void Interpreter::visit(std::shared_ptr<ASTEnumNode> astnode) {
 	const auto& name_space = current_program_stack.top()->name_space;
 
 	for (size_t i = 0; i < astnode->identifiers.size(); ++i) {
-		auto var = std::make_shared<RuntimeVariable>(astnode->identifiers[i], Type::T_INT, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "");
+		auto var = std::make_shared<RuntimeVariable>(astnode->identifiers[i], Type::T_INT, Type::T_UNDEFINED, std::vector<size_t>(), "", "");
 		gc.add_var_root(var);
 		var->set_value(allocate_value(new RuntimeValue(flx_int(i))));
 		scopes[name_space].back()->declare_variable(astnode->identifiers[i], var);
@@ -327,7 +327,7 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 	}
 
 	// return node activates return flow
-	for (long long i = scopes[name_space].size() - 1; i >= 0; --i) {
+	for (intmax_t i = scopes[name_space].size() - 1; i >= 0; --i) {
 		if (!scopes[name_space][i]->name.empty()) {
 			return_from_function_name = scopes[name_space][i]->name;
 			return_from_function = true;
@@ -617,7 +617,7 @@ void Interpreter::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 		}
 	}
 
-	long long pos;
+	intmax_t pos;
 	try {
 		// if has and match condition
 		auto hash = astnode->condition->hash(this);
@@ -629,7 +629,7 @@ void Interpreter::visit(std::shared_ptr<ASTSwitchNode> astnode) {
 	}
 
 	// executes block
-	for (long long i = pos; i < astnode->statements.size(); ++i) {
+	for (intmax_t i = pos; i < astnode->statements.size(); ++i) {
 		astnode->statements.at(i)->accept(this);
 
 		if (exit_from_program) {
@@ -1231,7 +1231,7 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 	// here it's calculate de current dimension of array
 	--current_expression_array_dim_max;
 	size_t stay = current_expression_array_dim.size() - current_expression_array_dim_max;
-	std::vector<unsigned int> current_expression_array_dim_aux;
+	std::vector<size_t> current_expression_array_dim_aux;
 	size_t curr_dim_i = current_expression_array_dim.size() - 1;
 	for (size_t i = 0; i < stay; ++i) {
 		current_expression_array_dim_aux.emplace(current_expression_array_dim_aux.begin(), current_expression_array_dim.at(curr_dim_i));
@@ -1849,16 +1849,16 @@ std::shared_ptr<Scope> Interpreter::find_declared_function_strict(const std::sha
 
 }
 
-long long Interpreter::hash(RuntimeValue* value) {
+intmax_t Interpreter::hash(RuntimeValue* value) {
 	switch (value->type) {
 	case Type::T_BOOL:
-		return static_cast<long long>(value->get_b());
+		return static_cast<intmax_t>(value->get_b());
 	case Type::T_INT:
-		return static_cast<long long>(value->get_i());
+		return static_cast<intmax_t>(value->get_i());
 	case Type::T_FLOAT:
-		return static_cast<long long>(value->get_f());
+		return static_cast<intmax_t>(value->get_f());
 	case Type::T_CHAR:
-		return static_cast<long long>(value->get_c());
+		return static_cast<intmax_t>(value->get_c());
 	case Type::T_STRING:
 		return utils::StringUtils::hashcode(value->get_s());
 	default:
@@ -1866,36 +1866,36 @@ long long Interpreter::hash(RuntimeValue* value) {
 	}
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTExprNode> astnode) {
+intmax_t Interpreter::hash(std::shared_ptr<ASTExprNode> astnode) {
 	astnode->accept(this);
 	return hash(current_expression_value);
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTValueNode> astnode) {
+intmax_t Interpreter::hash(std::shared_ptr<ASTValueNode> astnode) {
 	return hash(dynamic_cast<RuntimeValue*>(astnode->value));
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
-	return static_cast<long long>(astnode->value);
+intmax_t Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
+	return static_cast<intmax_t>(astnode->value);
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
+intmax_t Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
 	return utils::StringUtils::hashcode(astnode->value);
 }
 
-long long Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
+intmax_t Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
 	const auto& current_program = current_program_stack.top();
 	const auto& name_space = current_program->name_space;
 	auto variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, name_space, astnode->identifier_vector[0].identifier));
@@ -1904,7 +1904,7 @@ long long Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
 	return hash(value);
 }
 
-void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigned int> dim) {
+void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<size_t> dim) {
 	auto arr = new_value->get_arr();
 	auto arrsize = arr.size();
 
@@ -1938,7 +1938,7 @@ void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigne
 
 }
 
-flx_array Interpreter::build_array(const std::vector<unsigned int>& dim, RuntimeValue* init_value, long long i) {
+flx_array Interpreter::build_array(const std::vector<size_t>& dim, RuntimeValue* init_value, intmax_t i) {
 	flx_array raw_arr;
 
 	if (dim.size() - 1 == i) {
@@ -1969,7 +1969,7 @@ flx_array Interpreter::build_array(const std::vector<unsigned int>& dim, Runtime
 
 	if (i >= 0) {
 		size_t stay = dim.size() - i - 1;
-		std::vector<unsigned int> curr_arr_dim;
+		std::vector<size_t> curr_arr_dim;
 		size_t curr_dim_i = dim.size() - 1;
 		for (size_t i = 0; i < stay; ++i) {
 			curr_arr_dim.emplace(curr_arr_dim.begin(), dim.at(curr_dim_i));
@@ -1985,8 +1985,8 @@ flx_array Interpreter::build_array(const std::vector<unsigned int>& dim, Runtime
 	return raw_arr;
 }
 
-std::vector<unsigned int> Interpreter::calculate_array_dim_size(const flx_array& arr) {
-	auto dim = std::vector<unsigned int>();
+std::vector<size_t> Interpreter::calculate_array_dim_size(const flx_array& arr) {
+	auto dim = std::vector<size_t>();
 
 	dim.push_back(arr.size());
 
@@ -1998,10 +1998,10 @@ std::vector<unsigned int> Interpreter::calculate_array_dim_size(const flx_array&
 	return dim;
 }
 
-std::vector<unsigned int> Interpreter::evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector) {
-	auto access_vector = std::vector<unsigned int>();
+std::vector<size_t> Interpreter::evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector) {
+	auto access_vector = std::vector<size_t>();
 	for (const auto& expr : expr_access_vector) {
-		unsigned int val = 0;
+		size_t val = 0;
 		if (expr) {
 			std::dynamic_pointer_cast<ASTExprNode>(expr)->accept(this);
 			auto size_expr = current_expression_value;
@@ -2124,7 +2124,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 		for (size_t i = 0; i < vec.size(); ++i) {
 			arr[i] = vec[i];
 		}
-		auto rest = allocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<unsigned int>{(unsigned int)arr.size()}));
+		auto rest = allocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<size_t>{(size_t)arr.size()}));
 		auto var = std::make_shared<RuntimeVariable>(rest_name, *rest);
 		//gc.add_var_root(var); // TODO: remove from root
 		var->set_value(rest);
@@ -2137,7 +2137,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 
 void Interpreter::build_args(const std::vector<std::string>& args) {
 	// args
-	auto dim = std::vector<unsigned int>{ (unsigned int)args.size() };
+	auto dim = std::vector<size_t>{ (size_t)args.size() };
 	auto var = std::make_shared<RuntimeVariable>("args", Type::T_ARRAY, Type::T_STRING, dim, "", "");
 	gc.add_var_root(var);
 
@@ -2150,13 +2150,13 @@ void Interpreter::build_args(const std::vector<std::string>& args) {
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("args", var);
 
 	// cwd
-	auto cwd_var = std::make_shared<RuntimeVariable>("cwd", Type::T_STRING, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "");
+	auto cwd_var = std::make_shared<RuntimeVariable>("cwd", Type::T_STRING, Type::T_UNDEFINED, std::vector<size_t>(), "", "");
 	gc.add_var_root(cwd_var);
 	cwd_var->set_value(allocate_value(new RuntimeValue(std::filesystem::current_path().string())));
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("cwd", cwd_var);
 }
 
-void Interpreter::set_curr_pos(unsigned int row, unsigned int col) {
+void Interpreter::set_curr_pos(size_t row, size_t col) {
 	curr_row = row;
 	curr_col = col;
 }
