@@ -25,7 +25,7 @@ void ModuleConsole::register_functions(SemanticAnalyser* visitor) {
 void ModuleConsole::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["show_console"] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("show"))->get_value();
@@ -35,12 +35,12 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["is_console_visible"] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(flx_bool(::IsWindowVisible(::GetConsoleWindow()))));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(flx_bool(::IsWindowVisible(::GetConsoleWindow()))));
 
 		};
 
 	visitor->builtin_functions["set_console_color"] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector {
@@ -54,7 +54,7 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["set_console_cursor_position"] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{
@@ -69,7 +69,7 @@ void ModuleConsole::register_functions(Interpreter* visitor) {
 		};
 
 	visitor->builtin_functions["set_console_font"] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
 		auto vals = std::vector{

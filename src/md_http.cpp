@@ -163,9 +163,9 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 
 		// dictionary struct
 		flx_struct res_headers_str;
-		res_headers_str["root"] = visitor->alocate_value(new RuntimeValue(Type::T_VOID));
-		res_headers_str["size"] = visitor->alocate_value(new RuntimeValue(flx_int(0)));
-		auto headers_value = visitor->alocate_value(new RuntimeValue(res_headers_str, "Dictionary", Constants::STD_NAMESPACE));
+		res_headers_str["root"] = visitor->allocate_value(new RuntimeValue(Type::T_VOID));
+		res_headers_str["size"] = visitor->allocate_value(new RuntimeValue(flx_int(0)));
+		auto headers_value = visitor->allocate_value(new RuntimeValue(res_headers_str, "Dictionary", Constants::STD_NAMESPACE));
 		// dict identifier
 		auto header_identifier = std::make_shared<ASTIdentifierNode>(std::vector<Identifier>{ Identifier("headers_value") }, Constants::STD_NAMESPACE, 0, 0);
 		
@@ -213,14 +213,14 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 		// create response struct
 		flx_struct res_str;
 		auto status = utils::StringUtils::split(response_lines[0], ' ');
-		res_str["http_version"] = visitor->alocate_value(new RuntimeValue(flx_string(status[0])));
-		res_str["status"] = visitor->alocate_value(new RuntimeValue(flx_int(stoll(status[1]))));
-		res_str["status_description"] = visitor->alocate_value(new RuntimeValue(flx_string(status[2])));
+		res_str["http_version"] = visitor->allocate_value(new RuntimeValue(flx_string(status[0])));
+		res_str["status"] = visitor->allocate_value(new RuntimeValue(flx_int(stoll(status[1]))));
+		res_str["status_description"] = visitor->allocate_value(new RuntimeValue(flx_string(status[2])));
 		res_str["headers"] = headers_value;
-		res_str["data"] = visitor->alocate_value(new RuntimeValue(flx_string(res_body)));
-		res_str["raw"] = visitor->alocate_value(new RuntimeValue(flx_string(raw_response)));
+		res_str["data"] = visitor->allocate_value(new RuntimeValue(flx_string(res_body)));
+		res_str["raw"] = visitor->allocate_value(new RuntimeValue(flx_string(raw_response)));
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(res_str, "HttpResponse", Constants::STD_NAMESPACE));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(res_str, "HttpResponse", Constants::STD_NAMESPACE));
 
 		// remove scope
 		visitor->scopes[Constants::STD_NAMESPACE].pop_back();

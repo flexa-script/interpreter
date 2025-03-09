@@ -16,7 +16,7 @@ using namespace core::runtime;
 Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<ASTProgramNode> main_program,
 	const std::map<std::string, std::shared_ptr<ASTProgramNode>>& programs, const std::vector<std::string>& args)
 	: Visitor(programs, main_program, main_program ? main_program->name : Constants::DEFAULT_NAMESPACE) {
-	current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+	current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 	gc.add_ptr_root(&current_expression_value);
 
 	current_this_name.push(Constants::DEFAULT_NAMESPACE);
@@ -57,7 +57,7 @@ void Interpreter::visit(std::shared_ptr<ASTProgramNode> astnode) {
 	if (astnode->statements.size() > 1
 		|| astnode->statements.size() > 0
 		&& !std::dynamic_pointer_cast<ASTExprNode>(astnode->statements[0])) {
-		current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 	}
 }
 
@@ -127,7 +127,7 @@ void Interpreter::visit(std::shared_ptr<ASTEnumNode> astnode) {
 	for (size_t i = 0; i < astnode->identifiers.size(); ++i) {
 		auto var = std::make_shared<RuntimeVariable>(astnode->identifiers[i], Type::T_INT, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "");
 		gc.add_var_root(var);
-		var->set_value(alocate_value(new RuntimeValue(flx_int(i))));
+		var->set_value(allocate_value(new RuntimeValue(flx_int(i))));
 		scopes[name_space].back()->declare_variable(astnode->identifiers[i], var);
 	}
 }
@@ -149,7 +149,7 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 	clear_current_expression();
 
 	if (!new_value->use_ref) {
-		new_value = alocate_value(new RuntimeValue(new_value));
+		new_value = allocate_value(new RuntimeValue(new_value));
 	}
 
 	auto ev_dim = evaluate_access_vector(astnode->expr_dim);
@@ -233,7 +233,7 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	RuntimeValue* new_value = ptr_value;
 
 	if (!ptr_value->use_ref) {
-		new_value = alocate_value(new RuntimeValue(ptr_value));
+		new_value = allocate_value(new RuntimeValue(ptr_value));
 	}
 
 	// handle direct assignment
@@ -311,19 +311,19 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 				curr_func_call_expr_id_vector.back().access_vector[curr_func_call_expr_id_vector.back().access_vector.size() - 1]->accept(this);
 				auto pos = value->get_i();
 
-				value = alocate_value(new RuntimeValue(flx_char(str[pos])));
+				value = allocate_value(new RuntimeValue(flx_char(str[pos])));
 			}
 		}
 
 		// check if it's reference
-		current_expression_value = value->use_ref ? value : alocate_value(new RuntimeValue(value));
+		current_expression_value = value->use_ref ? value : allocate_value(new RuntimeValue(value));
 
 		if (curr_func_call_expr_call) {
 			curr_func_call_expr_call->accept(this);
 		}
 	}
 	else {
-		current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 	}
 
 	// return node activates return flow
@@ -359,7 +359,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 		RuntimeValue* pvalue = current_expression_value;
 		clear_current_expression();
 		if (!pvalue->use_ref) {
-			pvalue = alocate_value(new RuntimeValue(pvalue));
+			pvalue = allocate_value(new RuntimeValue(pvalue));
 		}
 
 		function_arguments->push_back(pvalue);
@@ -520,7 +520,7 @@ void Interpreter::visit(std::shared_ptr<ASTLambdaFunction> astnode) {
 	fun->identifier = fun_name;
 	fun->accept(this);
 
-	current_expression_value = alocate_value(new RuntimeValue(flx_function(name_space, fun->identifier)));
+	current_expression_value = allocate_value(new RuntimeValue(flx_function(name_space, fun->identifier)));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTBlockNode> astnode) {
@@ -739,7 +739,7 @@ void Interpreter::visit(std::shared_ptr<ASTForNode> astnode) {
 		}
 		else {
 			// if empty, execute with no condition
-			current_expression_value = alocate_value(new RuntimeValue(flx_bool(true)));
+			current_expression_value = allocate_value(new RuntimeValue(flx_bool(true)));
 		}
 
 		auto result = current_expression_value->get_b();
@@ -846,7 +846,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		clear_current_expression();
 
 		for (auto val : colletion) {
-			auto exnode = std::make_shared<ASTValueNode>(alocate_value(new RuntimeValue(flx_char(val))), astnode->row, astnode->col);
+			auto exnode = std::make_shared<ASTValueNode>(allocate_value(new RuntimeValue(flx_char(val))), astnode->row, astnode->col);
 
 			// declare each value at meta block
 			if (auto itdecl = std::dynamic_pointer_cast<ASTDeclarationNode>(astnode->itdecl)) {
@@ -1036,7 +1036,7 @@ void Interpreter::visit(std::shared_ptr<ASTThrowNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTEllipsisNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+	current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTWhileNode> astnode) {
@@ -1146,27 +1146,27 @@ void Interpreter::visit(std::shared_ptr<ASTValueNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
+	current_expression_value = allocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
+	current_expression_value = allocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
+	current_expression_value = allocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
+	current_expression_value = allocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
+	current_expression_value = allocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
@@ -1201,7 +1201,7 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 		clear_current_expression();
 
 		if (!arr_value->use_ref) {
-			arr_value = alocate_value(new RuntimeValue(arr_value));
+			arr_value = allocate_value(new RuntimeValue(arr_value));
 		}
 
 		// if it's undefined or array (nested), it's accepts the first type encountered
@@ -1223,7 +1223,7 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 	// as size by dimension is fixed, it's not necessary to check after max (max nested deep)
 	is_max = true;
 
-	current_expression_value = alocate_value(
+	current_expression_value = allocate_value(
 		new RuntimeValue(arr, current_expression_array_type.type, current_expression_array_dim,
 			current_expression_array_type.type_name, current_expression_array_type.type_name_space)
 	);
@@ -1275,7 +1275,7 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 
 		// check if it's a reference
 		if (!str_value->use_ref) {
-			str_value = alocate_value(new RuntimeValue(str_value));
+			str_value = allocate_value(new RuntimeValue(str_value));
 		}
 
 		check_build_array(str_value, evaluate_access_vector(var_type_struct.expr_dim));
@@ -1293,13 +1293,13 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 	// declare rest values as null
 	for (auto& struct_var_def : type_struct.variables) {
 		if (str.find(struct_var_def.first) == str.end()) {
-			RuntimeValue* str_value = alocate_value(new RuntimeValue(struct_var_def.second.type));
+			RuntimeValue* str_value = allocate_value(new RuntimeValue(struct_var_def.second.type));
 			str_value->set_null();
 			str[struct_var_def.first] = str_value;
 		}
 	}
 
-	current_expression_value = alocate_value(new RuntimeValue(str, astnode->type_name, astnode->name_space));
+	current_expression_value = allocate_value(new RuntimeValue(str, astnode->type_name, astnode->name_space));
 
 }
 
@@ -1322,7 +1322,7 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 			std::dynamic_pointer_cast<ASTExprNode>(astnode->identifier_vector.back().access_vector[astnode->identifier_vector.back().access_vector.size() - 1])->accept(this);
 			auto pos = current_expression_value->get_i();
 
-			auto char_value = alocate_value(new RuntimeValue(Type::T_CHAR));
+			auto char_value = allocate_value(new RuntimeValue(Type::T_CHAR));
 			char_value->set(flx_char(str[pos]));
 			current_expression_value = char_value;
 
@@ -1332,12 +1332,12 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 	// handle struct type names for type checks
 	else if (get_inner_most_struct_definition_scope(current_program, name_space, astnode->identifier)) {
 		const auto& expr_dim = astnode->identifier_vector[0].access_vector;
-		auto expression_value = alocate_value(new RuntimeValue(astnode->identifier, name_space));
+		auto expression_value = allocate_value(new RuntimeValue(astnode->identifier, name_space));
 
 		if (expr_dim.size() > 0) {
 			auto dim = evaluate_access_vector(expr_dim);
 			flx_array arr = build_array(dim, expression_value, expr_dim.size() - 1);
-			current_expression_value = alocate_value(new RuntimeValue(arr, Type::T_STRUCT, dim, astnode->identifier, name_space));
+			current_expression_value = allocate_value(new RuntimeValue(arr, Type::T_STRUCT, dim, astnode->identifier, name_space));
 
 		}
 		else {
@@ -1349,7 +1349,7 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 	// handle expression function calls
 	else if (get_inner_most_function_scope(current_program, name_space, astnode->identifier, nullptr)) {
 		auto fun = flx_function{ name_space, astnode->identifier };
-		current_expression_value = alocate_value(new RuntimeValue(fun));
+		current_expression_value = allocate_value(new RuntimeValue(fun));
 
 	}
 	else {
@@ -1367,7 +1367,7 @@ void Interpreter::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 	clear_current_expression();
 
 	if (!l_value->use_ref) {
-		l_value = alocate_value(new RuntimeValue(l_value));
+		l_value = allocate_value(new RuntimeValue(l_value));
 	}
 	gc.add_root(l_value);
 
@@ -1382,14 +1382,14 @@ void Interpreter::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 	clear_current_expression();
 
 	if (!r_value->use_ref) {
-		r_value = alocate_value(new RuntimeValue(r_value));
+		r_value = allocate_value(new RuntimeValue(r_value));
 	}
 	gc.add_root(r_value);
 
 	current_expression_value = RuntimeOperations::do_operation(astnode->op, l_value, r_value, true);
 
 	if (current_expression_value != l_value && current_expression_value != r_value) {
-		alocate_value(current_expression_value);
+		allocate_value(current_expression_value);
 	}
 
 	gc.remove_root(l_value);
@@ -1452,7 +1452,7 @@ void Interpreter::visit(std::shared_ptr<ASTInNode> astnode) {
 		}
 	}
 
-	current_expression_value = alocate_value(new RuntimeValue(flx_bool(res)));
+	current_expression_value = allocate_value(new RuntimeValue(flx_bool(res)));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTUnaryExprNode> astnode) {
@@ -1482,7 +1482,7 @@ void Interpreter::visit(std::shared_ptr<ASTUnaryExprNode> astnode) {
 		}
 		else {
 			if (!current_expression_value->use_ref) {
-				current_expression_value = alocate_value(new RuntimeValue(current_expression_value));
+				current_expression_value = allocate_value(new RuntimeValue(current_expression_value));
 			}
 
 			switch (current_expression_value->type) {
@@ -1526,7 +1526,7 @@ void Interpreter::visit(std::shared_ptr<ASTTypeCastNode> astnode) {
 
 	astnode->expr->accept(this);
 
-	RuntimeValue* new_value = alocate_value(new RuntimeValue());
+	RuntimeValue* new_value = allocate_value(new RuntimeValue());
 
 	switch (astnode->type) {
 	case Type::T_BOOL:
@@ -1639,19 +1639,19 @@ void Interpreter::visit(std::shared_ptr<ASTTypeNode> astnode) {
 
 	auto& type = astnode->type;
 	type.dim = evaluate_access_vector(type.expr_dim);
-	current_expression_value = alocate_value(new RuntimeValue(type));
+	current_expression_value = allocate_value(new RuntimeValue(type));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTNullNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
-	current_expression_value = alocate_value(new RuntimeValue(Type::T_VOID));
+	current_expression_value = allocate_value(new RuntimeValue(Type::T_VOID));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTThisNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
-	current_expression_value = alocate_value(new RuntimeValue(flx_string(current_this_name.top())));
+	current_expression_value = allocate_value(new RuntimeValue(flx_string(current_this_name.top())));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
@@ -1661,7 +1661,7 @@ void Interpreter::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 
 	auto str_type = TypeDefinition::buid_type_str(*current_expression_value);
 
-	auto value = alocate_value(new RuntimeValue(Type::T_STRING));
+	auto value = allocate_value(new RuntimeValue(Type::T_STRING));
 	value->set(flx_string(str_type));
 	current_expression_value = value;
 }
@@ -1673,7 +1673,7 @@ void Interpreter::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
 
 	auto str_type = TypeDefinition::buid_type_str(*current_expression_value);
 
-	auto value = alocate_value(new RuntimeValue(Type::T_INT));
+	auto value = allocate_value(new RuntimeValue(Type::T_INT));
 	value->set(flx_int(utils::StringUtils::hashcode(str_type)));
 	current_expression_value = value;
 }
@@ -1683,7 +1683,7 @@ void Interpreter::visit(std::shared_ptr<ASTRefIdNode> astnode) {
 
 	astnode->expr->accept(this);
 
-	current_expression_value = alocate_value(new RuntimeValue(flx_int(current_expression_value)));
+	current_expression_value = allocate_value(new RuntimeValue(flx_int(current_expression_value)));
 }
 
 RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<Identifier>& identifier_vector, RuntimeValue* new_value) {
@@ -1787,7 +1787,7 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 		}
 
 		if (!current_val[access_pos]) {
-			current_val[access_pos] = alocate_value(new RuntimeValue(Type::T_VOID));
+			current_val[access_pos] = allocate_value(new RuntimeValue(Type::T_VOID));
 		}
 
 		next_value = current_val[access_pos];
@@ -1920,7 +1920,7 @@ void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<unsigne
 			break;
 		}
 		case 1: {
-			auto val = arrsize == 1 ? arr[0] : alocate_value(new RuntimeValue(Type::T_VOID));
+			auto val = arrsize == 1 ? arr[0] : allocate_value(new RuntimeValue(Type::T_VOID));
 
 			flx_array rarr = build_array(dim, val, dim.size() - 1);
 
@@ -1956,7 +1956,7 @@ flx_array Interpreter::build_array(const std::vector<unsigned int>& dim, Runtime
 	raw_arr = flx_array(size);
 
 	for (size_t j = 0; j < size; ++j) {
-		auto val = alocate_value(new RuntimeValue(init_value));
+		auto val = allocate_value(new RuntimeValue(init_value));
 
 		if (TypeUtils::is_undefined(current_expression_array_type.type) || TypeUtils::is_array(current_expression_array_type.type)) {
 			current_expression_array_type = *val;
@@ -1976,7 +1976,7 @@ flx_array Interpreter::build_array(const std::vector<unsigned int>& dim, Runtime
 			--curr_dim_i;
 		}
 
-		auto val = alocate_value(new RuntimeValue(raw_arr, current_expression_array_type.array_type, curr_arr_dim,
+		auto val = allocate_value(new RuntimeValue(raw_arr, current_expression_array_type.array_type, curr_arr_dim,
 			current_expression_array_type.type_name, current_expression_array_type.type_name_space));
 
 		return build_array(dim, val, i);
@@ -2016,12 +2016,12 @@ std::vector<unsigned int> Interpreter::evaluate_access_vector(const std::vector<
 	return access_vector;
 }
 
-RuntimeValue* Interpreter::alocate_value(RuntimeValue* value) {
+RuntimeValue* Interpreter::allocate_value(RuntimeValue* value) {
 	return dynamic_cast<RuntimeValue*>(gc.allocate(value));
 }
 
 void Interpreter::clear_current_expression() {
-	current_expression_value = alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+	current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 }
 
 void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value) {
@@ -2069,7 +2069,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 		// is reference : not reference
 		RuntimeValue* current_value = current_function_calling_argument;
 		if (!current_function_calling_argument->use_ref) {
-			current_value = alocate_value(new RuntimeValue(current_function_calling_argument));
+			current_value = allocate_value(new RuntimeValue(current_function_calling_argument));
 			current_value->ref.reset();
 		}
 
@@ -2097,7 +2097,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 			}
 			else if (const auto decls = dynamic_cast<UnpackedVariableDefinition*>(current_function_defined_parameters.top()[i])) {
 				for (auto& decl : decls->variables) {
-					auto sub_value = alocate_value(new RuntimeValue(current_value->get_str()[decl.identifier]));
+					auto sub_value = allocate_value(new RuntimeValue(current_value->get_str()[decl.identifier]));
 					declare_function_parameter(curr_scope, decl.identifier, sub_value);
 				}
 			}
@@ -2112,7 +2112,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 			}
 
 			std::dynamic_pointer_cast<ASTExprNode>(decl->default_value)->accept(this);
-			auto current_value = alocate_value(new RuntimeValue(current_expression_value));
+			auto current_value = allocate_value(new RuntimeValue(current_expression_value));
 			clear_current_expression();
 
 			declare_function_parameter(curr_scope, decl->identifier, current_value);
@@ -2124,7 +2124,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 		for (size_t i = 0; i < vec.size(); ++i) {
 			arr[i] = vec[i];
 		}
-		auto rest = alocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<unsigned int>{(unsigned int)arr.size()}));
+		auto rest = allocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<unsigned int>{(unsigned int)arr.size()}));
 		auto var = std::make_shared<RuntimeVariable>(rest_name, *rest);
 		//gc.add_var_root(var); // TODO: remove from root
 		var->set_value(rest);
@@ -2143,16 +2143,16 @@ void Interpreter::build_args(const std::vector<std::string>& args) {
 
 	auto arr = flx_array(args.size());
 	for (size_t i = 0; i < args.size(); ++i) {
-		arr[i] = alocate_value(new RuntimeValue(args[i]));
+		arr[i] = allocate_value(new RuntimeValue(args[i]));
 	}
 
-	var->set_value(alocate_value(new RuntimeValue(arr, Type::T_STRING, dim)));
+	var->set_value(allocate_value(new RuntimeValue(arr, Type::T_STRING, dim)));
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("args", var);
 
 	// cwd
 	auto cwd_var = std::make_shared<RuntimeVariable>("cwd", Type::T_STRING, Type::T_UNDEFINED, std::vector<unsigned int>(), "", "");
 	gc.add_var_root(cwd_var);
-	cwd_var->set_value(alocate_value(new RuntimeValue(std::filesystem::current_path().string())));
+	cwd_var->set_value(allocate_value(new RuntimeValue(std::filesystem::current_path().string())));
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("cwd", cwd_var);
 }
 

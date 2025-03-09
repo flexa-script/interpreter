@@ -58,7 +58,7 @@ void ModuleBuiltin::register_functions(SemanticAnalyser* visitor) {
 void ModuleBuiltin::register_functions(Interpreter* visitor) {
 	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)]);
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
 		if (scope->already_declared_variable("args")) {
@@ -83,7 +83,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 		visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::PRINT)]();
 		std::string line;
 		std::getline(std::cin, line);
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_STRING));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_STRING));
 		visitor->current_expression_value->set(flx_string(std::move(line)));
 		};
 
@@ -91,7 +91,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::READCH)] = [this, visitor]() {
 		while (!_kbhit());
 		char ch = _getch();
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_CHAR));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_CHAR));
 		visitor->current_expression_value->set(flx_char(ch));
 		};
 
@@ -102,7 +102,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("it"));
 		auto itval = var->get_value();
 
-		auto val = visitor->alocate_value(new RuntimeValue(Type::T_INT));
+		auto val = visitor->allocate_value(new RuntimeValue(Type::T_INT));
 
 		if (TypeUtils::is_array(itval->type)) {
 			val->set(flx_int(itval->get_arr().size()));
@@ -117,7 +117,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 
 	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::SLEEP), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::SLEEP)]);
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::SLEEP)] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("ms"));
@@ -129,7 +129,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 
 	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM)]);
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM)] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("cmd"));
@@ -146,7 +146,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
 		auto check_expr = var->get_value();
 
-		visitor->current_expression_value = visitor->alocate_value(
+		visitor->current_expression_value = visitor->allocate_value(
 			new RuntimeValue(
 				flx_bool(
 					check_expr->ref.lock()
@@ -166,7 +166,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
 		auto check_expr = var->get_value();
 
-		visitor->current_expression_value = visitor->alocate_value(
+		visitor->current_expression_value = visitor->allocate_value(
 			new RuntimeValue(
 				flx_bool(
 					TypeUtils::is_array(check_expr->type) || check_expr->dim.size() > 0
@@ -183,7 +183,7 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
 		auto check_expr = var->get_value();
 
-		visitor->current_expression_value = visitor->alocate_value(
+		visitor->current_expression_value = visitor->allocate_value(
 			new RuntimeValue(
 				flx_bool(
 					TypeUtils::is_struct(check_expr->type)

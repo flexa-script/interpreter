@@ -44,18 +44,18 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		};
 
 		// initialize file struct values
-		RuntimeValue* cpfile = visitor->alocate_value(new RuntimeValue(Type::T_STRUCT));
+		RuntimeValue* cpfile = visitor->allocate_value(new RuntimeValue(Type::T_STRUCT));
 
 		flx_struct str = flx_struct();
-		str["path"] = visitor->alocate_value(new RuntimeValue(vals[0]));
-		str["mode"] = visitor->alocate_value(new RuntimeValue(vals[1]));
+		str["path"] = visitor->allocate_value(new RuntimeValue(vals[0]));
+		str["mode"] = visitor->allocate_value(new RuntimeValue(vals[1]));
 
 		int parmode = vals[1]->get_i();
 
 		std::fstream* fs = nullptr;
 		try {
 			fs = new std::fstream(vals[0]->get_s(), parmode);
-			str[INSTANCE_ID_NAME] = visitor->alocate_value(new RuntimeValue(flx_int(fs)));
+			str[INSTANCE_ID_NAME] = visitor->allocate_value(new RuntimeValue(flx_int(fs)));
 			cpfile->set(str, "File", Constants::STD_NAMESPACE);
 			visitor->current_expression_value = cpfile;
 		}
@@ -69,7 +69,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_STRING));
+			auto rval = visitor->allocate_value(new RuntimeValue(Type::T_STRING));
 
 			std::fstream* fs = ((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i());
 
@@ -91,7 +91,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_STRING));
+			auto rval = visitor->allocate_value(new RuntimeValue(Type::T_STRING));
 
 			std::fstream* fs = ((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i());
 
@@ -108,7 +108,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_ARRAY));
+			auto rval = visitor->allocate_value(new RuntimeValue(Type::T_ARRAY));
 			rval->set_arr_type(Type::T_CHAR);
 
 			std::fstream* fs = ((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i());
@@ -128,7 +128,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 			// read all bytes
 			if (fs->read(buffer, buffer_size)) {
 				for (std::streamsize i = 0; i < buffer_size; ++i) {
-					RuntimeValue* val = visitor->alocate_value(new RuntimeValue(Type::T_CHAR));
+					RuntimeValue* val = visitor->allocate_value(new RuntimeValue(Type::T_CHAR));
 					val->set(buffer[i]);
 					arr[i] = val;
 				}
@@ -185,7 +185,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("file"))->get_value();
 
 		if (!TypeUtils::is_void(val->type)) {
-			auto rval = visitor->alocate_value(new RuntimeValue(Type::T_BOOL));
+			auto rval = visitor->allocate_value(new RuntimeValue(Type::T_BOOL));
 			rval->set(flx_bool(((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i())->is_open()));
 			visitor->current_expression_value = rval;
 		}
@@ -210,7 +210,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 		std::filesystem::path path = val->get_s();
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::filesystem::is_regular_file(path)));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::filesystem::is_regular_file(path)));
 
 		};
 
@@ -220,7 +220,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 		std::filesystem::path path = val->get_s();
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::filesystem::is_directory(path)));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::filesystem::is_directory(path)));
 
 		};
 
@@ -234,7 +234,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 			throw std::runtime_error("cannot create directory");
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -254,10 +254,10 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 		for (size_t i = 0; i < files.size(); ++i) {
 			const auto& file = files[i];
-			values[i] = visitor->alocate_value(new RuntimeValue(file));
+			values[i] = visitor->allocate_value(new RuntimeValue(file));
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(values));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(values));
 
 		};
 
@@ -267,7 +267,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 		std::filesystem::path path = val->get_s();
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::filesystem::exists(path)));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::filesystem::exists(path)));
 
 		};
 
@@ -279,7 +279,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 		std::filesystem::remove_all(path);
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(Type::T_UNDEFINED));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 
 		};

@@ -15,16 +15,16 @@ ModuleDateTime::~ModuleDateTime() = default;
 
 flx_struct ModuleDateTime::tm_to_date_time(Interpreter* visitor, time_t t, tm* tm) {
 	flx_struct dt_str = flx_struct();
-	dt_str["timestamp"] = visitor->alocate_value(new RuntimeValue(flx_int(t)));
-	dt_str["second"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_sec)));
-	dt_str["minute"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_min)));
-	dt_str["hour"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_hour)));
-	dt_str["day"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_mday)));
-	dt_str["month"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_mon + 1)));
-	dt_str["year"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_year)));
-	dt_str["week_day"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_wday)));
-	dt_str["year_day"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_yday)));
-	dt_str["is_dst"] = visitor->alocate_value(new RuntimeValue(flx_int(tm->tm_isdst)));
+	dt_str["timestamp"] = visitor->allocate_value(new RuntimeValue(flx_int(t)));
+	dt_str["second"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_sec)));
+	dt_str["minute"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_min)));
+	dt_str["hour"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_hour)));
+	dt_str["day"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_mday)));
+	dt_str["month"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_mon + 1)));
+	dt_str["year"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_year)));
+	dt_str["week_day"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_wday)));
+	dt_str["year_day"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_yday)));
+	dt_str["is_dst"] = visitor->allocate_value(new RuntimeValue(flx_int(tm->tm_isdst)));
 
 	return dt_str;
 }
@@ -76,7 +76,7 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 			t = mktime(tm);
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", Constants::STD_NAMESPACE));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", Constants::STD_NAMESPACE));
 
 		};
 
@@ -93,7 +93,7 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 		tm* tm = new struct tm();
 		gmtime_s(tm, &t);
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", Constants::STD_NAMESPACE));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", Constants::STD_NAMESPACE));
 
 		};
 
@@ -111,7 +111,7 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 		char buffer[80];
 		strftime(buffer, 80, fmt.c_str(), tm);
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::string{ buffer }));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::string{ buffer }));
 
 		};
 
@@ -129,7 +129,7 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 		char buffer[80];
 		strftime(buffer, 80, fmt.c_str(), tm);
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::string{ buffer }));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::string{ buffer }));
 
 		};
 
@@ -146,7 +146,7 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 			throw std::runtime_error("Error trying to convert date/time to ASCII string");
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::string{ buffer }));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::string{ buffer }));
 
 		};
 
@@ -163,12 +163,12 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 			throw std::runtime_error("Error trying to convert date/time to ASCII string");
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(std::string{ buffer }));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::string{ buffer }));
 
 		};
 
 	visitor->builtin_functions["clock"] = [this, visitor]() {
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(flx_int(clock())));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(flx_int(clock())));
 
 		};
 

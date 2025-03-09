@@ -50,7 +50,7 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 			is_pressed = current_key_state[key];
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(flx_bool(is_pressed)));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(flx_bool(is_pressed)));
 
 		};
 
@@ -68,7 +68,7 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 			previous_key_state[key] = false;
 		}
 
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(flx_bool(is_released)));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(flx_bool(is_released)));
 
 		};
 
@@ -77,9 +77,9 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 		GetCursorPos(&point);
 
 		flx_struct str = flx_struct();
-		str["x"] = visitor->alocate_value(new RuntimeValue(flx_int(point.x * 2 * 0.905)));
-		str["y"] = visitor->alocate_value(new RuntimeValue(flx_int(point.y * 2 * 0.875)));
-		RuntimeValue* res = visitor->alocate_value(new RuntimeValue(str, "Point", Constants::STD_NAMESPACE));
+		str["x"] = visitor->allocate_value(new RuntimeValue(flx_int(point.x * 2 * 0.905)));
+		str["y"] = visitor->allocate_value(new RuntimeValue(flx_int(point.y * 2 * 0.875)));
+		RuntimeValue* res = visitor->allocate_value(new RuntimeValue(str, "Point", Constants::STD_NAMESPACE));
 
 		visitor->current_expression_value = res;
 
@@ -104,7 +104,7 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 
 		int button = val->get_i();
 		bool is_pressed = (GetAsyncKeyState(button) & 0x8000) != 0;
-		visitor->current_expression_value = visitor->alocate_value(new RuntimeValue(flx_bool(is_pressed)));
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(flx_bool(is_pressed)));
 
 		};
 }

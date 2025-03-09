@@ -26,7 +26,7 @@ namespace core {
 			RuntimeValue* current_expression_value;
 			GarbageCollector gc;
 
-			RuntimeValue* alocate_value(RuntimeValue* value);
+			RuntimeValue* allocate_value(RuntimeValue* value);
 
 		private:
 			dim_eval_func_t evaluate_access_vector_ptr = std::bind(&Interpreter::evaluate_access_vector, this, std::placeholders::_1);
