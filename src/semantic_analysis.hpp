@@ -35,6 +35,7 @@ namespace core {
 			bool is_max;
 
 		private:
+			bool is_return_node(std::shared_ptr<ASTNode> astnode);
 			bool returns(std::shared_ptr<ASTNode> astnode);
 
 			void declare_function_parameter(std::shared_ptr<Scope> scope, const VariableDefinition& param);

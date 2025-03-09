@@ -78,6 +78,7 @@ namespace core {
 
 			intmax_t hash(RuntimeValue* value);
 
+			bool is_builtin_execution_block(std::vector<std::shared_ptr<ASTNode>> statements);
 			void declare_function_block_parameters(const std::string& name_space);
 			void build_args(const std::vector<std::string>& args);
 

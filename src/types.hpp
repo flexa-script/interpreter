@@ -386,6 +386,8 @@ namespace core {
 
 		void set_null();
 
+		bool has_value();
+
 		void set_type(Type type);
 		void set_arr_type(Type arr_type);
 

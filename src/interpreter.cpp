@@ -17,10 +17,18 @@ Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<AS
 	const std::map<std::string, std::shared_ptr<ASTProgramNode>>& programs, const std::vector<std::string>& args)
 	: Visitor(programs, main_program, main_program ? main_program->name : Constants::DEFAULT_NAMESPACE) {
 	current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 	gc.add_ptr_root(&current_expression_value);
 
-	current_this_name.push(Constants::DEFAULT_NAMESPACE);
-	scopes[Constants::DEFAULT_NAMESPACE].push_back(global_scope);
+	current_this_name.push(main_program->name);
+
+	if (main_program->name_space != Constants::DEFAULT_NAMESPACE) {
+		program_nmspaces[main_program->name].push_back(Constants::DEFAULT_NAMESPACE);
+	}
+
+	scopes[main_program->name_space].push_back(global_scope);
+
+	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("builtin", Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
 
 	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 
@@ -420,7 +428,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 			if (!TypeUtils::is_function(var_value->type)) {
 				ExceptionHandler::undeclared_function(identifier, signature);
 			}
-			
+
 			// get function namespace and name
 			name_space = var_value->get_fun().first;
 			identifier = var_value->get_fun().second;
@@ -528,7 +536,6 @@ void Interpreter::visit(std::shared_ptr<ASTBlockNode> astnode) {
 	const auto& current_program = current_program_stack.top();
 	const auto& name_space = current_program->name_space;
 
-	// the one use function_call_name
 	scopes[name_space].push_back(std::make_shared<Scope>(current_program, function_call_name));
 	function_call_name = "";
 
@@ -1251,15 +1258,20 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
+	auto name_space = astnode->name_space;
 
-	auto type_struct = find_inner_most_struct(current_program, astnode->name_space, astnode->type_name);
+	auto type_struct = find_inner_most_struct(current_program, name_space, astnode->type_name);
+
+	if (name_space.empty()) {
+		name_space = current_program->name_space;
+	}
 
 	auto str = flx_struct();
 
 	for (auto& expr : astnode->values) {
 		// check it is a member
 		if (type_struct.variables.find(expr.first) == type_struct.variables.end()) {
-			ExceptionHandler::throw_struct_member_err(astnode->name_space, astnode->type_name, expr.first);
+			ExceptionHandler::throw_struct_member_err(name_space, astnode->type_name, expr.first);
 		}
 		VariableDefinition var_type_struct = type_struct.variables[expr.first];
 
@@ -1269,7 +1281,7 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 		clear_current_expression();
 
 		if (!TypeDefinition::is_any_or_match_type(var_type_struct, *str_value)) {
-			ExceptionHandler::throw_struct_value_assign_type_err(astnode->name_space, astnode->type_name,
+			ExceptionHandler::throw_struct_value_assign_type_err(name_space, astnode->type_name,
 				expr.first, var_type_struct, *str_value);
 		}
 
@@ -1299,7 +1311,7 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 		}
 	}
 
-	current_expression_value = allocate_value(new RuntimeValue(str, astnode->type_name, astnode->name_space));
+	current_expression_value = allocate_value(new RuntimeValue(str, astnode->type_name, name_space));
 
 }
 
@@ -1363,6 +1375,7 @@ void Interpreter::visit(std::shared_ptr<ASTBinaryExprNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	astnode->left->accept(this);
+
 	RuntimeValue* l_value = current_expression_value;
 	clear_current_expression();
 
@@ -1400,7 +1413,7 @@ void Interpreter::visit(std::shared_ptr<ASTTernaryNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
 	astnode->condition->accept(this);
-	
+
 	RuntimeValue* condition_expr = current_expression_value;
 	clear_current_expression();
 
@@ -2017,7 +2030,9 @@ RuntimeValue* Interpreter::allocate_value(RuntimeValue* value) {
 }
 
 void Interpreter::clear_current_expression() {
-	current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+	if (current_expression_value->has_value()) {
+		current_expression_value = allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+	}
 }
 
 void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value) {
@@ -2041,6 +2056,10 @@ void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const
 			scope->declare_variable(identifier, var);
 		}
 	}
+}
+
+bool Interpreter::is_builtin_execution_block(std::vector<std::shared_ptr<ASTNode>> statements) {
+	return !function_call_name.empty() && statements.size() == 1 && std::dynamic_pointer_cast<ASTBuiltinCallNode>(statements[0]);
 }
 
 void Interpreter::declare_function_block_parameters(const std::string& name_space) {
@@ -2122,7 +2141,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 		}
 		auto rest = allocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<size_t>{(size_t)arr.size()}));
 		auto var = std::make_shared<RuntimeVariable>(rest_name, *rest);
-		gc.add_var_root(var); // TODO: remove from root
+		gc.add_var_root(var);
 		var->set_value(rest);
 		curr_scope->declare_variable(rest_name, var);
 	}

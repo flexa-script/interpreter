@@ -12,7 +12,13 @@ using namespace core::analysis;
 SemanticAnalyser::SemanticAnalyser(std::shared_ptr<Scope> global_scope, std::shared_ptr<ASTProgramNode> main_program,
 	std::map<std::string, std::shared_ptr<ASTProgramNode>> programs, const std::vector<std::string>& args)
 	: Visitor(programs, main_program, main_program ? main_program->name : Constants::DEFAULT_NAMESPACE), is_max(false) {
-	scopes[Constants::DEFAULT_NAMESPACE].push_back(global_scope);
+	scopes[main_program->name_space].push_back(global_scope);
+
+	if (main_program->name_space != Constants::DEFAULT_NAMESPACE) {
+		program_nmspaces[main_program->name].push_back(Constants::DEFAULT_NAMESPACE);
+	}
+
+	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("builtin", Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
 
 	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 
@@ -1585,11 +1591,6 @@ std::vector<size_t> SemanticAnalyser::evaluate_access_vector(const std::vector<s
 	return access_vector;
 }
 
-bool is_return_node(std::shared_ptr<ASTNode> astnode) {
-	return std::dynamic_pointer_cast<ASTReturnNode>(astnode)
-		|| std::dynamic_pointer_cast<ASTThrowNode>(astnode);
-}
-
 bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 	if (is_return_node(astnode)) {
 		return true;
@@ -1677,6 +1678,11 @@ void SemanticAnalyser::build_args(const std::vector<std::string>& args) {
 	auto cwd_var = std::make_shared<SemanticVariable>("cwd", Type::T_STRING, true, 0, 0);
 	cwd_var->set_value(std::make_shared<SemanticValue>(Type::T_STRING, 0, true, 0, 0));
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("cwd", cwd_var);
+}
+
+bool SemanticAnalyser::is_return_node(std::shared_ptr<ASTNode> astnode) {
+	return std::dynamic_pointer_cast<ASTReturnNode>(astnode)
+		|| std::dynamic_pointer_cast<ASTThrowNode>(astnode);
 }
 
 intmax_t SemanticAnalyser::hash(std::shared_ptr<ASTExprNode> astnode) {

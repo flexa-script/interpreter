@@ -816,6 +816,11 @@ void RuntimeValue::set_null() {
 	copy_from(&v);
 }
 
+bool RuntimeValue::has_value() {
+	return type != Type::T_UNDEFINED
+		&& type != Type::T_VOID;
+}
+
 void RuntimeValue::copy_from(RuntimeValue* value) {
 	type = value->type;
 	type_name = value->type_name;

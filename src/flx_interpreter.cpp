@@ -81,12 +81,12 @@ void FlexaInterpreter::parse_programs(const std::vector<FlexaSource>& source_pro
 }
 
 int FlexaInterpreter::interpreter() {
-	FlexaSource main_program;
+	FlexaSource main_program_src;
 	std::vector<FlexaSource> source_programs;
 	try {
-		main_program = load_program(args.main_file);
+		main_program_src = load_program(args.main_file);
 		source_programs = load_programs(args.source_files);
-		source_programs.emplace(source_programs.begin(), main_program);
+		source_programs.emplace(source_programs.begin(), main_program_src);
 	}
 	catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
