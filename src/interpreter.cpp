@@ -1146,27 +1146,27 @@ void Interpreter::visit(std::shared_ptr<ASTValueNode> astnode) {
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->val));
+	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->val));
+	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->val));
+	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->val));
+	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
-	current_expression_value = alocate_value(new RuntimeValue(astnode->val));
+	current_expression_value = alocate_value(new RuntimeValue(astnode->value));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
@@ -1876,23 +1876,23 @@ long long Interpreter::hash(std::shared_ptr<ASTValueNode> astnode) {
 }
 
 long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long Interpreter::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
-	return utils::StringUtils::hashcode(astnode->val);
+	return utils::StringUtils::hashcode(astnode->value);
 }
 
 long long Interpreter::hash(std::shared_ptr<ASTIdentifierNode> astnode) {

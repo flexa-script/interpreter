@@ -329,9 +329,9 @@ namespace core {
 	template<typename T>
 	class ASTLiteralNode : public ASTExprNode {
 	public:
-		T val;
+		T value;
 
-		ASTLiteralNode(T val, unsigned int row, unsigned int col) : ASTExprNode(row, col), val(val) {};
+		ASTLiteralNode(T value, unsigned int row, unsigned int col) : ASTExprNode(row, col), value(value) {};
 
 		void accept(Visitor*) override;
 		virtual long long hash(Visitor*) override;

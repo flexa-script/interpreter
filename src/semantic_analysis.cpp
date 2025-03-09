@@ -1685,23 +1685,23 @@ long long SemanticAnalyser::hash(std::shared_ptr<ASTExprNode> astnode) {
 }
 
 long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_bool>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_int>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_float>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_char>> astnode) {
-	return static_cast<long long>(astnode->val);
+	return static_cast<long long>(astnode->value);
 }
 
 long long SemanticAnalyser::hash(std::shared_ptr<ASTLiteralNode<flx_string>> astnode) {
-	return utils::StringUtils::hashcode(astnode->val);
+	return utils::StringUtils::hashcode(astnode->value);
 }
 
 long long SemanticAnalyser::hash(std::shared_ptr<ASTIdentifierNode> astnode) {
