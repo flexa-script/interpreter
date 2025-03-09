@@ -1,5 +1,5 @@
-#ifndef BUILTIN_HPP
-#define BUILTIN_HPP
+#ifndef MD_BUILTIN_HPP
+#define MD_BUILTIN_HPP
 
 #include <string>
 #include <unordered_map>
@@ -31,4 +31,4 @@ namespace core {
 
 }
 
-#endif // !BUILTIN_HPP
+#endif // !MD_BUILTIN_HPP

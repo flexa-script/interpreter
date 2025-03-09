@@ -154,7 +154,7 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 
 	auto ev_dim = evaluate_access_vector(astnode->expr_dim);
 
-	// chack and fill array if necessary
+	// check and fill array if necessary
 	check_build_array(new_value, ev_dim);
 
 	// creates variable

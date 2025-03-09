@@ -1,5 +1,5 @@
-#ifndef META_VISITOR_HPP
-#define META_VISITOR_HPP
+#ifndef SCOPE_MANAGER_HPP
+#define SCOPE_MANAGER_HPP
 
 #include <string>
 #include <vector>
@@ -14,7 +14,8 @@
 namespace core {
 
 	class ASTProgramNode;
-	template <typename T> class ASTLiteralNode;
+	template <typename T>
+	class ASTLiteralNode;
 	class ASTLambdaFunction;
 	class ASTIdentifierNode;
 
@@ -53,4 +54,4 @@ namespace core {
 
 }
 
-#endif // !META_VISITOR_HPP
+#endif // !SCOPE_MANAGER_HPP
