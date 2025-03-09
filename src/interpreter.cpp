@@ -1661,9 +1661,7 @@ void Interpreter::visit(std::shared_ptr<ASTTypeOfNode> astnode) {
 
 	auto str_type = TypeDefinition::buid_type_str(*current_expression_value);
 
-	auto value = allocate_value(new RuntimeValue(Type::T_STRING));
-	value->set(flx_string(str_type));
-	current_expression_value = value;
+	current_expression_value = allocate_value(new RuntimeValue(str_type));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
@@ -1673,9 +1671,7 @@ void Interpreter::visit(std::shared_ptr<ASTTypeIdNode> astnode) {
 
 	auto str_type = TypeDefinition::buid_type_str(*current_expression_value);
 
-	auto value = allocate_value(new RuntimeValue(Type::T_INT));
-	value->set(flx_int(utils::StringUtils::hashcode(str_type)));
-	current_expression_value = value;
+	current_expression_value = allocate_value(new RuntimeValue(flx_int(utils::StringUtils::hashcode(str_type))));
 }
 
 void Interpreter::visit(std::shared_ptr<ASTRefIdNode> astnode) {
@@ -2126,7 +2122,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 		}
 		auto rest = allocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<size_t>{(size_t)arr.size()}));
 		auto var = std::make_shared<RuntimeVariable>(rest_name, *rest);
-		//gc.add_var_root(var); // TODO: remove from root
+		gc.add_var_root(var); // TODO: remove from root
 		var->set_value(rest);
 		curr_scope->declare_variable(rest_name, var);
 	}
