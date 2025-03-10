@@ -1374,7 +1374,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}
 
-		bool match_arr_t = lval->array_type == rval->array_type;
+		bool match_arr_t = lval->array_type == rval->array_type || TypeUtils::is_any(lval->array_type);
 		if (!match_arr_t && !TypeUtils::is_any(l_var_array_type) && !is_expr) {
 			ExceptionHandler::throw_operation_err(op, *lval, *rval);
 		}

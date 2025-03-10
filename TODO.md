@@ -92,7 +92,6 @@
         - [X] `x++`, `x--` incrementor
         - [X] `ref` and `unref` to handle variable references
         - [X] `{ init_value }` to initilize all positions with same value
-        - [X] `{  }` to initilize all positions as undefined
         - [X] `in` operator to check if anything is in array/string
         - [X] ternary `expr ? texpr : fexpr`
     - [X] bitwise operators:
