@@ -286,7 +286,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 
 	// gets compare expression
 	TypeDefinition curr_expr = *decl_var_expression;
-	if (Token::is_assignment_collection_op(astnode->op) && declared_variable->value == decl_var_expression) {
+	if (Token::is_assignment_collection_op(astnode->op) && !TypeUtils::is_any(declared_variable->type) && declared_variable->value == decl_var_expression) {
 		curr_expr = *declared_variable;
 	}
 
