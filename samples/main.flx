@@ -6,11 +6,11 @@ include namespace flx;
 
 var stack = create_stack();
 
-push(stack, {});
+var new_dim = {};
+
+push(stack, ref new_dim);
 
 println({peek(stack)});
-
-var new_dim = {{}};
 
 var temp_arr = peek(stack);
 temp_arr += { ref new_dim };
