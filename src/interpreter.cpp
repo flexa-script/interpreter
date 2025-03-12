@@ -180,6 +180,8 @@ void Interpreter::visit(std::shared_ptr<ASTDeclarationNode> astnode) {
 		ExceptionHandler::throw_declaration_type_err(astnode->identifier, *new_var, *new_value);
 	}
 
+	validates_reference_type_assignment(*new_var, new_value);
+
 	// normalize string and number types
 	RuntimeOperations::normalize_type(new_var.get(), new_value);
 
@@ -276,6 +278,8 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 				pos = current_expression_value->get_i();
 				clear_current_expression();
 			}
+
+			validates_reference_type_assignment(*variable, new_value);
 
 			RuntimeOperations::normalize_type(variable.get(), new_value);
 
@@ -1291,7 +1295,9 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 		}
 
 		check_build_array(str_value, evaluate_access_vector(var_type_struct.expr_dim));
-
+		validates_reference_type_assignment(var_type_struct, str_value);
+		RuntimeOperations::normalize_type(&var_type_struct, str_value);
+		
 		if (!TypeUtils::is_any(var_type_struct.type) && !TypeUtils::is_void(str_value->type)) {
 			str_value->type = var_type_struct.type;
 			str_value->array_type = var_type_struct.array_type;

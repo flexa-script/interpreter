@@ -1283,7 +1283,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 			&& Token::is_equality_op(op)) {
 			res_value = new RuntimeValue((flx_bool)(op == "==" ?
 				lval->get_c() == rval->get_c()
-				: lval->get_c() != lval->get_c()));
+				: lval->get_c() != rval->get_c()));
 
 			break;
 		}
