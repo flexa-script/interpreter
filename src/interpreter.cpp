@@ -246,6 +246,10 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 		new_value = allocate_value(new RuntimeValue(ptr_value));
 	}
 
+	validates_reference_type_assignment(*variable, new_value);
+
+	RuntimeOperations::normalize_type(variable.get(), new_value);
+
 	// handle direct assignment
 	if (astnode->op == "="
 		&& astnode->identifier_vector.size() == 1
@@ -257,16 +261,12 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 			ExceptionHandler::throw_mismatched_type_err(*variable, *ptr_value);
 		}
 
-		RuntimeOperations::normalize_type(variable.get(), new_value);
-
 		// direct variable assignment
 		variable->set_value(new_value);
 	}
 	// handle sub value assignment
 	else {
 		if (astnode->op == "=") {
-			validates_reference_type_assignment(*variable, new_value);
-
 			// variable sub value assignment
 			set_value(variable, astnode->identifier_vector, new_value);
 		}
@@ -278,10 +278,6 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 				pos = current_expression_value->get_i();
 				clear_current_expression();
 			}
-
-			validates_reference_type_assignment(*variable, new_value);
-
-			RuntimeOperations::normalize_type(variable.get(), new_value);
 
 			// do value/sub value operation
 			RuntimeOperations::do_operation(astnode->op, value, new_value, false, pos);
@@ -327,8 +323,7 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 			}
 		}
 
-		// check if it's reference
-		current_expression_value = value->use_ref ? value : allocate_value(new RuntimeValue(value));
+		current_expression_value = value;
 
 		if (curr_func_call_expr_call) {
 			curr_func_call_expr_call->accept(this);

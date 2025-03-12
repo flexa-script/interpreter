@@ -1,1 +1,28 @@
-println("Hello world!");
+// println("Hello world!");
+
+using flx.std.collections.stack;
+
+include namespace flx;
+
+var stack = create_stack();
+
+push(stack, {});
+
+println({peek(stack)});
+
+var new_dim = {{}};
+
+var temp_arr = peek(stack);
+temp_arr += { ref new_dim };
+// peek(stack) += { 1 };
+
+push(stack, {ref new_dim});
+
+println({peek(stack)});
+
+
+var temp_arr2 = peek(stack);
+temp_arr2 += { 1 };
+temp_arr2 += { 2 };
+
+println({peek(stack)});
