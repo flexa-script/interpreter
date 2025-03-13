@@ -418,23 +418,19 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode)
 	}
 
 	if (astnode->block) {
-		// todo: improve function return type identification
-
 		auto has_return = returns(astnode->block);
 		auto type = TypeUtils::is_void(astnode->type) && has_return ? Type::T_ANY : astnode->type;
-		auto array_type = (TypeUtils::is_void(astnode->array_type) || TypeUtils::is_undefined(astnode->array_type)) && has_return ? Type::T_ANY : astnode->array_type;
 
 		if (astnode->identifier != "") {
 			try {
 				std::shared_ptr<Scope> func_scope = scopes[name_space].back();
 				auto& declfun = func_scope->find_declared_function(astnode->identifier, &astnode->parameters, true);
 				declfun.type = type;
-				declfun.array_type = array_type;
 				declfun.block = astnode->block;
 			}
 			catch (...) {
 				auto f = FunctionDefinition(astnode->identifier, type, astnode->type_name, astnode->type_name_space,
-					array_type, astnode->dim, astnode->parameters, astnode->block, astnode->row, astnode->row);
+					astnode->array_type, astnode->dim, astnode->parameters, astnode->block, astnode->row, astnode->row);
 				scopes[name_space].back()->declare_function(astnode->identifier, f);
 			}
 
