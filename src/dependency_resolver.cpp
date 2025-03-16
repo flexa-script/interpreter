@@ -50,7 +50,7 @@ void DependencyResolver::visit(std::shared_ptr<ASTExcludeNamespaceNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTDeclarationNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTUnpackedDeclarationNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTAssignmentNode>) {}
-
+void DependencyResolver::visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode>) {}
 
 void DependencyResolver::visit(std::shared_ptr<ASTBuiltinCallNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTFunctionCallNode>) {}

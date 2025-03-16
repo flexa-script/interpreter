@@ -673,12 +673,14 @@ void RuntimeValue::set(flx_function fun) {
 void RuntimeValue::set_sub(std::string identifier, RuntimeValue* sub_value) {
 	if (!str) return;
 	sub_value->value_ref = this;
+	sub_value->access_identifier = identifier;
 	(*str)[identifier] = sub_value;
 }
 
 void RuntimeValue::set_sub(size_t index, RuntimeValue* sub_value) {
 	if (!arr) return;
 	sub_value->value_ref = this;
+	sub_value->access_index = index;
 	(*arr)[index] = sub_value;
 }
 
@@ -726,13 +728,18 @@ RuntimeValue* RuntimeValue::get_sub(std::string identifier) {
 	if (!str) return nullptr;
 	auto sub_value = (*str)[identifier];
 	sub_value->value_ref = this;
+	sub_value->access_identifier = identifier;
 	return sub_value;
 }
 
 RuntimeValue* RuntimeValue::get_sub(size_t index) {
 	if (!arr) return nullptr;
+	if (index >= (*arr).size()) {
+		throw std::runtime_error("invalid array access position");
+	}
 	auto sub_value = (*arr)[index];
 	sub_value->value_ref = this;
+	sub_value->access_index = index;
 	return sub_value;
 }
 
@@ -777,6 +784,9 @@ void RuntimeValue::set_arr_type(Type arr_type) {
 }
 
 void RuntimeValue::unset() {
+	access_identifier = "";
+	access_index = 0;
+
 	if (this->b) {
 		delete this->b;
 		this->b = nullptr;
@@ -1243,7 +1253,7 @@ RuntimeValue* RuntimeOperations::do_operation(const std::string& op, RuntimeValu
 		if (is_expr
 			&& TypeUtils::is_numeric(l_type)
 			&& Token::is_relational_op(op)) {
-			lval->set(do_relational_operation(op, lval, rval));
+			res_value = new RuntimeValue(do_relational_operation(op, lval, rval));
 
 			break;
 		}

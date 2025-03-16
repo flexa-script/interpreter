@@ -270,7 +270,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 		throw std::runtime_error("variable '" + astnode->identifier + "' is undefined");
 	}
 
-	auto decl_var_expression = access_value(declared_variable->value, astnode->identifier_vector);
+	auto decl_var_expression = access_value(declared_variable->get_value(), astnode->identifier_vector);
 
 	if (declared_variable->is_const) {
 		throw std::runtime_error("'" + identifier + "' constant being reassigned");
@@ -286,15 +286,76 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 
 	// gets compare expression
 	TypeDefinition curr_expr = *decl_var_expression;
-	if (Token::is_assignment_collection_op(astnode->op) && !TypeUtils::is_any(declared_variable->type) && declared_variable->value == decl_var_expression) {
+	if (Token::is_assignment_collection_op(astnode->op) && !TypeUtils::is_any(declared_variable->type) && declared_variable->get_value() == decl_var_expression) {
 		curr_expr = *declared_variable;
 	}
 
 	assignment_expr = SemanticValue(do_operation(astnode->op, *declared_variable, curr_expr,
 		assignment_expr, false), 0, false, astnode->row, astnode->col);
 
-	if (declared_variable->value == decl_var_expression) {
-		declared_variable->value->copy_from(assignment_expr);
+	if (declared_variable->get_value() == decl_var_expression) {
+		declared_variable->get_value()->copy_from(assignment_expr);
+	}
+
+}
+
+void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+	const auto& current_program = current_program_stack.top();
+	const auto& name_space = current_program->name_space;
+
+	astnode->function->accept(this);
+
+	std::shared_ptr<SemanticVariable> declared_variable;
+
+	if (auto var = current_expression.ref.lock()) {
+		declared_variable = std::dynamic_pointer_cast<SemanticVariable>(var);
+	}
+	else {
+		auto decl_expr = current_expression;
+		astnode->expr->accept(this);
+		do_operation(astnode->op, decl_expr, decl_expr, current_expression, false);
+		return;
+	}
+
+	auto decl_var_expression = declared_variable->get_value();
+
+	astnode->expr->accept(this);
+
+	if (TypeUtils::is_undefined(current_expression.type)) {
+		throw std::runtime_error("'" + declared_variable->identifier + "' assign expression is undefined");
+	}
+
+	if (TypeUtils::is_function(current_expression.type)) {
+		auto f = FunctionDefinition(declared_variable->identifier, astnode->row, astnode->row);
+		scopes[name_space].back()->declare_function(declared_variable->identifier, f);
+	}
+
+	auto assignment_expr = current_expression;
+
+	if (declared_variable->is_const) {
+		throw std::runtime_error("'" + declared_variable->identifier + "' constant being reassigned");
+	}
+
+	if (decl_var_expression->dim.size() < declared_variable->dim.size() && decl_var_expression->dim.size() == 1) {
+		decl_var_expression->dim = declared_variable->dim;
+	}
+
+	if (TypeUtils::is_string(declared_variable->type) || TypeUtils::is_float(declared_variable->type)) {
+		decl_var_expression->type = declared_variable->type;
+	}
+
+	// gets compare expression
+	TypeDefinition curr_expr = *decl_var_expression;
+	if (Token::is_assignment_collection_op(astnode->op) && !TypeUtils::is_any(declared_variable->type) && declared_variable->get_value() == decl_var_expression) {
+		curr_expr = *declared_variable;
+	}
+
+	assignment_expr = SemanticValue(do_operation(astnode->op, *declared_variable, curr_expr,
+		assignment_expr, false), 0, false, astnode->row, astnode->col);
+
+	if (declared_variable->get_value() == decl_var_expression) {
+		declared_variable->get_value()->copy_from(assignment_expr);
 	}
 
 }
@@ -1106,7 +1167,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 		throw std::runtime_error("variable '" + astnode->identifier + "' is undefined");
 	}
 
-	auto variable_expr = access_value(declared_variable->value, astnode->identifier_vector);
+	auto variable_expr = access_value(declared_variable->get_value(), astnode->identifier_vector);
 	variable_expr->reset_ref();
 
 	if (TypeUtils::is_undefined(variable_expr->type)) {
@@ -1115,7 +1176,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 
 	current_expression = *variable_expr;
 	current_expression.reset_ref();
-	current_expression.is_sub = declared_variable->value != variable_expr;
+	current_expression.is_sub = declared_variable->get_value() != variable_expr;
 
 }
 

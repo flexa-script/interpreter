@@ -1038,9 +1038,22 @@ std::shared_ptr<ASTNode> Parser::parse_identifier_statement() {
 
 	switch (next_token.type) {
 	case TK_LEFT_BRACKET: {
-		std::shared_ptr<ASTFunctionCallNode> expr = parse_function_call_node(identifier);
+		std::shared_ptr<ASTFunctionCallNode> fun = parse_function_call_node(identifier);
+		std::string op = next_token.value;
+
+		switch (next_token.type) {
+		case TK_INCREMENT_OP:
+			op = op == "++" ? "+=" : "-=";
+
+		case TK_ADDITIVE_OP:
+		case TK_MULTIPLICATIVE_OP:
+		case TK_EQUALS:
+			return std::make_shared<ASTFunctionExpressionAssignmentNode>(fun, op, parse_function_expression_assignment_tail(), current_token.row, current_token.col);
+
+		}
+
 		check_consume_semicolon();
-		return expr;
+		return fun;
 	}
 	case TK_INCREMENT_OP:
 		return parse_increment_expression(identifier);
@@ -1087,11 +1100,9 @@ std::shared_ptr<ASTFunctionCallNode> Parser::parse_function_call_tail() {
 		consume_token();
 		consume_token();
 		expression_identifier_vector = parse_identifier_vector();
-
-		if (expression_identifier_vector.size() > 0) {
-			expression_identifier_vector.emplace(expression_identifier_vector.begin(), id);
-		}
 	}
+	
+	expression_identifier_vector.emplace(expression_identifier_vector.begin(), id);
 
 	// parse expression function call
 	if (next_token.type == TK_LEFT_BRACKET) {
@@ -1202,6 +1213,25 @@ std::shared_ptr<ASTAssignmentNode> Parser::parse_assignment_statement(std::share
 	check_consume_semicolon();
 
 	return std::make_shared<ASTAssignmentNode>(identifier->identifier_vector, identifier->name_space, op, expr, identifier->row, identifier->col);
+}
+
+std::shared_ptr<ASTExprNode> Parser::parse_function_expression_assignment_tail() {
+	std::shared_ptr<ASTExprNode> expr = nullptr;
+
+	consume_token();
+	if (current_token.type == TK_INCREMENT_OP) {
+		expr = std::make_shared<ASTLiteralNode<flx_int>>(1, current_token.row, current_token.col);
+
+	}
+	else {
+		consume_token();
+		expr = parse_expression();
+
+		check_consume_semicolon();
+
+	}
+
+	return expr;
 }
 
 std::shared_ptr<ASTDeclarationNode> Parser::parse_declaration_statement() {
@@ -1657,8 +1687,12 @@ std::shared_ptr<ASTThisNode> Parser::parse_this_node() {
 	return std::make_shared<ASTThisNode>(row, col);
 }
 
+bool Parser::check_check_consume_semicolon() {
+	return !consume_semicolon.empty() && consume_semicolon.top();
+}
+
 void Parser::check_consume_semicolon() {
-	if (!consume_semicolon.empty() && consume_semicolon.top()) {
+	if (check_check_consume_semicolon()) {
 		consume_token(TK_SEMICOLON);
 	}
 }

@@ -331,6 +331,8 @@ namespace core {
 
 	public:
 		RuntimeValue* value_ref = nullptr;
+		size_t access_index = 0;
+		flx_string access_identifier = "";
 
 		RuntimeValue(Type type, Type array_type, std::vector<size_t> dim,
 			const std::string& type_name, const std::string& type_name_space,

@@ -100,6 +100,7 @@ namespace core {
 			void visit(std::shared_ptr<ASTDeclarationNode>) override;
 			void visit(std::shared_ptr<ASTUnpackedDeclarationNode>) override;
 			void visit(std::shared_ptr<ASTAssignmentNode>) override;
+			void visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode>) override;
 			void visit(std::shared_ptr<ASTReturnNode>) override;
 			void visit(std::shared_ptr<ASTExitNode>) override;
 			void visit(std::shared_ptr<ASTBlockNode>) override;

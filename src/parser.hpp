@@ -45,6 +45,7 @@ namespace core {
 			std::shared_ptr<ASTStatementNode> parse_unpacked_declaration_statement();
 			std::shared_ptr<ASTAssignmentNode> parse_assignment_statement(std::shared_ptr<ASTIdentifierNode> idnode);
 			std::shared_ptr<ASTUnaryExprNode> parse_increment_expression(std::shared_ptr<ASTIdentifierNode> idnode);
+			std::shared_ptr<ASTExprNode> parse_function_expression_assignment_tail();
 			std::shared_ptr<ASTReturnNode> parse_return_statement();
 			std::shared_ptr<ASTExitNode> parse_exit_statement();
 			std::shared_ptr<ASTEnumNode> parse_enum_statement();
@@ -118,6 +119,7 @@ namespace core {
 			void consume_token();
 			void consume_token(LexTokenType type);
 			void check_current_token(LexTokenType type) const;
+			bool check_check_consume_semicolon();
 			void check_consume_semicolon();
 
 			std::string msg_header() const;

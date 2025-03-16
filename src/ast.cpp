@@ -49,6 +49,11 @@ ASTAssignmentNode::ASTAssignmentNode(const std::vector<Identifier>& identifier_v
 	: ASTStatementNode(row, col), identifier(identifier_vector[0].identifier),
 	identifier_vector(identifier_vector), name_space(name_space), expr(expr), op(op) {}
 
+ASTFunctionExpressionAssignmentNode::ASTFunctionExpressionAssignmentNode(std::shared_ptr<ASTFunctionCallNode> function,
+	const std::string& op, std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
+	: ASTStatementNode(row, col), function(function), expr(expr), op(op) {
+}
+
 ASTReturnNode::ASTReturnNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
 	: ASTStatementNode(row, col), expr(expr) {}
 
@@ -333,6 +338,10 @@ void ASTExcludeNamespaceNode::accept(Visitor* v) {
 
 void ASTAssignmentNode::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTAssignmentNode>(shared_from_this()));
+}
+
+void ASTFunctionExpressionAssignmentNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTFunctionExpressionAssignmentNode>(shared_from_this()));
 }
 
 void ASTReturnNode::accept(Visitor* v) {

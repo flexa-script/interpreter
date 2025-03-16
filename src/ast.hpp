@@ -149,6 +149,18 @@ namespace core {
 		void accept(Visitor*) override;
 	};
 
+	class ASTFunctionExpressionAssignmentNode : public ASTStatementNode {
+	public:
+		std::shared_ptr<ASTFunctionCallNode> function;
+		std::string op;
+		std::shared_ptr<ASTExprNode> expr;
+
+		ASTFunctionExpressionAssignmentNode(std::shared_ptr<ASTFunctionCallNode> function,
+			const std::string& op, std::shared_ptr<ASTExprNode> expr, size_t row, size_t col);
+
+		void accept(Visitor*) override;
+	};
+
 	class ASTReturnNode : public ASTStatementNode {
 	public:
 		std::shared_ptr<ASTExprNode> expr;

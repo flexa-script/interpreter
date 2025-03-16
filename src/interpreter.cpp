@@ -286,6 +286,45 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 
 }
 
+void Interpreter::visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+	const auto& current_program = current_program_stack.top();
+
+	astnode->function->accept(this);
+
+	if (auto variable = current_expression_value) {
+		// evaluate assignment expression
+		astnode->expr->accept(this);
+
+		auto ptr_value = current_expression_value;
+
+		// check if it's reference
+		RuntimeValue* new_value = ptr_value;
+
+		if (!ptr_value->use_ref) {
+			new_value = allocate_value(new RuntimeValue(ptr_value));
+		}
+
+		validates_reference_type_assignment(*variable, new_value);
+
+		RuntimeOperations::normalize_type(variable, new_value);
+
+		if (variable->value_ref && TypeUtils::is_string(variable->value_ref->type
+		) && astnode->op == "=" && TypeUtils::is_char(variable->type)) {
+			(*variable->value_ref->get_raw_s())[variable->access_index] = new_value->get_c();
+		}
+		else {
+			RuntimeOperations::do_operation(astnode->op, variable, new_value, false);
+		}
+		
+	}
+	else {
+		throw std::runtime_error("expected variable as value of function return, but found value");
+
+	}
+
+}
+
 void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& name_space = current_program_stack.top()->name_space;
@@ -316,10 +355,12 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 			if (TypeUtils::is_string(value->type) && curr_func_call_expr_id_vector.back().access_vector.size() > 0 && has_string_access) {
 				has_string_access = false;
 				std::string str = value->get_s();
-				curr_func_call_expr_id_vector.back().access_vector[curr_func_call_expr_id_vector.back().access_vector.size() - 1]->accept(this);
-				auto pos = value->get_i();
+				curr_func_call_expr_id_vector.back().access_vector.back()->accept(this);
+				auto pos = current_expression_value->get_i();
 
 				value = allocate_value(new RuntimeValue(flx_char(str[pos])));
+				value->value_ref = returned_value;
+				value->access_index = pos;
 			}
 		}
 
@@ -534,9 +575,10 @@ void Interpreter::visit(std::shared_ptr<ASTBlockNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
 	const auto& name_space = current_program->name_space;
-
-	scopes[name_space].push_back(std::make_shared<Scope>(current_program, function_call_name));
+	auto current_function_call_name = function_call_name;
 	function_call_name = "";
+
+	scopes[name_space].push_back(std::make_shared<Scope>(current_program, current_function_call_name));
 
 	// declare all parameters in block if its a function
 	declare_function_block_parameters(name_space);
@@ -1335,8 +1377,9 @@ void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 			std::dynamic_pointer_cast<ASTExprNode>(astnode->identifier_vector.back().access_vector[astnode->identifier_vector.back().access_vector.size() - 1])->accept(this);
 			auto pos = current_expression_value->get_i();
 
-			auto char_value = allocate_value(new RuntimeValue(Type::T_CHAR));
-			char_value->set(flx_char(str[pos]));
+			auto char_value = allocate_value(new RuntimeValue(flx_char(str[pos])));
+			char_value->value_ref = sub_val;
+			char_value->access_index = pos;
 			current_expression_value = char_value;
 
 		}
@@ -1771,36 +1814,29 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 	auto access_vector = evaluate_access_vector(identifier_vector[i].access_vector);
 
 	if (access_vector.size() > 0) {
-		auto current_val = next_value->get_arr();
 		size_t s = 0;
 		size_t access_pos = 0;
 
 		for (s = 0; s < access_vector.size() - 1; ++s) {
 			access_pos = access_vector.at(s);
-			if (access_pos >= current_val.size()) {
-				throw std::runtime_error("invalid array access position");
-			}
+			next_value = next_value->get_sub(access_pos);
 			// break if it is a string, and the string access will be handled in identifier node evaluation
-			if (TypeUtils::is_string(current_val[access_pos]->type)) {
+			if (TypeUtils::is_string(next_value->type)) {
 				has_string_access = true;
-				break;
+				return next_value;
 			}
-			current_val = current_val[access_pos]->get_arr();
 		}
+		// break if it is a string, and the string access will be handled in identifier node evaluation
 		if (TypeUtils::is_string(next_value->type)) {
 			has_string_access = true;
 			return next_value;
 		}
 		access_pos = access_vector.at(s);
-		if (access_pos >= current_val.size()) {
-			throw std::runtime_error("invalid array access position");
-		}
+		next_value = next_value->get_sub(access_pos);
 
-		if (!current_val[access_pos]) {
-			current_val[access_pos] = allocate_value(new RuntimeValue(Type::T_VOID));
+		if (!next_value) {
+			next_value = allocate_value(new RuntimeValue(Type::T_VOID));
 		}
-
-		next_value = current_val[access_pos];
 	}
 
 	++i;
@@ -1817,7 +1853,7 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 			throw std::runtime_error("cannot reach '" + ss.str() + "', previous '" + identifier_vector[i - 1].identifier + "' value is null");
 		}
 
-		next_value = next_value->get_str()[identifier_vector[i].identifier];
+		next_value = next_value->get_sub(identifier_vector[i].identifier);
 
 		if (identifier_vector[i].access_vector.size() > 0 || i < identifier_vector.size()) {
 			return access_value(next_value, identifier_vector, i);

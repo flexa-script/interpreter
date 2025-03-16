@@ -18,6 +18,7 @@ namespace core {
 	class ASTDeclarationNode;
 	class ASTUnpackedDeclarationNode;
 	class ASTAssignmentNode;
+	class ASTFunctionExpressionAssignmentNode;
 	class ASTFunctionCallNode;
 	class ASTReturnNode;
 	class ASTBlockNode;
@@ -80,6 +81,7 @@ namespace core {
 		virtual void visit(std::shared_ptr<ASTDeclarationNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTUnpackedDeclarationNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTAssignmentNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTReturnNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTBlockNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTContinueNode>) = 0;
