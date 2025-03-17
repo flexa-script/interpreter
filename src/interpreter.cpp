@@ -309,8 +309,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode> ast
 
 		RuntimeOperations::normalize_type(variable, new_value);
 
-		if (variable->value_ref && TypeUtils::is_string(variable->value_ref->type
-		) && astnode->op == "=" && TypeUtils::is_char(variable->type)) {
+		if (variable->value_ref && TypeUtils::is_string(variable->value_ref->type) && astnode->op == "=" && TypeUtils::is_char(variable->type)) {
 			(*variable->value_ref->get_raw_s())[variable->access_index] = new_value->get_c();
 		}
 		else {

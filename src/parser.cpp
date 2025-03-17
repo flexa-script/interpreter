@@ -352,7 +352,7 @@ std::shared_ptr<ASTSwitchNode> Parser::parse_switch_statement() {
 		}
 	}
 
-	default_block = statements.size();
+	default_block = statements.size() - 1;
 
 	return std::make_shared<ASTSwitchNode>(condition, statements, case_blocks, default_block, row, col);
 }
