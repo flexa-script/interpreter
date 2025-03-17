@@ -18,7 +18,7 @@ SemanticAnalyser::SemanticAnalyser(std::shared_ptr<Scope> global_scope, std::sha
 		program_nmspaces[main_program->name].push_back(Constants::DEFAULT_NAMESPACE);
 	}
 
-	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("builtin", Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
+	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("builtin@" + utils::UUID::generate(), Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
 
 	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 
@@ -403,7 +403,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 
 	// handle function return
 	if (astnode->identifier.empty()) {
-		if (!TypeUtils::is_function(returned_expression.type)) {
+		if (!TypeUtils::is_function(returned_expression.type) && !TypeUtils::is_any(returned_expression.type)) {
 			throw std::runtime_error(ExceptionHandler::buid_signature(astnode->identifier_vector, signature));
 		}
 

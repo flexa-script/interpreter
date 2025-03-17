@@ -727,8 +727,10 @@ flx_function RuntimeValue::get_fun() const {
 RuntimeValue* RuntimeValue::get_sub(std::string identifier) {
 	if (!str) return nullptr;
 	auto sub_value = (*str)[identifier];
-	sub_value->value_ref = this;
-	sub_value->access_identifier = identifier;
+	if (sub_value) {
+		sub_value->value_ref = this;
+		sub_value->access_identifier = identifier;
+	}
 	return sub_value;
 }
 
@@ -738,8 +740,10 @@ RuntimeValue* RuntimeValue::get_sub(size_t index) {
 		throw std::runtime_error("invalid array access position");
 	}
 	auto sub_value = (*arr)[index];
-	sub_value->value_ref = this;
-	sub_value->access_index = index;
+	if (sub_value) {
+		sub_value->value_ref = this;
+		sub_value->access_index = index;
+	}
 	return sub_value;
 }
 

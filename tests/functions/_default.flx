@@ -71,7 +71,7 @@ ret_fun1()();
 // ---------------------------------------------
 // ---------------------------------------------
 
-struct Stack {
+struct TestStack {
   var arr;
 }
 
@@ -83,7 +83,7 @@ fun peek(s) {
   return ref s.arr;
 }
 
-var s = Stack{arr={}};
+var s = TestStack{arr={}};
 var a = {};
 var nd = {};
 

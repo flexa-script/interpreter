@@ -28,7 +28,7 @@ Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<AS
 
 	scopes[main_program->name_space].push_back(global_scope);
 
-	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("builtin", Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
+	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("builtin@" + utils::UUID::generate(), Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
 
 	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 
@@ -316,7 +316,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode> ast
 		else {
 			RuntimeOperations::do_operation(astnode->op, variable, new_value, false);
 		}
-		
+
 	}
 	else {
 		throw std::runtime_error("expected variable as value of function return, but found value");
@@ -1334,7 +1334,7 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 		check_build_array(str_value, evaluate_access_vector(var_type_struct.expr_dim));
 		validates_reference_type_assignment(var_type_struct, str_value);
 		RuntimeOperations::normalize_type(&var_type_struct, str_value);
-		
+
 		if (!TypeUtils::is_any(var_type_struct.type) && !TypeUtils::is_void(str_value->type)) {
 			str_value->type = var_type_struct.type;
 			str_value->array_type = var_type_struct.array_type;
