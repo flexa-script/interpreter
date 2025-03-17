@@ -1,1 +1,12 @@
-println("Hello world!");
+fun test_if(): int {
+    if (false) {
+        return 0;
+    }
+
+    // return 0;
+}
+
+fun test_switch(): int {
+    return 0;
+}
+

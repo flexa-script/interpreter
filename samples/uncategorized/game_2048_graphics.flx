@@ -29,6 +29,20 @@ var color_white = flx::rgb(255, 255, 255);
 var color_gray = flx::rgb(187, 173, 160);
 var color_dark_gray = flx::rgb(62, 57, 51);
 
+var color_2 = flx::rgb(238, 228, 218);
+var color_4 = flx::rgb(237, 224, 200);
+var color_8 = flx::rgb(242, 177, 121);
+var color_16 = flx::rgb(245, 149, 99);
+var color_32 = flx::rgb(246, 124, 95);
+var color_64 = flx::rgb(246, 94, 59);
+var color_128 = flx::rgb(237, 207, 114);
+var color_256 = flx::rgb(237, 204, 97);
+var color_512 = flx::rgb(237, 200, 80);
+var color_1024 = flx::rgb(237, 197, 63);
+var color_2048 = flx::rgb(237, 194, 46);
+var color_4096 = flx::rgb(62, 57, 51);
+var color_0 = flx::rgb(204, 192, 179);
+
 // function declarations
 fun render();
 fun update();
@@ -120,32 +134,33 @@ fun update() {
 }
 
 fun get_color(val: int): Color {
-    if (val == 2) {
-        return flx::rgb(238, 228, 218);
-    } else if (val == 4) {
-        return flx::rgb(237, 224, 200);
-    } else if (val == 8) {
-        return flx::rgb(242, 177, 121);
-    } else if (val == 16) {
-        return flx::rgb(245, 149, 99);
-    } else if (val == 32) {
-        return flx::rgb(246, 124, 95);
-    } else if (val == 64) {
-        return flx::rgb(246, 94, 59);
-    } else if (val == 128) {
-        return flx::rgb(237, 207, 114);
-    } else if (val == 256) {
-        return flx::rgb(237, 204, 97);
-    } else if (val == 512) {
-        return flx::rgb(237, 200, 80);
-    } else if (val == 1024) {
-        return flx::rgb(237, 197, 63);
-    } else if (val == 2048) {
-        return flx::rgb(237, 194, 46);
-    } else if (val == 4096) {
-        return flx::rgb(62, 57, 51);
-    } else {
-        return flx::rgb(204, 192, 179);
+    switch (val) {
+    case 2:
+        return color_2;
+    case 4:
+        return color_4;
+    case 8:
+        return color_8;
+    case 16:
+        return color_16;
+    case 32:
+        return color_32;
+    case 64:
+        return color_64;
+    case 128:
+        return color_128;
+    case 256:
+        return color_256;
+    case 512:
+        return color_512;
+    case 1024:
+        return color_1024;
+    case 2048:
+        return color_2048;
+    case 4096:
+        return color_4096;
+    default:
+        return color_0;
     }
 }
 
@@ -397,6 +412,4 @@ fun is_end_game(): bool {
     return c2;
 }
 
-if (this == "main") {
-	main();
-}
+main();

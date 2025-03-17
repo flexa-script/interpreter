@@ -1667,17 +1667,15 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 			}
 
 			if (sub_return) {
-				if (const auto& if_node = std::dynamic_pointer_cast<ASTIfNode>(block_stmt)) {
-					if (if_node->else_block) {
-						if (!returns(if_node->else_block)) {
-							sub_return = false;
-						}
-					}
-					else {
-						sub_return = false;
-					}
-				}
-				else if (!returns(block_stmt)) {
+				//else if (const auto& switch_node = std::dynamic_pointer_cast<ASTSwitchNode>(block_stmt)) {
+				//	for (const auto& switch_stmt : switch_node->statements) {
+				//		if (returns(switch_stmt)) {
+				//			return true;
+				//		}
+				//	}
+				//}
+				//else 
+				if (!returns(block_stmt)) {
 					sub_return = false;
 				}
 			}
@@ -1699,6 +1697,15 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 			else_return = returns(if_node->else_block);
 		}
 		return if_return && elif_return && else_return;
+	}
+
+	if (const auto& if_node = std::dynamic_pointer_cast<ASTIfNode>(astnode)) {
+		if (if_node->else_block) {
+			return returns(if_node->else_block);
+		}
+		else {
+			return false;
+		}
 	}
 
 	if (const auto& trycatch_node = std::dynamic_pointer_cast<ASTTryCatchNode>(astnode)) {
