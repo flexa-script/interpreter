@@ -1504,7 +1504,7 @@ void Interpreter::visit(std::shared_ptr<ASTInNode> astnode) {
 			res = coll_val.get_s().find(expr_val.get_c()) != std::string::npos;
 		}
 		else {
-			res = expr_val.get_s().find(expr_val.get_s()) != std::string::npos;
+			res = coll_val.get_s().find(expr_val.get_s()) != std::string::npos;
 		}
 	}
 
