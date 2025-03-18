@@ -1852,6 +1852,10 @@ RuntimeValue* Interpreter::access_value(RuntimeValue* value, const std::vector<I
 			throw std::runtime_error("cannot reach '" + ss.str() + "', previous '" + identifier_vector[i - 1].identifier + "' value is null");
 		}
 
+		if (!next_value->get_str().contains(identifier_vector[i].identifier)) {
+			ExceptionHandler::throw_struct_member_err(next_value->type_name_space, next_value->type_name, identifier_vector[i].identifier);
+		}
+
 		next_value = next_value->get_sub(identifier_vector[i].identifier);
 
 		if (identifier_vector[i].access_vector.size() > 0 || i < identifier_vector.size()) {
