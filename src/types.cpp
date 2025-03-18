@@ -1039,6 +1039,10 @@ std::string RuntimeOperations::parse_value_to_string(const RuntimeValue* value, 
 		break;
 	case Type::T_FLOAT:
 		str = std::to_string(value->get_f());
+		str.erase(str.find_last_not_of('0') + 1, std::string::npos);
+		if (!str.empty() && str.back() == '.') {
+			str += "0";
+		}
 		break;
 	case Type::T_CHAR:
 		str = flx_string(std::string{ value->get_c() });
