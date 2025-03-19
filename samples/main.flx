@@ -1,12 +1,41 @@
-fun test_if(): int {
-    if (false) {
-        return 0;
+// fun test_if(): int {
+//     if (true) {
+//         return 0;
+//     }
+//     else if (true){
+//         return 1;
+//     }
+//     else{
+//         return 1;
+//     }
+
+//     // return 0;
+// }
+
+fun test_switch(): int {
+    switch (10) {
+    case 1:
+        println("x");
+        println("Y");
+        return 1;
+        // break;
+    case 2:
+        println("x");
+        println("Y");
+        return 1;
+        // break;
+    case 3:
+        println("x");
+        println("Y");
+        // return 1;
+        // break;
+    default:
+        println("x");
+        println("Y");
+        return 1;
+        // break;
     }
 
     // return 0;
-}
-
-fun test_switch(): int {
-    return 0;
 }
 

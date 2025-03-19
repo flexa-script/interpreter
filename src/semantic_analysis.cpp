@@ -1667,14 +1667,6 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 			}
 
 			if (sub_return) {
-				//else if (const auto& switch_node = std::dynamic_pointer_cast<ASTSwitchNode>(block_stmt)) {
-				//	for (const auto& switch_stmt : switch_node->statements) {
-				//		if (returns(switch_stmt)) {
-				//			return true;
-				//		}
-				//	}
-				//}
-				//else 
 				if (!returns(block_stmt)) {
 					sub_return = false;
 				}
@@ -1699,25 +1691,46 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 		return if_return && elif_return && else_return;
 	}
 
-	if (const auto& if_node = std::dynamic_pointer_cast<ASTIfNode>(astnode)) {
-		if (if_node->else_block) {
-			return returns(if_node->else_block);
-		}
-		else {
-			return false;
-		}
-	}
-
 	if (const auto& trycatch_node = std::dynamic_pointer_cast<ASTTryCatchNode>(astnode)) {
 		return returns(trycatch_node->try_block) && returns(trycatch_node->catch_block);
 	}
 
 	if (const auto& switch_node = std::dynamic_pointer_cast<ASTSwitchNode>(astnode)) {
-		for (const auto& switch_stmt : switch_node->statements) {
-			if (returns(switch_stmt)) {
-				return true;
+		std::vector<size_t> positions;
+		for (const auto& [key, value] : switch_node->case_blocks) {
+			positions.push_back(value);
+		}
+
+		for (size_t pi = 0; pi < positions.size() + 1; ++pi) {
+			size_t current_block_start = 0;
+			size_t current_block_end = 0;
+
+			if (pi < positions.size() - 2) {
+				current_block_start = positions[pi];
+				current_block_end = pi < positions.size() - 1 ? positions[pi + 1] : switch_node->default_block;
+			}
+			else {
+				current_block_start = switch_node->default_block;
+				current_block_end = switch_node->statements.size();
+			}
+
+
+			bool block_return = false;
+			for (size_t i = current_block_start; i < current_block_end; ++i) {
+				const auto& switch_stmt = switch_node->statements[i];
+
+				if (returns(switch_stmt)) {
+					block_return = true;
+					break;
+				}
+			}
+
+			if (!block_return) {
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	if (const auto& for_node = std::dynamic_pointer_cast<ASTForNode>(astnode)) {
