@@ -12,6 +12,8 @@
 //     // return 0;
 // }
 
+// and if there is a break before return???
+
 fun test_switch(): int {
     switch (10) {
     case 1:
