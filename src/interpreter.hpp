@@ -60,7 +60,7 @@ namespace core {
 		private:
 			void clear_current_expression();
 
-			void declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value);
+			void declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, TypeDefinition variable, RuntimeValue* value);
 
 			std::vector<size_t> evaluate_access_vector(const std::vector<std::shared_ptr<ASTExprNode>>& expr_access_vector);
 			std::vector<size_t> calculate_array_dim_size(const flx_array& arr);

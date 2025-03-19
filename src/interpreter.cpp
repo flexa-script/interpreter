@@ -274,7 +274,7 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 			// gets string access position
 			flx_int pos = -1;
 			if (has_string_access) {
-				std::dynamic_pointer_cast<ASTExprNode>(astnode->identifier_vector.back().access_vector[astnode->identifier_vector.back().access_vector.size() - 1])->accept(this);
+				astnode->identifier_vector.back().access_vector[astnode->identifier_vector.back().access_vector.size() - 1]->accept(this);
 				pos = current_expression_value->get_i();
 				clear_current_expression();
 			}
@@ -2075,7 +2075,7 @@ void Interpreter::clear_current_expression() {
 	}
 }
 
-void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, RuntimeValue* value) {
+void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const std::string& identifier, TypeDefinition variable, RuntimeValue* value) {
 	if (TypeUtils::is_function(value->type)) {
 		const auto& prg = current_program_stack.top();
 		const auto& name_space = value->get_fun().first;
@@ -2089,8 +2089,7 @@ void Interpreter::declare_function_parameter(std::shared_ptr<Scope> scope, const
 			scope->declare_variable(identifier, value->ref.lock());
 		}
 		else {
-
-			auto var = std::make_shared<RuntimeVariable>(identifier, *value);
+			auto var = std::make_shared<RuntimeVariable>(identifier, variable);
 			gc.add_var_root(var);
 			var->set_value(value);
 			scope->declare_variable(identifier, var);
@@ -2133,7 +2132,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 		}
 		else {
 			if (const auto decl = dynamic_cast<VariableDefinition*>(current_function_defined_parameters.top()[i])) {
-				declare_function_parameter(curr_scope, decl->identifier, current_value);
+				declare_function_parameter(curr_scope, decl->identifier, *decl, current_value);
 
 				// is rest
 				if (decl->is_rest) {
@@ -2153,7 +2152,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 			else if (const auto decls = dynamic_cast<UnpackedVariableDefinition*>(current_function_defined_parameters.top()[i])) {
 				for (auto& decl : decls->variables) {
 					auto sub_value = allocate_value(new RuntimeValue(current_value->get_str()[decl.identifier]));
-					declare_function_parameter(curr_scope, decl.identifier, sub_value);
+					declare_function_parameter(curr_scope, decl.identifier, decl, sub_value);
 				}
 			}
 		}
@@ -2170,7 +2169,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 			auto current_value = allocate_value(new RuntimeValue(current_expression_value));
 			clear_current_expression();
 
-			declare_function_parameter(curr_scope, decl->identifier, current_value);
+			declare_function_parameter(curr_scope, decl->identifier, *decl, current_value);
 		}
 	}
 
@@ -2180,7 +2179,7 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 			arr[i] = vec[i];
 		}
 		auto rest = allocate_value(new RuntimeValue(arr, Type::T_ANY, std::vector<size_t>{(size_t)arr.size()}));
-		auto var = std::make_shared<RuntimeVariable>(rest_name, *rest);
+		auto var = std::make_shared<RuntimeVariable>(rest_name, *current_function_defined_parameters.top().back());
 		gc.add_var_root(var);
 		var->set_value(rest);
 		curr_scope->declare_variable(rest_name, var);
