@@ -1661,13 +1661,17 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 		bool block_return = false;
 		bool sub_return = block_node->statements.size() > 0;
 		for (const auto& block_stmt : block_node->statements) {
-			if (is_return_node(block_stmt) && returns(block_stmt)) {
+			if (is_return_node(block_stmt)) {
 				block_return = true;
 				break;
 			}
 
 			if (sub_return) {
 				if (!returns(block_stmt)) {
+					sub_return = false;
+				}
+
+				if (std::dynamic_pointer_cast<ASTBreakNode>(block_stmt) || std::dynamic_pointer_cast<ASTContinueNode>(block_stmt)) {
 					sub_return = false;
 				}
 			}
@@ -1722,6 +1726,10 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 
 				if (returns(switch_stmt)) {
 					block_return = true;
+					break;
+				}
+
+				if (const auto& break_node = std::dynamic_pointer_cast<ASTBreakNode>(switch_stmt)) {
 					break;
 				}
 			}
