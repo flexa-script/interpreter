@@ -1700,12 +1700,13 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 		for (const auto& [key, value] : switch_node->case_blocks) {
 			positions.push_back(value);
 		}
+		std::sort(positions.begin(), positions.end());
 
-		for (size_t pi = 0; pi < positions.size() + 1; ++pi) {
+		for (size_t pi = 0; pi < positions.size() + 2; ++pi) {
 			size_t current_block_start = 0;
 			size_t current_block_end = 0;
 
-			if (pi < positions.size() - 2) {
+			if (pi < positions.size()) {
 				current_block_start = positions[pi];
 				current_block_end = pi < positions.size() - 1 ? positions[pi + 1] : switch_node->default_block;
 			}

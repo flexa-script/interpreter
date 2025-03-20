@@ -19,7 +19,7 @@ fun test_switch(): int {
     case 1:
         println("x");
         println("Y");
-        return 1;
+        // return 1;
         // break;
     case 2:
         println("x");
@@ -29,7 +29,7 @@ fun test_switch(): int {
     case 3:
         println("x");
         println("Y");
-        // return 1;
+        return 1;
         // break;
     default:
         println("x");
@@ -38,6 +38,6 @@ fun test_switch(): int {
         // break;
     }
 
-    // return 0;
+    return 0;
 }
 
