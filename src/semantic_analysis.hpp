@@ -50,6 +50,7 @@ namespace core {
 
 			void check_is_struct_exists(Type type, const std::string& name_space, const std::string& identifier);
 
+			const std::string& normalize_name_space(std::string& astnode_name_space, const std::string& name_space) const;
 			bool namespace_exists(const std::string& name_space);
 			void validate_namespace(const std::string& name_space) const;
 

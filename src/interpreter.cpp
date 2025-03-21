@@ -386,7 +386,7 @@ void Interpreter::visit(std::shared_ptr<ASTReturnNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	auto name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
+	auto name_space = astnode->name_space;
 	std::string identifier = astnode->identifier;
 	std::vector<Identifier> identifier_vector = astnode->identifier_vector;
 	bool strict = true;
@@ -527,7 +527,7 @@ void Interpreter::visit(std::shared_ptr<ASTBuiltinCallNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	const auto& name_space = astnode->type_name_space.empty() ? current_program->name_space : astnode->type_name_space;
+	const auto& name_space = astnode->type_name_space;
 
 	try {
 		// if its already declared, it's a block definition
@@ -545,7 +545,7 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 		}
 
 		scopes[name_space].back()->declare_function(astnode->identifier,
-			FunctionDefinition(astnode->identifier, astnode->type, astnode->type_name, astnode->type_name_space,
+			FunctionDefinition(astnode->identifier, astnode->type, astnode->type_name, name_space,
 				astnode->array_type, astnode->dim, astnode->parameters, block, astnode->row, astnode->row));
 	}
 
@@ -1298,13 +1298,9 @@ void Interpreter::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	auto name_space = astnode->name_space;
+	const auto& name_space = astnode->name_space;
 
 	auto type_struct = find_inner_most_struct(current_program, name_space, astnode->type_name);
-
-	if (name_space.empty()) {
-		name_space = current_program->name_space;
-	}
 
 	auto str = flx_struct();
 
@@ -1360,7 +1356,7 @@ void Interpreter::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 void Interpreter::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
+	const auto& name_space = astnode->name_space;
 
 	// handle regular identifier
 	if (const auto& id_scope = get_inner_most_variable_scope(current_program, name_space, astnode->identifier)) {

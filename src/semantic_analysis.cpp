@@ -231,7 +231,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTUnpackedDeclarationNode> astnode
 void SemanticAnalyser::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
+	const auto& name_space = normalize_name_space(astnode->name_space, current_program->name_space);
 	const auto& identifier = astnode->identifier;
 
 	if (!Token::is_assignment_op(astnode->op)) {
@@ -386,7 +386,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTReturnNode> astnode) {
 void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
+	const auto& name_space = normalize_name_space(astnode->name_space, current_program->name_space);
 	bool strict = true;
 	auto returned_expression = current_expression;
 
@@ -412,7 +412,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionCallNode> astnode) {
 	}
 	// handle subvalue call
 	else if (astnode->identifier_vector.size() > 1) {
-		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, astnode->name_space, astnode->row, astnode->col);
+		auto idnode = std::make_shared<ASTIdentifierNode>(astnode->identifier_vector, name_space, astnode->row, astnode->col);
 		idnode->accept(this);
 
 		if (!TypeUtils::is_function(current_expression.type)) {
@@ -463,7 +463,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTBuiltinCallNode> astnode) {}
 void SemanticAnalyser::visit(std::shared_ptr<ASTFunctionDefinitionNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	const auto& name_space = astnode->type_name_space.empty() ? current_program->name_space : astnode->type_name_space;
+	const auto& name_space = normalize_name_space(astnode->type_name_space, current_program->name_space);
 
 	for (const auto& scope : scopes[name_space]) {
 		if (scope->already_declared_function(astnode->identifier, &astnode->parameters)) {
@@ -1100,7 +1100,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTArrayConstructorNode> astnode) {
 void SemanticAnalyser::visit(std::shared_ptr<ASTStructConstructorNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
+	const auto& name_space = normalize_name_space(astnode->name_space, current_program->name_space);
 	auto is_const = true;
 
 	std::shared_ptr<Scope> curr_scope = get_inner_most_struct_definition_scope(current_program, name_space, astnode->type_name);
@@ -1111,7 +1111,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTStructConstructorNode> astnode) 
 
 	for (const auto& expr : astnode->values) {
 		if (type_struct.variables.find(expr.first) == type_struct.variables.end()) {
-			ExceptionHandler::throw_struct_member_err(astnode->name_space, astnode->type_name, expr.first);
+			ExceptionHandler::throw_struct_member_err(name_space, astnode->type_name, expr.first);
 		}
 		const auto& var_type_struct = type_struct.variables[expr.first];
 		expr.second->accept(this);
@@ -1121,14 +1121,14 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTStructConstructorNode> astnode) 
 
 		if (!TypeDefinition::is_any_or_match_type(var_type_struct,
 			current_expression)) {
-			ExceptionHandler::throw_struct_type_err(astnode->name_space, astnode->type_name, var_type_struct);
+			ExceptionHandler::throw_struct_type_err(name_space, astnode->type_name, var_type_struct);
 		}
 	}
 
 	current_expression = SemanticValue();
 	current_expression.type = Type::T_STRUCT;
 	current_expression.type_name = astnode->type_name;
-	current_expression.type_name_space = astnode->name_space;
+	current_expression.type_name_space = name_space;
 	current_expression.is_const = is_const;
 
 }
@@ -1136,7 +1136,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTStructConstructorNode> astnode) 
 void SemanticAnalyser::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
-	const auto& name_space = astnode->name_space.empty() ? current_program->name_space : astnode->name_space;
+	const auto& name_space = normalize_name_space(astnode->name_space, current_program->name_space);
 
 	std::shared_ptr<Scope> curr_scope = get_inner_most_variable_scope(current_program, name_space, astnode->identifier);
 
@@ -1615,6 +1615,13 @@ void SemanticAnalyser::equals_value(const SemanticValue& lval, const SemanticVal
 	if (!lval.use_ref && rval.use_ref) {
 		throw std::runtime_error("both values must be unreferenced");
 	}
+}
+
+const std::string& SemanticAnalyser::normalize_name_space(std::string& astnode_name_space, const std::string& name_space) const {
+	if (astnode_name_space.empty()) {
+		astnode_name_space = name_space;
+	}
+	return astnode_name_space;
 }
 
 std::shared_ptr<SemanticValue> SemanticAnalyser::access_value(std::shared_ptr<SemanticValue> value, const std::vector<Identifier>& identifier_vector, size_t i) {
