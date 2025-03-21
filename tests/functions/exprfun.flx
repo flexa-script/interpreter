@@ -4,7 +4,7 @@ fun aaa() {
 
 aaa();
 
-var f = fun () {
+var f = lambda () {
 	println('f');
 };
 

@@ -979,12 +979,15 @@ std::shared_ptr<ASTExprNode> Parser::parse_factor() {
 	case TK_TYPEOF:
 	case TK_TYPEID:
 	case TK_REFID:
+	case TK_IS_STRUCT:
+	case TK_IS_ARRAY:
+	case TK_IS_ANY:
 		return parse_call_operator_node();
 
 	case TK_IDENTIFIER:
 		return parse_identifier_expression();
 
-	case TK_FUN:
+	case TK_LAMBDA:
 		return parse_function_expression();
 
 		// subexpression case
@@ -1490,6 +1493,12 @@ std::shared_ptr<ASTCallOperatorNode> Parser::parse_call_operator_node() {
 		return std::make_shared<ASTTypeIdNode>(expr, row, col);
 	case TK_REFID:
 		return std::make_shared<ASTRefIdNode>(expr, row, col);
+	case TK_IS_STRUCT:
+		return std::make_shared<ASTIsStructNode>(expr, row, col);
+	case TK_IS_ARRAY:
+		return std::make_shared<ASTIsArrayNode>(expr, row, col);
+	case TK_IS_ANY:
+		return std::make_shared<ASTIsAnyNode>(expr, row, col);
 	default:
 		throw std::runtime_error(msg_header() + "invalid token '" + Token::token_image(type) + "'");
 	}

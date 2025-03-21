@@ -121,4 +121,3 @@ var vd_dus: string = "string";
 assert_equals("string as undeclared any", "string", vd_dus);
 
 end_test();
-

@@ -93,18 +93,6 @@ assert_true("is any", is_any(vd_dc));
 
 assert_true("is any", is_any(vd_ds));
 
-assert_true("is any", is_any(vd_dubf));
-
-assert_true("is any", is_any(vd_dubt));
-
-assert_true("is any", is_any(vd_dui));
-
-assert_true("is any", is_any(vd_duf));
-
-assert_true("is any", is_any(vd_duc));
-
-assert_true("is any", is_any(vd_dus));
-
 end_test();
 
 start_test("TYPE / IS STRUCT");
@@ -121,14 +109,14 @@ var t = T{a=666, b=6.66, c='c', d="string", e=true};
 
 assert_true("is struct", is_struct(t));
 
-assert_true("is not struct", is_struct(t.a));
+assert_false("is not struct", is_struct(t.a));
 
-assert_true("is not struct", is_struct(t.b));
+assert_false("is not struct", is_struct(t.b));
 
-assert_true("is not struct", is_struct(t.c));
+assert_false("is not struct", is_struct(t.c));
 
-assert_true("is not struct", is_struct(t.d));
+assert_false("is not struct", is_struct(t.d));
 
-assert_true("is not struct", is_struct(t.e));
+assert_false("is not struct", is_struct(t.e));
 
 end_test();

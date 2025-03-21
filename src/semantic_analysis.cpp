@@ -1398,6 +1398,45 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTRefIdNode> astnode) {
 	current_expression.type = Type::T_INT;
 }
 
+void SemanticAnalyser::visit(std::shared_ptr<ASTIsStructNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	if (TypeUtils::is_undefined(current_expression.type)) {
+		throw std::runtime_error("is_struct expression is undefined");
+	}
+
+	current_expression = SemanticValue();
+	current_expression.type = Type::T_BOOL;
+}
+
+void SemanticAnalyser::visit(std::shared_ptr<ASTIsArrayNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	if (TypeUtils::is_undefined(current_expression.type)) {
+		throw std::runtime_error("is_array expression is undefined");
+	}
+
+	current_expression = SemanticValue();
+	current_expression.type = Type::T_BOOL;
+}
+
+void SemanticAnalyser::visit(std::shared_ptr<ASTIsAnyNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	if (TypeUtils::is_undefined(current_expression.type)) {
+		throw std::runtime_error("is_any expression is undefined");
+	}
+
+	current_expression = SemanticValue();
+	current_expression.type = Type::T_BOOL;
+}
+
 void SemanticAnalyser::declare_function_parameter(std::shared_ptr<Scope> scope, const VariableDefinition& param) {
 	if (TypeUtils::is_function(param.type) || TypeUtils::is_any(param.type)) {
 		auto f = FunctionDefinition(param.identifier, param.row, param.row);

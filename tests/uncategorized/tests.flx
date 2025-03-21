@@ -133,7 +133,7 @@ fun aaa(foo: function){
   foo_tests();
 }
 
-aaa(fun () {
+aaa(lambda () {
   println("aaa");}
 );
 

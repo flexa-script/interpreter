@@ -57,6 +57,9 @@ namespace core {
 	class ASTTypeOfNode;
 	class ASTTypeIdNode;
 	class ASTRefIdNode;
+	class ASTIsStructNode;
+	class ASTIsArrayNode;
+	class ASTIsAnyNode;
 	class ASTValueNode;
 	class ASTBuiltinCallNode;
 
@@ -121,6 +124,9 @@ namespace core {
 		virtual void visit(std::shared_ptr<ASTTypeOfNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTTypeIdNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTRefIdNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTIsStructNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTIsArrayNode>) = 0;
+		virtual void visit(std::shared_ptr<ASTIsAnyNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTValueNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTBuiltinCallNode>) = 0;
 

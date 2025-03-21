@@ -44,15 +44,6 @@ void ModuleBuiltin::register_functions(SemanticAnalyser* visitor) {
 	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM)]);
 	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM)] = nullptr;
 
-	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)]);
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)] = nullptr;
-
-	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)]);
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)] = nullptr;
-
-	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)]);
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)] = nullptr;
-
 }
 
 void ModuleBuiltin::register_functions(Interpreter* visitor) {
@@ -139,60 +130,6 @@ void ModuleBuiltin::register_functions(Interpreter* visitor) {
 
 		};
 
-	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)]);
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY)] = [this, visitor]() {
-
-		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
-		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
-		auto check_expr = var->get_value();
-
-		visitor->current_expression_value = visitor->allocate_value(
-			new RuntimeValue(
-				flx_bool(
-					check_expr->ref.lock()
-					&& (
-						TypeUtils::is_any(check_expr->ref.lock()->type) || TypeUtils::is_any(check_expr->ref.lock()->array_type)
-					)
-				)
-			)
-		);
-
-		};
-
-	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)]);
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY)] = [this, visitor]() {
-
-		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
-		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
-		auto check_expr = var->get_value();
-
-		visitor->current_expression_value = visitor->allocate_value(
-			new RuntimeValue(
-				flx_bool(
-					TypeUtils::is_array(check_expr->type) || check_expr->dim.size() > 0
-				)
-			)
-		);
-
-		};
-
-	visitor->scopes[Constants::DEFAULT_NAMESPACE].back()->declare_function(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT), func_decls[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)]);
-	visitor->builtin_functions[Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT)] = [this, visitor]() {
-
-		auto& scope = visitor->scopes[Constants::DEFAULT_NAMESPACE].back();
-		auto var = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("expr"));
-		auto check_expr = var->get_value();
-
-		visitor->current_expression_value = visitor->allocate_value(
-			new RuntimeValue(
-				flx_bool(
-					TypeUtils::is_struct(check_expr->type)
-				)
-			)
-		);
-
-		};
-
 }
 
 void ModuleBuiltin::build_decls() {
@@ -253,24 +190,4 @@ void ModuleBuiltin::build_decls() {
 		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
 		std::make_shared<ASTBuiltinCallNode>(Constants::BUILTIN_NAMES.at(BuintinFuncs::SYSTEM), 0, 0)}, 0, 0)));
 
-	parameters = std::vector<TypeDefinition*>();
-	variable = new VariableDefinition("expr", Type::T_ANY);
-	parameters.push_back(variable);
-	func_decls.emplace(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY), FunctionDefinition(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY), Type::T_BOOL, parameters,
-		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
-		std::make_shared<ASTBuiltinCallNode>(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ANY), 0, 0)}, 0, 0)));
-
-	parameters = std::vector<TypeDefinition*>();
-	variable = new VariableDefinition("expr", Type::T_ANY);
-	parameters.push_back(variable);
-	func_decls.emplace(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY), FunctionDefinition(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY), Type::T_BOOL, parameters,
-		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
-		std::make_shared<ASTBuiltinCallNode>(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_ARRAY), 0, 0)}, 0, 0)));
-
-	parameters = std::vector<TypeDefinition*>();
-	variable = new VariableDefinition("expr", Type::T_ANY);
-	parameters.push_back(variable);
-	func_decls.emplace(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT), FunctionDefinition(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT), Type::T_BOOL, parameters,
-		std::make_shared<ASTBlockNode>(std::vector<std::shared_ptr<ASTNode>>{
-		std::make_shared<ASTBuiltinCallNode>(Constants::BUILTIN_NAMES.at(BuintinFuncs::IS_STRUCT), 0, 0)}, 0, 0)));
 }

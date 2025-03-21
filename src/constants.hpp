@@ -17,10 +17,7 @@ namespace core {
 		READCH,
 		LEN,
 		SLEEP,
-		SYSTEM,
-		IS_ANY,
-		IS_ARRAY,
-		IS_STRUCT
+		SYSTEM
 	};
 
 	class Constants {

@@ -5,24 +5,24 @@ struct FunStruct {
 }
 
 var fstr = FunStruct {
-  init = fun () {
+  init = lambda () {
     println("level 1 init1: ", this);
   },
-  ret_fun = fun () {
+  ret_fun = lambda () {
     println("level 1 ret_fun1: ", this);
-    return fun () {
+    return lambda () {
       println("level 2 lambda1: ", this);
     };
   },
-  ret_str_fun = fun () {
+  ret_str_fun = lambda () {
     println("level 1 ret_str_fun1: ", this);
     return FunStruct {
-      init = fun () {
+      init = lambda () {
         println("level 2 lambda2: ", this);
       },
-      ret_fun = fun () {
+      ret_fun = lambda () {
         println("level 2 ret_fun2: ", this);
-        return fun () {
+        return lambda () {
           println("level 2 lambda3: ", this);
         };
       }
@@ -54,7 +54,7 @@ fun to_ret_fun1() {
   println(this);
 }
 
-var to_ret_fun2 = fun () {
+var to_ret_fun2 = lambda () {
   println(this);
 };
 

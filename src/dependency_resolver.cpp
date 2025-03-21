@@ -97,6 +97,9 @@ void DependencyResolver::visit(std::shared_ptr<ASTTypeNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTTypeOfNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTTypeIdNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTRefIdNode>) {}
+void DependencyResolver::visit(std::shared_ptr<ASTIsStructNode>) {}
+void DependencyResolver::visit(std::shared_ptr<ASTIsArrayNode>) {}
+void DependencyResolver::visit(std::shared_ptr<ASTIsAnyNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTNullNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTThisNode>) {}
 void DependencyResolver::visit(std::shared_ptr<ASTValueNode>) {}

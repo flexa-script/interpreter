@@ -538,6 +538,30 @@ namespace core {
 		virtual intmax_t hash(Visitor*) override;
 	};
 
+	class ASTIsStructNode : public ASTCallOperatorNode {
+	public:
+		ASTIsStructNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col);
+
+		void accept(Visitor*) override;
+		virtual intmax_t hash(Visitor*) override;
+	};
+
+	class ASTIsArrayNode : public ASTCallOperatorNode {
+	public:
+		ASTIsArrayNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col);
+
+		void accept(Visitor*) override;
+		virtual intmax_t hash(Visitor*) override;
+	};
+
+	class ASTIsAnyNode : public ASTCallOperatorNode {
+	public:
+		ASTIsAnyNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col);
+
+		void accept(Visitor*) override;
+		virtual intmax_t hash(Visitor*) override;
+	};
+
 }
 
 #endif // !AST_HPP

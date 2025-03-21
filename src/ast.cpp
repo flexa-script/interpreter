@@ -168,6 +168,15 @@ ASTTypeIdNode::ASTTypeIdNode(std::shared_ptr<ASTExprNode> expr, size_t row, size
 ASTRefIdNode::ASTRefIdNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
 	: ASTCallOperatorNode(expr, row, col) {}
 
+ASTIsStructNode::ASTIsStructNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
+	: ASTCallOperatorNode(expr, row, col) {}
+
+ASTIsArrayNode::ASTIsArrayNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
+	: ASTCallOperatorNode(expr, row, col) {}
+
+ASTIsAnyNode::ASTIsAnyNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
+	: ASTCallOperatorNode(expr, row, col) {}
+
 ASTLambdaFunction::ASTLambdaFunction(std::shared_ptr<ASTFunctionDefinitionNode> fun, size_t row, size_t col)
 	: ASTExprNode(row, col), fun(fun) {}
 
@@ -269,6 +278,24 @@ void ASTRefIdNode::accept(Visitor* v) {
 }
 
 intmax_t ASTRefIdNode::hash(Visitor* v) { return 0; }
+
+void ASTIsStructNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTIsStructNode>(shared_from_this()));
+}
+
+intmax_t ASTIsStructNode::hash(Visitor* v) { return 0; }
+
+void ASTIsArrayNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTIsArrayNode>(shared_from_this()));
+}
+
+intmax_t ASTIsArrayNode::hash(Visitor* v) { return 0; }
+
+void ASTIsAnyNode::accept(Visitor* v) {
+	v->visit(std::dynamic_pointer_cast<ASTIsAnyNode>(shared_from_this()));
+}
+
+intmax_t ASTIsAnyNode::hash(Visitor* v) { return 0; }
 
 void ASTUnaryExprNode::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTUnaryExprNode>(shared_from_this()));

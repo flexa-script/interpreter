@@ -140,6 +140,9 @@ namespace core {
 			void visit(std::shared_ptr<ASTTypeOfNode>) override;
 			void visit(std::shared_ptr<ASTTypeIdNode>) override;
 			void visit(std::shared_ptr<ASTRefIdNode>) override;
+			void visit(std::shared_ptr<ASTIsStructNode>) override;
+			void visit(std::shared_ptr<ASTIsArrayNode>) override;
+			void visit(std::shared_ptr<ASTIsAnyNode>) override;
 			void visit(std::shared_ptr<ASTValueNode>) override;
 			void visit(std::shared_ptr<ASTBuiltinCallNode>) override;
 

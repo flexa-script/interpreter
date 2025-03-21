@@ -28,10 +28,7 @@ std::unordered_map<BuintinFuncs, std::string> const Constants::BUILTIN_NAMES = {
 	{READCH, "readch"},
 	{LEN, "len"},
 	{SLEEP, "sleep"},
-	{SYSTEM, "system"},
-	{IS_ANY, "is_any"},
-	{IS_ARRAY, "is_array"},
-	{IS_STRUCT, "is_struct"}
+	{SYSTEM, "system"}
 };
 
 std::vector<std::string> const Constants::STD_LIBS = {

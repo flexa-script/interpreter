@@ -1738,6 +1738,57 @@ void Interpreter::visit(std::shared_ptr<ASTRefIdNode> astnode) {
 	current_expression_value = allocate_value(new RuntimeValue(flx_int(current_expression_value)));
 }
 
+void Interpreter::visit(std::shared_ptr<ASTIsStructNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	auto check_expr = current_expression_value;
+
+	current_expression_value = allocate_value(
+		new RuntimeValue(
+			flx_bool(
+				TypeUtils::is_struct(check_expr->type)
+			)
+		)
+	);
+}
+
+void Interpreter::visit(std::shared_ptr<ASTIsArrayNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	auto check_expr = current_expression_value;
+
+	current_expression_value = allocate_value(
+		new RuntimeValue(
+			flx_bool(
+				TypeUtils::is_array(check_expr->type) || check_expr->dim.size() > 0
+			)
+		)
+	);
+}
+
+void Interpreter::visit(std::shared_ptr<ASTIsAnyNode> astnode) {
+	set_curr_pos(astnode->row, astnode->col);
+
+	astnode->expr->accept(this);
+
+	auto check_expr = current_expression_value;
+
+	current_expression_value = allocate_value(
+		new RuntimeValue(
+			flx_bool(
+				check_expr->ref.lock()
+				&& (
+					TypeUtils::is_any(check_expr->ref.lock()->type) || TypeUtils::is_any(check_expr->ref.lock()->array_type)
+					)
+			)
+		)
+	);
+}
+
 RuntimeValue* Interpreter::set_value(std::shared_ptr<RuntimeVariable> var, const std::vector<Identifier>& identifier_vector, RuntimeValue* new_value) {
 	if (identifier_vector.size() == 1 && identifier_vector[0].access_vector.size() == 0) {
 		var->set_value(new_value);
