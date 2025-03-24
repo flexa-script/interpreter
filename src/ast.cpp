@@ -51,8 +51,7 @@ ASTAssignmentNode::ASTAssignmentNode(const std::vector<Identifier>& identifier_v
 
 ASTFunctionExpressionAssignmentNode::ASTFunctionExpressionAssignmentNode(std::shared_ptr<ASTFunctionCallNode> function,
 	const std::string& op, std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
-	: ASTStatementNode(row, col), function(function), expr(expr), op(op) {
-}
+	: ASTStatementNode(row, col), function(function), expr(expr), op(op) {}
 
 ASTReturnNode::ASTReturnNode(std::shared_ptr<ASTExprNode> expr, size_t row, size_t col)
 	: ASTStatementNode(row, col), expr(expr) {}

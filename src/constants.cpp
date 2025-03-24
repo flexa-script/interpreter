@@ -13,7 +13,7 @@ using namespace core;
 
 std::string const Constants::NAME = "Flexa";
 
-std::string const Constants::VER = "v1.5.7";
+std::string const Constants::VER = "v1.5.18";
 
 std::string const Constants::YEAR = "2025";
 

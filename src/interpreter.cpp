@@ -290,36 +290,32 @@ void Interpreter::visit(std::shared_ptr<ASTFunctionExpressionAssignmentNode> ast
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
 
+	// evaluate assigned expression
 	astnode->function->accept(this);
 
-	if (auto variable = current_expression_value) {
-		// evaluate assignment expression
-		astnode->expr->accept(this);
+	auto variable = current_expression_value;
 
-		auto ptr_value = current_expression_value;
+	// evaluate assignment expression
+	astnode->expr->accept(this);
 
-		// check if it's reference
-		RuntimeValue* new_value = ptr_value;
+	auto ptr_value = current_expression_value;
 
-		if (!ptr_value->use_ref) {
-			new_value = allocate_value(new RuntimeValue(ptr_value));
-		}
+	// check if it's reference
+	RuntimeValue* new_value = ptr_value;
 
-		validates_reference_type_assignment(*variable, new_value);
+	if (!ptr_value->use_ref) {
+		new_value = allocate_value(new RuntimeValue(ptr_value));
+	}
 
-		RuntimeOperations::normalize_type(variable, new_value);
+	validates_reference_type_assignment(*variable, new_value);
 
-		if (variable->value_ref && TypeUtils::is_string(variable->value_ref->type) && astnode->op == "=" && TypeUtils::is_char(variable->type)) {
-			(*variable->value_ref->get_raw_s())[variable->access_index] = new_value->get_c();
-		}
-		else {
-			RuntimeOperations::do_operation(astnode->op, variable, new_value, false);
-		}
+	RuntimeOperations::normalize_type(variable, new_value);
 
+	if (variable->value_ref && TypeUtils::is_string(variable->value_ref->type) && astnode->op == "=" && TypeUtils::is_char(variable->type)) {
+		(*variable->value_ref->get_raw_s())[variable->access_index] = new_value->get_c();
 	}
 	else {
-		throw std::runtime_error("expected variable as value of function return, but found value");
-
+		RuntimeOperations::do_operation(astnode->op, variable, new_value, false);
 	}
 
 }
@@ -558,7 +554,6 @@ void Interpreter::visit(std::shared_ptr<ASTLambdaFunction> astnode) {
 	// generate an random identifier and evaluates
 	auto& fun = astnode->fun;
 
-	// what if...
 	auto fun_name = "lambda@" + utils::UUID::generate();
 	while (scopes[name_space].back()->already_declared_function_name(fun_name)) {
 		fun_name = "lambda@" + utils::UUID::generate();

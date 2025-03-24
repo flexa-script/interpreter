@@ -141,10 +141,9 @@ void Lexer::process_multiline_string() {
 	std::string str;
 	bool spec = false;
 	
-	if (next_char != '\n') {
-		throw std::runtime_error(msg_header() + "expected newline after '`'");
+	if (next_char == '\n') {
+		advance();
 	}
-	advance();
 
 	str = '"';
 	advance();
