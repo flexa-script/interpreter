@@ -685,6 +685,10 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTElseIfNode> astnode) {
 void SemanticAnalyser::visit(std::shared_ptr<ASTIfNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 
+	if (astnode->row == 226) {
+		int x = 0;
+	}
+
 	astnode->condition->accept(this);
 
 	if (TypeUtils::is_undefined(current_expression.type)) {
@@ -1492,7 +1496,7 @@ TypeDefinition SemanticAnalyser::do_operation(const std::string& op, TypeDefinit
 	}
 
 	if (TypeUtils::is_any(l_type) || TypeUtils::is_any(r_type)) {
-		if (Token::is_relational_op(op)) {
+		if (Token::is_relational_op(op) || Token::is_equality_op(op)) {
 			return TypeDefinition::get_basic(Type::T_BOOL);
 		}
 		return TypeUtils::is_any(r_type) ? TypeUtils::is_any(l_type) ? lvar : lvalue : rvalue;

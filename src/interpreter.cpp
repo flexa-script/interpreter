@@ -230,6 +230,10 @@ void Interpreter::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	set_curr_pos(astnode->row, astnode->col);
 	const auto& current_program = current_program_stack.top();
 
+	if (astnode->identifier == "board") {
+		int x = 0;
+	}
+
 	// finds assignment variable
 	std::shared_ptr<RuntimeVariable> variable = std::dynamic_pointer_cast<RuntimeVariable>(find_inner_most_variable(current_program, astnode->name_space, astnode->identifier));
 	RuntimeValue* value = access_value(variable->get_value(), astnode->identifier_vector);
@@ -1999,7 +2003,7 @@ void Interpreter::check_build_array(RuntimeValue* new_value, std::vector<size_t>
 	auto arr = new_value->get_arr();
 	auto arrsize = arr.size();
 
-	if (TypeUtils::is_array(new_value->type) && dim.size() > 0 && dim[0] > 0) {
+	if (TypeUtils::is_array(new_value->type) && dim.size() == 1 && dim[0] > 0) {
 
 		switch (arrsize)
 		{

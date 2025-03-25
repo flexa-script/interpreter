@@ -58,6 +58,11 @@ fun is_end_game(): bool;
 fun main() {
 	game_window = flx::create_window("2048", 450, 600);
     flx::randomize(flx::create_date_time().timestamp);
+    for (var i: int = 0; i < 4; i++) {
+        for (var j: int = 0; j < 4; j++) {
+            board[i][j] = 0;
+        }
+    }
     board[3][3] = 2;
 
     while (running and not flx::is_quit(game_window)) {
