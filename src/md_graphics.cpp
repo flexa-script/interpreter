@@ -32,6 +32,8 @@ void ModuleGraphics::register_functions(SemanticAnalyser* visitor) {
 	visitor->builtin_functions["draw_image"] = nullptr;
 	visitor->builtin_functions["update"] = nullptr;
 	visitor->builtin_functions["destroy_window"] = nullptr;
+	visitor->builtin_functions["destroy_font"] = nullptr;
+	visitor->builtin_functions["destroy_image"] = nullptr;
 	visitor->builtin_functions["is_quit"] = nullptr;
 }
 
@@ -497,9 +499,43 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 		RuntimeValue* win = val;
 		if (!TypeUtils::is_void(win->type)) {
-			if (((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())) {
-				((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->~Window();
+			Window* window = (Window*)win->get_str()[INSTANCE_ID_NAME]->get_i();
+			if (window) {
+				delete window;
 				win->set_null();
+			}
+		}
+
+		};
+
+	visitor->builtin_functions["destroy_font"] = [this, visitor]() {
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("font"))->get_value();
+
+		RuntimeValue* font_value = val;
+		if (!TypeUtils::is_void(font_value->type)) {
+			Font* font = (Font*)font_value->get_str()[INSTANCE_ID_NAME]->get_i();
+			if (font) {
+				if (font->font) {
+					DeleteObject(font->font);
+				}
+				delete font;
+				font_value->set_null();
+			}
+		}
+
+		};
+
+	visitor->builtin_functions["destroy_image"] = [this, visitor]() {
+		auto& scope = visitor->scopes[Constants::STD_NAMESPACE].back();
+		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("image"))->get_value();
+
+		RuntimeValue* img_value = val;
+		if (!TypeUtils::is_void(img_value->type)) {
+			Image* img = (Image*)img_value->get_str()[INSTANCE_ID_NAME]->get_i();
+			if (img) {
+				delete img;
+				img_value->set_null();
 			}
 		}
 

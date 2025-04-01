@@ -24,11 +24,7 @@ Image* Image::load_image(const std::string& filename) {
 	return new Image{ hbm_image, bm.bmWidth, bm.bmHeight };
 }
 
-Font::~Font() {
-	if (font) {
-		DeleteObject(font);
-	}
-}
+Font::~Font() {}
 
 Font* Font::create_font(int size, const std::string& name, int weight, bool italic, bool underline, bool strike, int orientation) {
 	std::wstring wfont_name(name.begin(), name.end());
@@ -140,7 +136,6 @@ SIZE Window::get_text_size(const std::string& text, Font* font) {
 	DrawText(hdc_back_buffer, wtext.c_str(), -1, &rect, DT_CALCRECT);
 
 	SelectObject(hdc_back_buffer, old_font);
-	DeleteObject(font);
 
 	return SIZE{ rect.right - rect.left, rect.bottom - rect.top };
 }
@@ -296,4 +291,3 @@ LRESULT CALLBACK Window::window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM
 
 	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
-

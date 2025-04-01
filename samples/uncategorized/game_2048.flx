@@ -257,7 +257,7 @@ fun is_end_game(c1: bool, c2: bool, board: int[4][4]): bool {
     return c2;
 }
 
-if (this == "main") {
+fun main() {
     randomize(create_date_time().timestamp);
     
     var grid: int[4][4] = { 0 };
@@ -321,3 +321,5 @@ if (this == "main") {
     }
 
 }
+
+main();
