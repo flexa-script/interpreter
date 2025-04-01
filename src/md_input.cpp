@@ -119,7 +119,7 @@ void ModuleInput::key_update_loop() {
 				current_key_state[i] = current;
 			}
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
