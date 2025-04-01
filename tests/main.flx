@@ -1,0 +1,26 @@
+using utils;
+using flx.std.testing;
+
+include namespace flx;
+
+var gsw: StopWatch = StopWatch{};
+
+timer_start(gsw);
+
+using test_suite;
+
+// will be replaced with asserted tests
+using old_tests;
+
+timer_stop(gsw);
+println("full test suite elapsed time: ", gsw.elapsed_time, " ms");
+
+using old_manual_tests;
+
+println("finished all regular tests");
+
+exit(0);
+
+using test_suite_call;
+
+println("not exited the program");

@@ -1,0 +1,122 @@
+namespace is_type;
+
+include namespace flx;
+
+start_test("TYPE / IS ARRAY");
+
+assert_true("is array", is_array({1, 2, 3}));
+
+var a = {1, 2, 3};
+assert_true("is undeclared any array", is_array(a));
+
+var b: int[] = {1, 2, 3};
+assert_true("is unsized int array", is_array(a));
+
+var c: int[3] = {1, 2, 3};
+assert_true("is sized int array", is_array(a));
+
+struct A {
+    var a: int[];
+    var b: float[3];
+    var c;
+}
+
+var d = A{a={1, 2, 3}, b={1.1, 2.2, 3.3}, c={'a', 0}};
+
+assert_true("is struct with array", is_array(d.a));
+
+assert_true("is struct with array", is_array(d.b));
+
+assert_true("is struct with array", is_array(d.c));
+
+assert_false("is not array", is_array(666));
+
+assert_false("is not array", is_array(6.66));
+
+assert_false("is not array", is_array('c'));
+
+assert_false("is not array", is_array("string"));
+
+assert_false("is not array", is_array(false));
+
+assert_false("is not array", is_array(true));
+
+struct S {
+    var a: int;
+    var b: float;
+    var c: char;
+    var d: string;
+    var e: bool;
+}
+
+var s = S{a=666, b=6.66, c='c', d="string", e=true};
+
+assert_false("is not array", is_array(s));
+
+assert_false("is not array", is_array(s.a));
+
+assert_false("is not array", is_array(s.b));
+
+assert_false("is not array", is_array(s.c));
+
+assert_false("is not array", is_array(s.d));
+
+assert_false("is not array", is_array(s.e));
+
+end_test();
+
+start_test("TYPE / IS ANY");
+
+assert_false("is not any", is_any({1, 2, 3}));
+
+assert_false("is not any", is_any(666));
+
+assert_false("is not any", is_any(6.66));
+
+assert_false("is not any", is_any('c'));
+
+assert_false("is not any", is_any("string"));
+
+assert_false("is not any", is_any(false));
+
+assert_false("is not any", is_any(true));
+
+assert_true("is any", is_any(vd_dbf));
+
+assert_true("is any", is_any(vd_dbt));
+
+assert_true("is any", is_any(vd_di));
+
+assert_true("is any", is_any(vd_df));
+
+assert_true("is any", is_any(vd_dc));
+
+assert_true("is any", is_any(vd_ds));
+
+end_test();
+
+start_test("TYPE / IS STRUCT");
+
+struct T {
+    var a: int;
+    var b: float;
+    var c: char;
+    var d: string;
+    var e: bool;
+}
+
+var t = T{a=666, b=6.66, c='c', d="string", e=true};
+
+assert_true("is struct", is_struct(t));
+
+assert_false("is not struct", is_struct(t.a));
+
+assert_false("is not struct", is_struct(t.b));
+
+assert_false("is not struct", is_struct(t.c));
+
+assert_false("is not struct", is_struct(t.d));
+
+assert_false("is not struct", is_struct(t.e));
+
+end_test();

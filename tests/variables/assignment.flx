@@ -1,0 +1,436 @@
+namespace assignment_test;
+
+include namespace flx;
+
+start_test("ASSIGNMENT / SIMPLE");
+
+var ass_us;
+ass_us = null;
+assert_equals("assigned undeclared any to null", null, ass_us);
+
+var ass_as: any;
+ass_as = "10";
+assert_equals("assigned undeclared any to \"10\"", "10", ass_as);
+
+var ass_bs: bool;
+ass_bs = true;
+assert_true("assigned undeclared any to true", ass_bs);
+
+var ass_is: int;
+ass_is = 333;
+assert_equals("assigned undeclared any to 333", 333, ass_is);
+
+var ass_fs: float;
+ass_fs = 66.6;
+assert_equals("assigned undeclared any to 66.6", 66.6, ass_fs);
+
+var ass_cs: char;
+ass_cs = 'C';
+assert_equals("assigned undeclared any to 'C'", 'C', ass_cs);
+
+var ass_ss: string;
+ass_ss = "string";
+assert_equals("assigned undeclared any to \"string\"", "string", ass_ss);
+
+end_test();
+
+
+start_test("ASSIGNMENT / ARRAY");
+
+var ass_ua1:[3];
+var ass_ua2:[3][3];
+var ass_ua3:[3][3][3];
+ass_ua1 = {1,2,3};
+assert_equals("assigned 1 dimension undeclared any array", {1,2,3}, ass_ua1);
+ass_ua2 = {{1,2,3},{1,2,3},{1,2,3}};
+assert_equals("assigned 2 dimension undeclared any array", {{1,2,3},{1,2,3},{1,2,3}}, ass_ua2);
+ass_ua3 = {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}};
+assert_equals("assigned 3 dimension undeclared any array", {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}}, ass_ua3);
+
+var ass_uaa1: any[3];
+var ass_uaa2: any[3][3];
+var ass_uaa3: any[3][3][3];
+ass_uaa1 = {1,2,3};
+assert_equals("assigned 1 dimension any array", {1,2,3}, ass_uaa1);
+ass_uaa2 = {{1,2,3},{1,2,3},{1,2,3}};
+assert_equals("assigned 2 dimension any array", {{1,2,3},{1,2,3},{1,2,3}}, ass_uaa2);
+ass_uaa3 = {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}};
+assert_equals("assigned 3 dimension any array", {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}}, ass_uaa3);
+
+var ass_uab1: bool[3];
+var ass_uab2: bool[3][3];
+var ass_uab3: bool[3][3][3];
+ass_uab1 = {true,false,true};
+assert_equals("assigned 1 dimension bool array", {true,false,true}, ass_uab1);
+ass_uab2 = {{true,false,true},{true,false,true},{true,false,true}};
+assert_equals("assigned 2 dimension bool array", {{true,false,true},{true,false,true},{true,false,true}}, ass_uab2);
+ass_uab3 = {{{true,false,true},{true,false,true},{true,false,true}},{{true,false,true},{true,false,true},{true,false,true}},{{true,false,true},{true,false,true},{true,false,true}}};
+assert_equals("assigned 3 dimension bool array", {{{true,false,true},{true,false,true},{true,false,true}},{{true,false,true},{true,false,true},{true,false,true}},{{true,false,true},{true,false,true},{true,false,true}}}, ass_uab3);
+
+var ass_uai1: int[3];
+var ass_uai2: int[3][3];
+var ass_uai3: int[3][3][3];
+ass_uai1 = {1,2,3};
+assert_equals("assigned 1 dimension int array", {1,2,3}, ass_uai1);
+ass_uai2 = {{1,2,3},{1,2,3},{1,2,3}};
+assert_equals("assigned 2 dimension int array", {{1,2,3},{1,2,3},{1,2,3}}, ass_uai2);
+ass_uaa3 = {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}};
+assert_equals("assigned 3 dimension int array", {{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}},{{1,2,3},{1,2,3},{1,2,3}}}, ass_uaa3);
+
+var ass_uaf1: float[3];
+var ass_uaf2: float[3][3];
+var ass_uaf3: float[3][3][3];
+ass_uaf1 = {1.1,2.2,3.3};
+assert_equals("assigned 1 dimension float array", {1.1,2.2,3.3}, ass_uaf1);
+ass_uaf2 = {{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}};
+assert_equals("assigned 2 dimension float array", {{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}}, ass_uaf2);
+ass_uaf3 = {{{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}},{{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}},{{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}}};
+assert_equals("assigned 3 dimension float array", {{{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}},{{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}},{{1.1,2.2,3.3},{1.1,2.2,3.3},{1.1,2.2,3.3}}}, ass_uaf3);
+
+var ass_uac1: char[3];
+var ass_uac2: char[3][3];
+var ass_uac3: char[3][3][3];
+ass_uac1 = {'1','2','3'};
+assert_equals("assigned 1 dimension char array", {'1','2','3'}, ass_uac1);
+ass_uac2 = {{'1','2','3'},{'1','2','3'},{'1','2','3'}};
+assert_equals("assigned 2 dimension char array", {{'1','2','3'},{'1','2','3'},{'1','2','3'}}, ass_uac2);
+ass_uac3 = {{{'1','2','3'},{'1','2','3'},{'1','2','3'}},{{'1','2','3'},{'1','2','3'},{'1','2','3'}},{{'1','2','3'},{'1','2','3'},{'1','2','3'}}};
+assert_equals("assigned 3 dimension char array", {{{'1','2','3'},{'1','2','3'},{'1','2','3'}},{{'1','2','3'},{'1','2','3'},{'1','2','3'}},{{'1','2','3'},{'1','2','3'},{'1','2','3'}}}, ass_uac3);
+
+var ass_uas1: string[3];
+var ass_uas2: string[3][3];
+var ass_uas3: string[3][3][3];
+ass_uas1 = {"1","2","3"};
+assert_equals("assigned 1 dimension string array", {"1","2","3"}, ass_uas1);
+ass_uas2 = {{"1","2","3"},{"1","2","3"},{"1","2","3"}};
+assert_equals("assigned 2 dimension string array", {{"1","2","3"},{"1","2","3"},{"1","2","3"}}, ass_uas2);
+ass_uas3 = {{{"1","2","3"},{"1","2","3"},{"1","2","3"}},{{"1","2","3"},{"1","2","3"},{"1","2","3"}},{{"1","2","3"},{"1","2","3"},{"1","2","3"}}};
+assert_equals("assigned 3 dimension string array", {{{"1","2","3"},{"1","2","3"},{"1","2","3"}},{{"1","2","3"},{"1","2","3"},{"1","2","3"}},{{"1","2","3"},{"1","2","3"},{"1","2","3"}}}, ass_uas3);
+
+end_test();
+
+
+start_test("ASSIGNMENT / STRUCT");
+
+var ass_ustr1: Foo;
+ass_ustr1 = Foo{x=10, y=20};
+assert_equals("assigned Foo.x", 10, ass_ustr1.x);
+assert_equals("assigned Foo.y", 20, ass_ustr1.y);
+
+var ass_ustr2: Bar;
+ass_ustr2 = Bar{
+    au=null, a={1, '2', "3"}, b=true, i=10, f=1.0, c='x', s="str",
+    s1={"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+    s2={
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+		{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+	},
+    s3={
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		},
+		{
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+			{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+		}
+	},
+    str=Foo{x=10, y=20},
+    str1={Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+    str2={
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+		{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+	},
+    str3={
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		},
+		{
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}},
+			{Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}, Foo{x=10, y=20}}
+		}
+	}
+};
+assert_equals("assigned Bar.au", null, ass_ustr2.au);
+assert_equals("assigned Bar.a", {1, '2', "3"}, ass_ustr2.a);
+assert_equals("assigned Bar.b", true, ass_ustr2.b);
+assert_equals("assigned Bar.i", 10, ass_ustr2.i);
+assert_equals("assigned Bar.f", 1.0, ass_ustr2.f);
+assert_equals("assigned Bar.c", 'x', ass_ustr2.c);
+assert_equals("assigned Bar.s", "str", ass_ustr2.s);
+assert_equals("assigned Bar.s1", {"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}, ass_ustr2.s1);
+assert_equals("assigned Bar.s2", {
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"},
+	{"1", "1", "1", "1", "1", "1", "1", "1", "1", "1"}
+}, ass_ustr2.s2);
+
+var foo_ref = Foo{x=10, y=20};
+
+var ass_ustra11: Foo[3];
+var ass_ustra12: Foo[3][3];
+var ass_ustra13: Foo[3][3][3];
+ass_ustra11 = {foo_ref, foo_ref, foo_ref};
+assert_equals("declared 1 dimension array as Foo", {foo_ref, foo_ref, foo_ref}, ass_ustra11);
+ass_ustra12 = {{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}};
+assert_equals("declared 2 dimension array as Foo", {{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}}, ass_ustra12);
+ass_ustra13 = {
+	{{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}},
+	{{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}},
+	{{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}}
+};
+assert_equals("declared 3 dimension array as Foo", {
+	{{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}},
+	{{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}},
+	{{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref},{foo_ref, foo_ref, foo_ref}}
+}, ass_ustra13);
+
+end_test();

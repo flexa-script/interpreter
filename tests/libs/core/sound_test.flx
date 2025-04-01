@@ -1,0 +1,28 @@
+using flx.core.sound;
+
+include namespace flx;
+
+set_volume(1f);
+println("Starting guitar");
+play_sound(cwd + "\\libs\\core\\guitar.wav");
+sleep(5000);
+println("Starting music");
+play_sound(cwd + "\\libs\\core\\sadness.wav");
+sleep(5000);
+println("Setting midle volume");
+set_volume(0.5);
+sleep(3000);
+println("Setting no volume");
+set_volume(0f);
+sleep(3000);
+println("Setting full volume");
+set_volume(1f);
+sleep(3000);
+println("Stopping");
+stop_sound();
+println("Play in loop");
+play_sound(cwd + "\\libs\\core\\water.wav");
+sleep(3000);
+println("Play once");
+play_sound_once(cwd + "\\libs\\core\\water.wav");
+sleep(1000);

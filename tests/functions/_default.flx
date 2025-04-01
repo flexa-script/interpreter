@@ -1,0 +1,182 @@
+struct FunStruct {
+  var init: function;
+  var ret_fun: function;
+  var ret_str_fun: function;
+}
+
+var fstr = FunStruct {
+  init = lambda () {
+    println("level 1 init1: ", this);
+  },
+  ret_fun = lambda () {
+    println("level 1 ret_fun1: ", this);
+    return lambda () {
+      println("level 2 lambda1: ", this);
+    };
+  },
+  ret_str_fun = lambda () {
+    println("level 1 ret_str_fun1: ", this);
+    return FunStruct {
+      init = lambda () {
+        println("level 2 lambda2: ", this);
+      },
+      ret_fun = lambda () {
+        println("level 2 ret_fun2: ", this);
+        return lambda () {
+          println("level 2 lambda3: ", this);
+        };
+      }
+    };
+  }
+};
+
+fstr.init();
+// level 1 init1: cc745b71-426e-13e6-2a0c-b242e4510643
+println("---");
+
+fstr.ret_fun()();
+// level 1 ret_fun1: b77df59e-f92b-2052-51ad-300e924926d3
+// level 2 lambda1: b77df59e-f92b-2052-51ad-300e924926d3
+println("---");
+
+fstr.ret_str_fun().init();
+// level 1 ret_str_fun1: b77df59e-f92b-2052-51ad-300e924926d3
+// level 2 lambda2: b77df59e-f92b-2052-51ad-300e924926d3
+println("---");
+
+fstr.ret_str_fun().ret_fun()();
+// level 1 ret_str_fun1: b77df59e-f92b-2052-51ad-300e924926d3
+// level 2 ret_fun2: b77df59e-f92b-2052-51ad-300e924926d3
+// level 2 lambda3: b77df59e-f92b-2052-51ad-300e924926d3
+println("---");
+
+fun to_ret_fun1() {
+  println(this);
+}
+
+var to_ret_fun2 = lambda () {
+  println(this);
+};
+
+fun ret_fun1() {
+  to_ret_fun2();
+  return to_ret_fun1;
+}
+
+ret_fun1()();
+
+
+// ---------------------------------------------
+// ---------------------------------------------
+// ---------------------------------------------
+// ---------------------------------------------
+
+struct TestStack {
+  var arr;
+}
+
+fun push(s, v) {
+  s.arr += { ref v };
+}
+
+fun peek(s) {
+  return ref s.arr;
+}
+
+var s = TestStack{arr={}};
+var a = {};
+var nd = {};
+
+println(refid(a));
+
+push(s, ref a);
+
+println(refid(peek(s)));
+
+// var pv = peek(s);
+// pv += { ref nd };
+peek(s) += { ref nd };
+
+println(refid(peek(s)));
+
+// ---------------------------------------------
+
+struct Container {
+  var value;
+}
+
+fun get(s) {
+  return ref s.value;
+}
+
+// array
+var arrc = Container{value={}};
+
+get(arrc) += { 1 };
+get(arrc) += { 2 };
+get(arrc) += { 3 };
+
+println({get(arrc)});
+println(get(arrc)[0]);
+println(get(arrc)[1]);
+println(get(arrc)[2]);
+
+get(arrc)[1] = 666;
+
+println({get(arrc)});
+
+// ---------------------------------------------
+
+// string
+var strc = Container{value=""};
+
+get(strc) += "a";
+get(strc) += "b";
+get(strc) += "c";
+
+println({get(strc)});
+println(get(strc)[0]);
+println(get(strc)[1]);
+println(get(strc)[2]);
+
+get(strc)[1] = 'z';
+
+println({get(strc)});
+
+// ---------------------------------------------
+
+// struct
+var structc = Container{value=Container{value={}}};
+
+get(structc).value += {"a"};
+get(structc).value += {"b"};
+get(structc).value += {"c"};
+
+println({get(structc).value});
+println(get(structc).value[0]);
+println(get(structc).value[1]);
+println(get(structc).value[2]);
+
+get(structc).value[1] = 'z';
+
+println({get(structc).value});
+
+// ---------------------------------------------
+
+// int
+var intc = Container{value=0};
+
+get(intc) += 6;
+get(intc) += 60;
+get(intc) += 600;
+
+println({get(intc)});
+println(get(intc) % 660);
+println(get(intc) % 606);
+println(get(intc) % 066);
+
+get(intc) = 333;
+
+println({get(intc)});
+
+

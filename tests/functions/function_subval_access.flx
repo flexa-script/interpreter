@@ -1,0 +1,21 @@
+struct Foo3 {
+	var str: string;
+	var bar: int;
+}
+fun foo3() {
+	return Foo3{str="asda", bar=10};
+}
+println(foo3().bar);
+println(foo3().str);
+println(foo3().str[0]);
+
+fun arr() {
+	return {10,11,21};
+}
+println(arr()[1]);
+
+fun string_val(){
+	return "test";
+}
+println(string_val());
+println(string_val()[1]);

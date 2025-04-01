@@ -1,0 +1,40 @@
+println(typeof(bool));
+println(typeof(int));
+println(typeof(float));
+println(typeof(char));
+println(typeof(string));
+println(typeof(function));
+
+println(typeof(bool[]));
+println(typeof(int[][]));
+println(typeof(float[10]));
+println(typeof(char[10][10]));
+println(typeof(string[10][]));
+println(typeof(function[][10]));
+
+struct TypeStrTest {
+  var x: int;
+  var y: int;
+}
+
+println(typeof(TypeStrTest));
+println(typeof(TypeStrTest[]));
+println(typeof(TypeStrTest[][]));
+println(typeof(TypeStrTest[10]));
+println(typeof(TypeStrTest[10][10]));
+println(typeof(TypeStrTest[10][]));
+println(typeof(TypeStrTest[][10]));
+
+var type_str_test1 = {0, 1, 2};
+var type_str_test2 = {{0, 1, 2}, {0, 1, 2}, {0, 1, 2}};
+var type_str_test3 = {{{0, 1, 2}, {0, 1, 2}, {0, 1, 2}}, {{0, 1, 2}, {0, 1, 2}, {0, 1, 2}}, {{0, 1, 2}, {0, 1, 2}, {0, 1, 2}}};
+
+println(typeof(type_str_test1));
+println(typeof(type_str_test2));
+println(typeof(type_str_test3));
+
+var type_str_test4 = {TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}};
+var type_str_test5 = {{TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}}, {TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}}, {TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}, TypeStrTest{x=0, y=1}}};
+
+println(typeof(type_str_test4));
+println(typeof(type_str_test5));

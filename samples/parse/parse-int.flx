@@ -1,0 +1,26 @@
+// parse-int.cp
+
+var wasBool = int(true);
+var wasInt = int(10);
+var wasFloat = int(9.99);
+var wasChar = int('a');
+var wasString = int("666");
+
+print(wasBool);
+print('\n');
+print(wasInt);
+print('\n');
+print(wasFloat);
+print('\n');
+print(wasChar);
+print('\n');
+print(wasString);
+
+print("\n\n");
+
+wasBool = int(false);
+
+print(wasBool);
+print('\n');
+
+print("\n\n");

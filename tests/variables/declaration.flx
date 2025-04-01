@@ -1,0 +1,123 @@
+include namespace flx;
+
+start_test("DECLARATION / UNDEFINED / SIMPLE");
+
+var vd_us;
+assert_true("declared as undeclared any", true);
+
+var vd_usa: any;
+assert_true("declared as any", true);
+
+var vd_usb: bool;
+assert_true("declared as bool", true);
+
+var vd_usi: int;
+assert_true("declared as int", true);
+
+var vd_usf: float;
+assert_true("declared as float", true);
+
+var vd_usc: char;
+assert_true("declared as char", true);
+
+var vd_uss: string;
+assert_true("declared as string", true);
+
+end_test();
+
+
+start_test("DECLARATION / UNDEFINED / ARRAY");
+
+var vd_ua1:[3];
+var vd_ua2:[3][3];
+var vd_ua3:[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as undeclared any", true);
+
+var vd_uaa1: any[3];
+var vd_uaa2: any[3][3];
+var vd_uaa3: any[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as any", true);
+
+var vd_uab1: bool[3];
+var vd_uab2: bool[3][3];
+var vd_uab3: bool;
+assert_true("declared 1, 2 and 3 dimension arrays as bool", true);
+
+var vd_uai1: int[3];
+var vd_uai2: int[3][3];
+var vd_uai3: int[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as int", true);
+
+var vd_uaf1: float[3];
+var vd_uaf2: float[3][3];
+var vd_uaf3: float[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as float", true);
+
+var vd_uac1: char[3];
+var vd_uac2: char[3][3];
+var vd_uac3: char[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as char", true);
+
+var vd_uas1: string[3];
+var vd_uas2: string[3][3];
+var vd_uas3: string[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as string", true);
+
+end_test();
+
+
+start_test("DECLARATION / UNDEFINED / STRUCT");
+
+var vd_ustr1: Foo;
+assert_true("declared struct as Foo", true);
+
+var vd_ustr2: Bar;
+assert_true("declared struct as Bar", true);
+
+var vd_ustra11: Foo[3];
+var vd_ustra12: Foo[3][3];
+var vd_ustra13: Foo[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as Foo", true);
+
+var vd_ustra21: Bar[3];
+var vd_ustra22: Bar[3][3];
+var vd_ustra23: Bar[3][3][3];
+assert_true("declared 1, 2 and 3 dimension arrays as Bar", true);
+
+end_test();
+
+
+start_test("DECLARATION / ASSIGNED / UNTYPED / SIMPLE");
+
+var vd_dbf = false;
+assert_equals("false boolean as undeclared any", false, vd_dbf);
+var vd_dbt = true;
+assert_equals("true boolean as undeclared any", true, vd_dbt);
+var vd_di = 666;
+assert_equals("integer as undeclared any", 666, vd_di);
+var vd_df = 6.66;
+assert_equals("float as undeclared any", 6.66, vd_df);
+var vd_dc = 'c';
+assert_equals("char as undeclared any", 'c', vd_dc);
+var vd_ds = "string";
+assert_equals("string as undeclared any", "string", vd_ds);
+
+end_test();
+
+
+start_test("DECLARATION / ASSIGNED / TYPED / SIMPLE");
+
+var vd_dubf: bool = false;
+assert_equals("false boolean as undeclared any", false, vd_dubf);
+var vd_dubt: bool = true;
+assert_equals("true boolean as undeclared any", true, vd_dubt);
+var vd_dui: int = 666;
+assert_equals("integer as undeclared any", 666, vd_dui);
+var vd_duf: float = 6.66;
+assert_equals("float as undeclared any", 6.66, vd_duf);
+var vd_duc: char = 'c';
+assert_equals("char as undeclared any", 'c', vd_duc);
+var vd_dus: string = "string";
+assert_equals("string as undeclared any", "string", vd_dus);
+
+end_test();

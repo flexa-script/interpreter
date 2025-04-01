@@ -1,0 +1,10 @@
+// using flx.std.math;
+
+// include namespace flx;
+
+
+using flx.std.testing;
+
+include namespace flx;
+
+var usw: StopWatch = StopWatch{};

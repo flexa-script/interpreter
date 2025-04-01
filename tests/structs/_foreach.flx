@@ -1,0 +1,11 @@
+using flx.std.types;
+using structs.definition;
+
+include namespace flx;
+
+var f = Foo{x=1, y=2};
+// var f = Foo{name="Carlos", age = 29, bar = null};
+
+foreach (var it: Pair in f) {
+	print("key: ", it.key, "\nvalue: ", it.value, "\ntype: ", typeof(it), '\n');
+}

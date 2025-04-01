@@ -1,0 +1,11 @@
+var test_ter: bool = true ? false : true;
+print(test_ter);
+print("\n");
+
+var test_ter2: string = 10 == 10 or 1 != 1 ? "é igual ou diferente" : "diferente" + '!';
+print(test_ter2);
+print("\n");
+
+var test_ter3 = 10 == 10 and 1 != 1 ? "é igual e diferente" : "não" + '!';
+print(test_ter3);
+print("\n");

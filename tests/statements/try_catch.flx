@@ -1,0 +1,34 @@
+// try-catch
+using flx.std.types;
+
+try {
+	print("executed try\n");
+	var a = 10/0;
+	print("after division");
+} catch (ex: flx::Exception) {
+	print("executed catch\n");
+	print("generated error: " + ex.error);
+}
+
+
+var i = 0;
+try{
+  i = 10 / 0;
+  print(i);
+}catch(ex: flx::Exception){
+  print(ex.error);
+}
+print(i);
+
+// var i = 10 / 0;
+// print(i);
+
+try {
+	print("try\n");
+	print(10/0);
+} catch (...) {
+	print("catch\n");
+}
+
+println("end");
+

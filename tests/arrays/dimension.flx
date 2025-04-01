@@ -1,0 +1,55 @@
+// array-dimension
+
+var arr1:[] = { 1, 2, 3 };
+var arr2:[][] = { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } };
+// var arr3[] = { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } };
+// var arr4[][] = { 1, 2, 3 };
+print(arr1);
+print("\n");
+print(arr2);
+// print(arr3);
+// print(arr4);
+print("\n\n");
+
+var arr5:[3] = { 1, 2, 3 };
+var arr6:[3][3] = { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } };
+// var arr7[5] = { 1, 2, 3 };
+// var arr8[3][4] = { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } };
+print(arr5);
+print("\n");
+print(arr6);
+// print(arr7);
+// print(arr8);
+print("\n\n");
+
+fun foo_dim() : int[] { return { 1, 2, 3 }; }
+fun bar_dim() : int[][] { return { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } }; }
+// fun doe() : int[] { return { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } }; } // check dimensions
+// fun lar() : int[][] { return { 1, 2, 3 }; } // check dimensions
+print(foo_dim());
+print("\n");
+print(bar_dim());
+// print(doe());
+// print(lar());
+print("\n\n");
+
+fun foe() : int[3] { return { 1, 2, 3 }; }
+fun bae() : int[3][3] { return { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } }; }
+// fun dor() : int[5] { return { { 1, 2, 3 }, { 1, 2, 3 }, { 1, 2, 3 } }; } // check dimensions
+// fun lae() : int[3][4] { return { 1, 2, 3 }; } // check dimensions
+print(foe());
+print("\n");
+print(bae());
+// print(dor());
+// print(lae());
+print("\n\n");
+
+struct StructFoo_dim {
+    var asd : int;
+    var bar : string;
+}
+fun jon() : StructFoo_dim {
+    return StructFoo_dim { asd=5, bar="foo_dim" };
+}
+print(jon());
+print("\n\n");

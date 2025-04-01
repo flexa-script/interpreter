@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\core">
+      <UniqueIdentifier>{1330c9a2-17b6-4f61-bdad-745bf20da1ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\core\parser">
+      <UniqueIdentifier>{479fe6ee-5f18-452a-9987-761901e96c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\core\visitor">
+      <UniqueIdentifier>{a394461a-7bf4-40db-8978-e0f264b92101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\core\lexer">
+      <UniqueIdentifier>{4fd0c68f-cea0-4cec-ba1a-9966220fa79d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core">
+      <UniqueIdentifier>{f0a1e035-dea8-4051-9d2f-04bf6e738d5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core\lexer">
+      <UniqueIdentifier>{12ff1234-e339-4ac5-948c-5f89127f7037}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core\parser">
+      <UniqueIdentifier>{db3abfde-2526-4c5b-8ecd-ce54495005b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core\visitor">
+      <UniqueIdentifier>{d72aab2d-eaf8-4f6d-9540-388b7dc27f84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\modules">
+      <UniqueIdentifier>{4f752d3d-3fc0-49be-beef-da7b6651996b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\modules\builtin">
+      <UniqueIdentifier>{e6d03087-f488-47a9-ae62-e91af6a68a76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\core\gc">
+      <UniqueIdentifier>{6a357d25-5c1f-481b-a15d-4408888fe872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\core\gc">
+      <UniqueIdentifier>{1f322f0a-165f-42cd-9334-9017bf5ef995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{5fa8aaa9-1151-4dea-967e-08b7509fe366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{f459730b-c6c4-44a9-9ec2-e87ad5f53784}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\modules\flx.core">
+      <UniqueIdentifier>{b1edb529-77be-4e86-a690-c74c53dc4993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\modules\flx.core\graphics">
+      <UniqueIdentifier>{5b80f9bc-6442-4c5c-bf2e-56ba94ace750}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\modules">
+      <UniqueIdentifier>{7530e65e-0216-4307-87d9-55883f91daca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\modules\builtin">
+      <UniqueIdentifier>{dea4d0d0-1529-47b6-9069-398ada94321f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\modules\flx.core">
+      <UniqueIdentifier>{62145de0-2a6a-4615-99e7-af14be83a5bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\modules\flx.core\graphics">
+      <UniqueIdentifier>{a5f087aa-5292-4c71-8c03-d0f1c79d63f1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lexer.hpp">
+      <Filter>Header Files\core\lexer</Filter>
+    </ClInclude>
+    <ClInclude Include="token.hpp">
+      <Filter>Header Files\core\lexer</Filter>
+    </ClInclude>
+    <ClInclude Include="ast.hpp">
+      <Filter>Header Files\core\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="parser.hpp">
+      <Filter>Header Files\core\parser</Filter>
+    </ClInclude>
+    <ClInclude Include="interpreter.hpp">
+      <Filter>Header Files\core\visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="semantic_analysis.hpp">
+      <Filter>Header Files\core\visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="visitor.hpp">
+      <Filter>Header Files\core\visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="module.hpp">
+      <Filter>Header Files\modules</Filter>
+    </ClInclude>
+    <ClInclude Include="exception_handler.hpp">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="types.hpp">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="gc.hpp">
+      <Filter>Header Files\core\gc</Filter>
+    </ClInclude>
+    <ClInclude Include="gcobject.hpp">
+      <Filter>Header Files\core\gc</Filter>
+    </ClInclude>
+    <ClInclude Include="dependency_resolver.hpp">
+      <Filter>Header Files\core\visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="scope_manager.hpp">
+      <Filter>Header Files\core\visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="namespace_manager.hpp">
+      <Filter>Header Files\core\visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="scope.hpp">
+      <Filter>Header Files\core\visitor</Filter>
+    </ClInclude>
+    <ClInclude Include="md_sound.hpp">
+      <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
+    <ClInclude Include="md_console.hpp">
+      <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
+    <ClInclude Include="md_files.hpp">
+      <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
+    <ClInclude Include="md_http.hpp">
+      <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
+    <ClInclude Include="md_input.hpp">
+      <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
+    <ClInclude Include="md_graphics.hpp">
+      <Filter>Header Files\modules\flx.core\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_utils.hpp">
+      <Filter>Header Files\modules\flx.core\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="watch.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.hpp">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="flx_repl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="flx_utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md_builtin.hpp">
+      <Filter>Header Files\modules\builtin</Filter>
+    </ClInclude>
+    <ClInclude Include="md_datetime.hpp">
+      <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
+    <ClInclude Include="constants.hpp">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="flx_interpreter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lexer.cpp">
+      <Filter>Source Files\core\lexer</Filter>
+    </ClCompile>
+    <ClCompile Include="token.cpp">
+      <Filter>Source Files\core\lexer</Filter>
+    </ClCompile>
+    <ClCompile Include="ast.cpp">
+      <Filter>Source Files\core\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="parser.cpp">
+      <Filter>Source Files\core\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="interpreter.cpp">
+      <Filter>Source Files\core\visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="semantic_analysis.cpp">
+      <Filter>Source Files\core\visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="visitor.cpp">
+      <Filter>Source Files\core\visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="module.cpp">
+      <Filter>Source Files\modules</Filter>
+    </ClCompile>
+    <ClCompile Include="exception_handler.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="types.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="token_constants.hpp">
+      <Filter>Header Files\core\lexer</Filter>
+    </ClCompile>
+    <ClCompile Include="gc.cpp">
+      <Filter>Source Files\core\gc</Filter>
+    </ClCompile>
+    <ClCompile Include="gcobject.cpp">
+      <Filter>Source Files\core\gc</Filter>
+    </ClCompile>
+    <ClCompile Include="dependency_resolver.cpp">
+      <Filter>Source Files\core\visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="scope_manager.cpp">
+      <Filter>Source Files\core\visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="namespace_manager.cpp">
+      <Filter>Source Files\core\visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="scope.cpp">
+      <Filter>Source Files\core\visitor</Filter>
+    </ClCompile>
+    <ClCompile Include="token_constants.cpp">
+      <Filter>Source Files\core\lexer</Filter>
+    </ClCompile>
+    <ClCompile Include="md_sound.cpp">
+      <Filter>Source Files\modules\flx.core</Filter>
+    </ClCompile>
+    <ClCompile Include="md_console.cpp">
+      <Filter>Source Files\modules\flx.core</Filter>
+    </ClCompile>
+    <ClCompile Include="md_datetime.cpp">
+      <Filter>Source Files\modules\flx.core</Filter>
+    </ClCompile>
+    <ClCompile Include="md_files.cpp">
+      <Filter>Source Files\modules\flx.core</Filter>
+    </ClCompile>
+    <ClCompile Include="md_http.cpp">
+      <Filter>Source Files\modules\flx.core</Filter>
+    </ClCompile>
+    <ClCompile Include="md_input.cpp">
+      <Filter>Source Files\modules\flx.core</Filter>
+    </ClCompile>
+    <ClCompile Include="md_builtin.cpp">
+      <Filter>Source Files\modules\builtin</Filter>
+    </ClCompile>
+    <ClCompile Include="md_graphics.cpp">
+      <Filter>Source Files\modules\flx.core\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_utils.cpp">
+      <Filter>Source Files\modules\flx.core\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="flx_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flx_interpreter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flx_repl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="watch.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="constants.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

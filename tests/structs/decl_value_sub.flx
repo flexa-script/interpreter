@@ -1,0 +1,21 @@
+struct ElementX {
+  var has_value : bool;
+  var value : any;
+  var next : ElementX;
+}
+
+struct MyList{
+  var root : ElementX;
+}
+
+var list : MyList = MyList{};
+
+list.root = ElementX {
+  has_value = true,
+  value = 10
+};
+
+print(list.root.has_value);
+print('\n');
+print(list.root.value);
+print('\n');

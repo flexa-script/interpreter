@@ -1,0 +1,21 @@
+// this
+
+print(this);
+
+print('\n');
+
+fun foo_this() {
+  print(this);
+}
+
+foo_this();
+
+print('\n');
+
+print(this);
+
+print('\n');
+
+foo_this();
+
+print('\n');

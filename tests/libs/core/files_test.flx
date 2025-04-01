@@ -1,0 +1,43 @@
+using flx.core.files;
+
+var file: flx::File = flx::open(cwd + "\\libs\\core\\doc.txt", flx::MODE_READ);
+
+println("readed text: ", flx::read(file));
+flx::close(file);
+
+var file2: flx::File = flx::open(cwd + "\\libs\\core\\doc2.txt", flx::MODE_WRITE);
+
+flx::write(file2, "this was write using flx files lib");
+flx::close(file2);
+
+var file3: flx::File = flx::open(cwd + "\\libs\\core\\doc2.txt", flx::MODE_READ);
+
+println("readed from writed file: ", flx::read(file3));
+flx::close(file3);
+
+if (not flx::path_exists(cwd + "\\libs\\core\\created")) {
+  flx::create_dir(cwd + "\\libs\\core\\created");
+  flx::create_dir(cwd + "\\libs\\core\\created\\sub1\\sub");
+  flx::create_dir(cwd + "\\libs\\core\\created\\sub2");
+}
+
+println(flx::is_file(cwd + "\\libs\\core\\created"));
+println(flx::is_file(cwd + "\\libs\\core\\doc2.txt"));
+
+println(flx::is_dir(cwd + "\\libs\\core\\created"));
+println(flx::is_dir(cwd + "\\libs\\core\\doc2.txt"));
+
+foreach (var entry in flx::list_dir(cwd + "\\libs\\core")) {
+  println(entry);
+}
+
+println(flx::path_exists(cwd + "\\libs\\core\\created"));
+println(flx::path_exists(cwd + "\\libs\\core\\doc2.txt"));
+println(flx::path_exists(cwd + "\\libs\\core\\created\\sub3"));
+println(flx::path_exists(cwd + "\\libs\\core\\doc3.txt"));
+
+
+flx::create_dir(cwd + "\\libs\\core\\created2");
+flx::create_dir(cwd + "\\libs\\core\\created2\\sub1\\sub");
+flx::create_dir(cwd + "\\libs\\core\\created2\\sub2");
+flx::delete_path(cwd + "\\libs\\core\\created2");

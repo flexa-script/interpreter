@@ -1,0 +1,34 @@
+include namespace flx;
+
+start_test("TYPE / TYPEOF / TYPE");
+
+assert_equals("type of bool", "bool", typeof(bool));
+assert_equals("type of int", "int", typeof(int));
+assert_equals("type of float", "float", typeof(float));
+assert_equals("type of char", "char", typeof(char));
+assert_equals("type of string", "string", typeof(string));
+
+end_test();
+
+start_test("TYPE / TYPEOF / VARIABLE / UNTYPED");
+
+assert_equals("type of false boolean as undeclared any", typeof(false), typeof(vd_dbf));
+assert_equals("type of true boolean as undeclared any", typeof(true), typeof(vd_dbt));
+assert_equals("type of integer as undeclared any", typeof(666), typeof(vd_di));
+assert_equals("type of float as undeclared any", typeof(6.66), typeof(vd_df));
+assert_equals("type of char as undeclared any", typeof('c'), typeof(vd_dc));
+assert_equals("type of string as undeclared any", typeof("string"), typeof(vd_ds));
+
+end_test();
+
+start_test("TYPE / TYPEOF / VARIABLE / TYPED");
+
+assert_equals("type of false boolean as undeclared any", typeof(false), typeof(vd_dubf));
+assert_equals("type of true boolean as undeclared any", typeof(true), typeof(vd_dubt));
+assert_equals("type of integer as undeclared any", typeof(666), typeof(vd_dui));
+assert_equals("type of float as undeclared any", typeof(6.66), typeof(vd_duf));
+assert_equals("type of char as undeclared any", typeof('c'), typeof(vd_duc));
+assert_equals("type of string as undeclared any", typeof("string"), typeof(vd_dus));
+
+end_test();
+
