@@ -12,15 +12,14 @@ using namespace core::analysis;
 SemanticAnalyser::SemanticAnalyser(std::shared_ptr<Scope> global_scope, std::shared_ptr<ASTProgramNode> main_program,
 	std::map<std::string, std::shared_ptr<ASTProgramNode>> programs, const std::vector<std::string>& args)
 	: Visitor(programs, main_program, main_program ? main_program->name : Constants::DEFAULT_NAMESPACE), is_max(false) {
+	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("__builtin__", Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
+	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
+
 	scopes[main_program->name_space].push_back(global_scope);
 
 	if (main_program->name_space != Constants::DEFAULT_NAMESPACE) {
 		program_nmspaces[main_program->name].push_back(Constants::DEFAULT_NAMESPACE);
 	}
-
-	scopes[Constants::DEFAULT_NAMESPACE].push_back(std::make_shared<Scope>(std::make_shared<ASTProgramNode>("builtin@" + utils::UUID::generate(), Constants::DEFAULT_NAMESPACE, std::vector<std::shared_ptr<ASTNode>>())));
-
-	Constants::BUILT_IN_LIBS.at("builtin")->register_functions(this);
 
 	build_args(args);
 };
