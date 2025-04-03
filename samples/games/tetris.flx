@@ -1,0 +1,437 @@
+using flx.core.graphics;
+using flx.core.console;
+using flx.core.input;
+using flx.core.sound;
+using flx.core.datetime;
+using flx.std.random;
+using flx.std.math;
+
+// Game contants
+enum {
+    ST_MAIN_MENU,
+    ST_PLAYING,
+    ST_GAME_OVER
+}
+var state = ST_MAIN_MENU;
+
+var last_time = flx::clock();
+var fps = 0f;
+var frame_count = 0;
+
+// Piece colors
+var color_black = flx::rgb(0, 0, 0);
+var color_white = flx::rgb(255, 255, 255);
+var color_gray = flx::rgb(50, 50, 50);
+var color_cyan = flx::rgb(0, 255, 255);    // I
+var color_blue = flx::rgb(0, 0, 255);      // J
+var color_orange = flx::rgb(255, 165, 0);  // L
+var color_yellow = flx::rgb(255, 255, 0);  // O
+var color_green = flx::rgb(0, 255, 0);     // S
+var color_purple = flx::rgb(128, 0, 128);  // T
+var color_red = flx::rgb(255, 0, 0);       // Z
+
+// Game settings
+var game_window: flx::Window = null;
+var title_font = flx::create_font(24);
+var score_font = flx::create_font(18);
+var grid_width = 10;
+var grid_height = 20;
+var cell_size = 30;
+var grid: int[20][10] = {0};  // grid 20x10 (height x width)
+var current_piece: int[4][4] = {0};
+var current_x = 0;
+var current_y = 0;
+var current_color: flx::Color;
+var score = 0;
+var level = 1;
+var lines_cleared = 0;
+var is_hard_dropping = false;
+var fall_speed = 1.0;  // seconds by fall
+var last_fall_time = flx::clock();
+
+// Tetris Pieces (I, J, L, O, S, T, Z)
+var pieces = {
+    // I
+    {
+        {0, 0, 0, 0},
+        {1, 1, 1, 1},
+        {0, 0, 0, 0},
+        {0, 0, 0, 0}
+    },
+    // J
+    {
+        {0, 0, 0, 0},
+        {1, 0, 0, 0},
+        {1, 1, 1, 0},
+        {0, 0, 0, 0}
+    },
+    // L
+    {
+        {0, 0, 0, 0},
+        {0, 0, 1, 0},
+        {1, 1, 1, 0},
+        {0, 0, 0, 0}
+    },
+    // O
+    {
+        {0, 0, 0, 0},
+        {0, 1, 1, 0},
+        {0, 1, 1, 0},
+        {0, 0, 0, 0}
+    },
+    // S
+    {
+        {0, 0, 0, 0},
+        {0, 1, 1, 0},
+        {1, 1, 0, 0},
+        {0, 0, 0, 0}
+    },
+    // T
+    {
+        {0, 0, 0, 0},
+        {0, 1, 0, 0},
+        {1, 1, 1, 0},
+        {0, 0, 0, 0}
+    },
+    // Z
+    {
+        {0, 0, 0, 0},
+        {1, 1, 0, 0},
+        {0, 1, 1, 0},
+        {0, 0, 0, 0}
+    }
+};
+
+// Game functions
+fun get_piece_color(piece_type: int): Color {
+    switch (piece_type) {
+    case 0: return color_cyan;    // I
+    case 1: return color_blue;    // J
+    case 2: return color_orange;  // L
+    case 3: return color_yellow;  // O
+    case 4: return color_green;   // S
+    case 5: return color_purple;  // T
+    case 6: return color_red;     // Z
+    default: return color_white;
+    }
+}
+
+fun check_collision(): bool {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            if (current_piece[i][j] != 0) {
+                var x = int(current_x + j);
+                var y = int(current_y + i);
+                
+                // check grid limits
+                if (x < 0 or x >= grid_width or y >= grid_height) {
+                    return true;
+                }
+                
+                // check if collide with merged pieces
+                if (y >= 0 and grid[x][y] != 0) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+fun new_piece() {
+    var piece_type = flx::randi() % 7;
+    current_color = get_piece_color(piece_type);
+    
+    // clear current piece
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            current_piece[i][j] = 0;
+        }
+    }
+    
+    // copy selected piece
+    var piece = pieces[piece_type];
+    for (var i = 0; i < len(piece); i++) {
+        for (var j = 0; j < len(piece[i]); j++) {
+            current_piece[i][j] = piece[i][j];
+        }
+    }
+    
+    // start position (top-center)
+    current_x = grid_width / 2 - 2;
+    current_y = 0;
+    
+    // check if lost
+    if (check_collision()) {
+        state = ST_GAME_OVER;
+    }
+}
+
+fun rotate_piece() {
+    // creates a temp copy
+    var temp_piece: int[4][4] = {0};
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            temp_piece[i][j] = current_piece[i][j];
+        }
+    }
+    
+    // ratate
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            current_piece[i][j] = temp_piece[3 - j][i];
+        }
+    }
+    
+    // if has collision, undo rotate
+    if (check_collision()) {
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                current_piece[i][j] = temp_piece[i][j];
+            }
+        }
+    }
+}
+
+fun merge_piece() {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            if (current_piece[i][j] != 0) {
+                var x = int(current_x + j);
+                var y = int(current_y + i);
+                if (y >= 0) {  // ignore pieces above grid
+                    grid[x][y] = 1;  // 1 indicates locked piece
+                }
+            }
+        }
+    }
+}
+
+fun clear_lines() {
+    var lines_to_clear = 0;
+    
+    for (var y = grid_height - 1; y >= 0; y--) {
+        var line_complete = true;
+        for (var x = 0; x < grid_width; x++) {
+            if (grid[x][y] == 0) {
+                line_complete = false;
+                break;
+            }
+        }
+        
+        if (line_complete) {
+            // move all lines down
+            for (var yy = y; yy > 0; yy--) {
+                for (var x = 0; x < grid_width; x++) {
+                    grid[x][yy] = grid[x][yy - 1];
+                }
+            }
+            
+            // clear top row
+            for (var x = 0; x < grid_width; x++) {
+                grid[0][x] = 0;
+            }
+            
+            lines_to_clear++;
+            y++;  // check same line again
+        }
+    }
+    
+    // update score
+    if (lines_to_clear > 0) {
+        lines_cleared += lines_to_clear;
+        score += lines_to_clear * lines_to_clear * 100 * level;
+        
+        // increase level at each 10 rows
+        level = 1 + lines_cleared / 10;
+        
+        // increase speed
+        fall_speed = flx::max(0.1, 1.0 - (level - 1) * 0.05);
+    }
+}
+
+fun start_hard_drop() {
+    is_hard_dropping = true;
+    fall_speed = 0.01;
+}
+
+fun stop_hard_drop() {
+    if (is_hard_dropping) {
+        is_hard_dropping = false;
+        fall_speed = 1.0 - (level - 1) * 0.05;
+    }
+}
+
+fun move_piece(dx: int, dy: int): bool {
+    current_x += dx;
+    current_y += dy;
+    
+    if (check_collision()) {
+        current_x -= dx;
+        current_y -= dy;
+        
+        // if the move was downward and it hit something, lock the piece
+        if (dy > 0) {
+            merge_piece();
+            clear_lines();
+            new_piece();
+            stop_hard_drop();
+            return true;
+        }
+        return false;
+    }
+    return true;
+}
+
+fun update() {
+    if (state == ST_MAIN_MENU) {
+        if (flx::is_key_released(flx::KEY_SPACE)) {
+            state = ST_PLAYING;
+        }
+    } 
+    else if (state == ST_PLAYING) {
+        // piece control
+        if (flx::is_key_released(flx::KEY_LEFT)) {
+            move_piece(-1, 0);
+        }
+        else if (flx::is_key_released(flx::KEY_RIGHT)) {
+            move_piece(1, 0);
+        }
+        else if (flx::is_key_released(flx::KEY_DOWN)) {
+            move_piece(0, 1);
+        }
+        else if (flx::is_key_released(flx::KEY_UP)) {
+            rotate_piece();
+        }
+        else if (flx::is_key_released(flx::KEY_SPACE)) {
+            start_hard_drop();
+        }
+        
+        // automatic falldown
+        var current_time = flx::clock();
+        if ((current_time - last_fall_time) / 1000.0 >= fall_speed) {
+            move_piece(0, 1);
+            last_fall_time = current_time;
+        }
+    }
+    else if (state == ST_GAME_OVER) {
+        if (flx::is_key_released(flx::KEY_SPACE)) {
+            // restarts the game
+            for (var i = 0; i < grid_height; i++) {
+                for (var j = 0; j < grid_width; j++) {
+                    grid[j][i] = 0;
+                }
+            }
+            score = 0;
+            level = 1;
+            lines_cleared = 0;
+            fall_speed = 1.0;
+            state = ST_PLAYING;
+            new_piece();
+        }
+    }
+}
+
+fun render() {
+    var cw = flx::get_current_width(game_window);
+    var ch = flx::get_current_height(game_window);
+    
+    flx::clear_screen(game_window, color_black);
+    
+    if (state == ST_MAIN_MENU) {
+        flx::draw_text(game_window, int(cw/2 - 100), int(ch/2 - 50), "TETRIS", color_white, title_font);
+        flx::draw_text(game_window, int(cw/2 - 150), int(ch/2 + 50), "Press SPACE to start", color_white, score_font);
+    }
+    else if (state == ST_PLAYING or state == ST_GAME_OVER) {
+        // draw the grid
+        for (var y = 0; y < grid_height; y++) {
+            for (var x = 0; x < grid_width; x++) {
+                if (grid[x][y] != 0) {
+                    flx::fill_rect(game_window, 
+                                 int(x * cell_size), 
+                                 int(y * cell_size), 
+                                 cell_size - 1, 
+                                 cell_size - 1, 
+                                 color_white);
+                }
+                flx::draw_rect(game_window, 
+                             int(x * cell_size), 
+                             int(y * cell_size), 
+                             cell_size - 1, 
+                             cell_size - 1, 
+                             color_gray);
+            }
+        }
+        
+        // draws current piece
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                if (current_piece[i][j] != 0) {
+                    var x = (current_x + j) * cell_size;
+                    var y = (current_y + i) * cell_size;
+                    
+                    if (y >= 0) {  // prevent to draw piece above grid
+                        flx::fill_rect(game_window, 
+                                     int(x), 
+                                     int(y), 
+                                     cell_size - 1, 
+                                     cell_size - 1, 
+                                     current_color);
+                    }
+                }
+            }
+        }
+        
+        // game info panel
+        var info_x = grid_width * cell_size + 20;
+        flx::draw_text(game_window, info_x, 50, "Score:", color_white, score_font);
+        flx::draw_text(game_window, info_x, 80, string(score), color_white, score_font);
+        
+        flx::draw_text(game_window, info_x, 120, "Level:", color_white, score_font);
+        flx::draw_text(game_window, info_x, 150, string(level), color_white, score_font);
+        
+        flx::draw_text(game_window, info_x, 190, "Rows:", color_white, score_font);
+        flx::draw_text(game_window, info_x, 220, string(lines_cleared), color_white, score_font);
+        
+        if (state == ST_GAME_OVER) {
+            flx::fill_rect(game_window, int(cw/2 - 150), int(ch/2 - 50), 300, 100, color_black);
+            flx::draw_rect(game_window, int(cw/2 - 150), int(ch/2 - 50), 300, 100, color_white);
+            flx::draw_text(game_window, int(cw/2 - 100), int(ch/2 - 30), "GAME OVER", color_white, title_font);
+            flx::draw_text(game_window, int(cw/2 - 120), int(ch/2 + 10), "Press SPACE to restart", color_white, score_font);
+        }
+    }
+    
+    flx::update(game_window);
+}
+
+fun main() {
+    var window_width = grid_width * cell_size + 200;  // extra space for infos
+    var window_height = grid_height * cell_size;
+    
+    game_window = flx::create_window("Tetris", window_width, window_height);
+    flx::randomize(flx::create_date_time().timestamp);
+    
+    new_piece();
+    
+    while (not flx::is_quit(game_window)) {
+        var current_time = flx::clock();
+        var elapsed_time = (current_time - last_time) / 1000;
+
+        frame_count++;
+        
+        if (elapsed_time >= 1.0) {
+            fps = frame_count / elapsed_time;
+            frame_count = 0;
+            last_time = current_time;
+
+            println("FPS: ", fps);
+        }
+        
+        update();
+        render();
+    }
+    
+    flx::destroy_window(game_window);
+}
+
+main();

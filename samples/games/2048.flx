@@ -43,9 +43,10 @@ var color_2048 = flx::rgb(237, 194, 46);
 var color_4096 = flx::rgb(62, 57, 51);
 var color_0 = flx::rgb(204, 192, 179);
 
-var title_font = flx::create_font(int((cw + ch) * 0.09));
-var sub_title_font = flx::create_font(int((cw + ch) * 0.04));
-var score_font = flx::create_font(int((cw + ch) * 0.035));
+var title_font = flx::create_font(45);
+var sub_title_font = flx::create_font(25);
+var score_font = flx::create_font(18);
+var num_font = flx::create_font(10);
 
 // function declarations
 fun render();
@@ -61,8 +62,6 @@ fun is_end_game(): bool;
 
 fun main() {
 	game_window = flx::create_window("2048", 450, 600);
-    last_cw = flx::get_current_width(game_window);
-    last_ch = flx::get_current_height(game_window);
     flx::randomize(flx::create_date_time().timestamp);
     board[3][3] = 2;
 
@@ -181,10 +180,12 @@ fun render() {
         flx::destroy_font(title_font);
         flx::destroy_font(sub_title_font);
         flx::destroy_font(score_font);
+        flx::destroy_font(num_font);
         
         title_font = flx::create_font(int((cw + ch) * 0.09));
         sub_title_font = flx::create_font(int((cw + ch) * 0.04));
         score_font = flx::create_font(int((cw + ch) * 0.035));
+        num_font = flx::create_font(int((cw + ch) * 0.04));
     }
 	
 	flx::clear_screen(game_window, color_black);
@@ -207,7 +208,6 @@ fun render() {
 			score += board[i][j];
 			var num_color = get_color(board[i][j]);
 			var tx = string(board[i][j]);
-			var num_font = flx::create_font(int((cw + ch) * 0.04));
 			var font_size = flx::get_text_size(game_window, tx, num_font);
 			var fw = font_size.width;
 			var fh = font_size.height;

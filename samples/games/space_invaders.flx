@@ -1,0 +1,346 @@
+using flx.core.graphics;
+using flx.core.console;
+using flx.core.input;
+using flx.core.sound;
+using flx.core.datetime;
+using flx.std.random;
+using flx.std.math;
+using flx.std.types;
+using flx.std.arrays;
+
+// Game states
+enum {
+    ST_MAIN_MENU,
+    ST_PLAYING,
+    ST_GAME_OVER
+}
+var state = ST_MAIN_MENU;
+
+var last_time = flx::clock();
+var fps = 0f;
+var frame_count = 0;
+
+// Game settings
+var game_window: flx::Window = null;
+var title_font = flx::create_font(24);
+var score_font = flx::create_font(18);
+
+// Player settings
+var player_width = 40;
+var player_height = 20;
+var player_x = 0;
+var player_y = 0;
+var player_speed = 5;
+var player_color = flx::rgb(0, 255, 0);
+
+// Projectile settings
+var projectile_width = 4;
+var projectile_height = 10;
+var projectile_speed = 7;
+var projectile_color = flx::rgb(255, 255, 0);
+var projectiles: flx::Point[] = {};
+
+// Enemy settings
+struct Enemy {
+    var x: int;
+    var y: int;
+    var alive: bool;
+}
+var enemy_rows = 5;
+var enemy_cols = 8;
+var enemy_width = 30;
+var enemy_height = 20;
+var enemy_padding = 10;
+var enemy_speed = 1;
+var enemy_direction = 1; // 1 = right, -1 = left
+var enemy_move_interval = 1.0; // seconds
+var last_enemy_move = flx::clock();
+var enemies: Enemy[enemy_cols][enemy_rows] = {};
+
+// Game stats
+var score = 0;
+var lives = 3;
+var level = 1;
+
+// Colors
+var color_black = flx::rgb(0, 0, 0);
+var color_white = flx::rgb(255, 255, 255);
+var color_red = flx::rgb(255, 0, 0);
+
+// Initialize game objects
+fun init_game() {
+    // Initialize player
+    player_x = (flx::get_current_width(game_window) - player_width) / 2;
+    player_y = flx::get_current_height(game_window) - player_height - 20;
+    
+    // Clear projectiles
+    projectiles = {};
+    
+    // Initialize enemies
+    var start_x = (flx::get_current_width(game_window) - 
+                  (enemy_cols * (enemy_width + enemy_padding))) / 2;
+    var start_y = 50;
+    
+    for (var col = 0; col < enemy_cols; col++) {
+        for (var row = 0; row < enemy_rows; row++) {
+            enemies[row][col] = Enemy{
+                x=start_x + col * (enemy_width + enemy_padding),
+                y=start_y + row * (enemy_height + enemy_padding),
+                alive=true
+            };
+        }
+    }
+}
+
+// Check if all enemies are dead
+fun all_enemies_dead(): bool {
+    for (var col = 0; col < enemy_cols; col++) {
+        for (var row = 0; row < enemy_rows; row++) {
+            if (enemies[row][col].alive) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// Fire projectile from player
+fun fire_projectile() {
+    projectiles = flx::append(projectiles, flx::Point{
+        x=int(player_x + (player_width - projectile_width) / 2),
+        y=int(player_y - projectile_height)
+    });
+}
+
+// Check collision between two rectangles
+fun check_collision(x1: int, y1: int, w1: int, h1: int,
+                    x2: int, y2: int, w2: int, h2: int): bool {
+    return x1 < x2 + w2 and
+           x1 + w1 > x2 and
+           y1 < y2 + h2 and
+           y1 + h1 > y2;
+}
+
+// Update game state
+fun update() {
+    if (state == ST_MAIN_MENU) {
+        if (flx::is_key_released(flx::KEY_SPACE)) {
+            state = ST_PLAYING;
+            init_game();
+        }
+    } 
+    else if (state == ST_PLAYING) {
+        // Player movement
+        if (flx::is_key_pressed(flx::KEY_LEFT)) {
+            player_x = flx::max(0, player_x - player_speed);
+        }
+        if (flx::is_key_pressed(flx::KEY_RIGHT)) {
+            player_x = flx::min(flx::get_current_width(game_window) - player_width, 
+                              player_x + player_speed);
+        }
+        
+        // Fire projectile
+        if (flx::is_key_released(flx::KEY_SPACE)) {
+            fire_projectile();
+        }
+        
+        // Update projectiles
+        for (var i = len(projectiles) - 1; i >= 0; i--) {
+            projectiles[i].y -= projectile_speed;
+            
+            // Remove projectiles that go off screen
+            if (projectiles[i].y < 0) {
+                projectiles = flx::remove_at(projectiles, i);
+                continue;
+            }
+            
+            // Check for enemy hits
+            for (var col = 0; col < enemy_cols; col++) {
+                for (var row = 0; row < enemy_rows; row++) {
+                    var enemy = enemies[row][col];
+                    if (enemy.alive and len(projectiles) > 0 and
+                        check_collision(
+                            projectiles[i].x, projectiles[i].y, 
+                            projectile_width, projectile_height,
+                            enemy.x, enemy.y, 
+                            enemy_width, enemy_height)) {
+                        
+                        // Mark enemy as dead
+                        enemies[row][col].alive = false;
+                        // Remove projectile
+                        projectiles = flx::remove_at(projectiles, i);
+                        // Increase score
+                        score += 10 * level;
+                        // Break out of loops
+                        row = enemy_rows;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Move enemies
+        var current_time = flx::clock();
+        if ((current_time - last_enemy_move) / 1000.0 >= enemy_move_interval) {
+            var should_move_down = false;
+            
+            // Check if any enemy has reached screen edge
+            for (var col = 0; col < enemy_cols; col++) {
+                for (var row = 0; row < enemy_rows; row++) {
+                    if (enemies[row][col].alive) {
+                        if ((enemy_direction > 0 and 
+                             enemies[row][col].x + enemy_width >= flx::get_current_width(game_window)) or
+                            (enemy_direction < 0 and 
+                             enemies[row][col].x <= 0)) {
+                            should_move_down = true;
+                            row = enemy_rows;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Move enemies
+            for (var col = 0; col < enemy_cols; col++) {
+                for (var row = 0; row < enemy_rows; row++) {
+                    if (enemies[row][col].alive) {
+                        if (should_move_down) {
+                            enemies[row][col].y += enemy_height;
+                            // Check if enemy reached player
+                            if (enemies[row][col].y + enemy_height >= player_y) {
+                                lives--;
+                                if (lives <= 0) {
+                                    state = ST_GAME_OVER;
+                                } else {
+                                    init_game();
+                                }
+                                return;
+                            }
+                        } else {
+                            enemies[row][col].x += enemy_speed * enemy_direction;
+                        }
+                    }
+                }
+            }
+            
+            if (should_move_down) {
+                enemy_direction *= -1;
+            }
+            
+            last_enemy_move = current_time;
+        }
+        
+        // Check if all enemies are dead
+        if (all_enemies_dead()) {
+            level++;
+            init_game();
+            enemy_speed += 0.5;
+            enemy_move_interval = flx::max(0.2, enemy_move_interval - 0.1);
+        }
+    }
+    else if (state == ST_GAME_OVER) {
+        if (flx::is_key_released(flx::KEY_SPACE)) {
+            // Reset game
+            score = 0;
+            lives = 3;
+            level = 1;
+            enemy_speed = 1;
+            enemy_move_interval = 1.0;
+            state = ST_PLAYING;
+            init_game();
+        }
+    }
+}
+
+// Render game
+fun render() {
+    var cw = flx::get_current_width(game_window);
+    var ch = flx::get_current_height(game_window);
+    
+    flx::clear_screen(game_window, color_black);
+    
+    if (state == ST_MAIN_MENU) {
+        flx::draw_text(game_window, int(cw/2 - 100), int(ch/2 - 50), "SPACE INVADERS", color_white, title_font);
+        flx::draw_text(game_window, int(cw/2 - 120), int(ch/2 + 50), "Press SPACE to start", color_white, score_font);
+    }
+    else if (state == ST_PLAYING or state == ST_GAME_OVER) {
+        // Draw player
+        flx::fill_rect(game_window, player_x, player_y, player_width, player_height, player_color);
+        
+        // Draw projectiles
+        for (var i = 0; i < len(projectiles); i++) {
+            flx::fill_rect(game_window, 
+                          projectiles[i].x, 
+                          projectiles[i].y, 
+                          projectile_width, 
+                          projectile_height, 
+                          projectile_color);
+        }
+        
+        // Draw enemies
+        for (var col = 0; col < enemy_cols; col++) {
+            for (var row = 0; row < enemy_rows; row++) {
+                if (enemies[row][col].alive) {
+                    var enemy_color = color_red;
+
+                    switch (row) {
+                        case 0: enemy_color = flx::rgb(255, 0, 255); // Purple
+                        case 1: enemy_color = flx::rgb(0, 255, 255); // Cyan
+                        case 2: enemy_color = flx::rgb(255, 255, 0); // Yellow
+                    }
+                    
+                    flx::fill_rect(game_window, 
+                                  int(enemies[row][col].x), 
+                                  int(enemies[row][col].y), 
+                                  enemy_width, 
+                                  enemy_height, 
+                                  enemy_color);
+                }
+            }
+        }
+        
+        // Draw game info
+        flx::draw_text(game_window, 20, 20, "Score: " + string(score), color_white, score_font);
+        flx::draw_text(game_window, int(cw - 120), 20, "Lives: " + string(lives), color_white, score_font);
+        flx::draw_text(game_window, int(cw/2 - 30), 20, "Level " + string(level), color_white, score_font);
+        
+        if (state == ST_GAME_OVER) {
+            flx::fill_rect(game_window, int(cw/2 - 150), int(ch/2 - 50), 300, 100, color_black);
+            flx::draw_rect(game_window, int(cw/2 - 150), int(ch/2 - 50), 300, 100, color_white);
+            flx::draw_text(game_window, int(cw/2 - 100), int(ch/2 - 30), "GAME OVER", color_white, title_font);
+            flx::draw_text(game_window, int(cw/2 - 120), int(ch/2 + 10), "Press SPACE to restart", color_white, score_font);
+        }
+    }
+    
+    flx::update(game_window);
+}
+
+fun main() {
+    var window_width = 600;
+    var window_height = 800;
+    
+    game_window = flx::create_window("Space Invaders", window_width, window_height);
+    flx::randomize(flx::create_date_time().timestamp);
+    
+    while (not flx::is_quit(game_window)) {
+        var current_time = flx::clock();
+        var elapsed_time = (current_time - last_time) / 1000;
+
+        frame_count++;
+        
+        if (elapsed_time >= 1.0) {
+            fps = frame_count / elapsed_time;
+            frame_count = 0;
+            last_time = current_time;
+
+            println("FPS: ", fps);
+        }
+        
+        update();
+        render();
+    }
+    
+    flx::destroy_window(game_window);
+}
+
+main();
