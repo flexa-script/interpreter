@@ -53,7 +53,7 @@ var enemy_height = 20;
 var enemy_padding = 10;
 var enemy_speed = 1;
 var enemy_direction = 1; // 1 = right, -1 = left
-var enemy_move_interval = 1.0; // seconds
+var enemy_move_interval = 0.01; // seconds
 var last_enemy_move = flx::clock();
 var enemies: Enemy[enemy_cols][enemy_rows] = {};
 
@@ -153,17 +153,17 @@ fun update() {
                 projectiles = flx::remove_at(projectiles, i);
                 continue;
             }
-            
+
             // Check for enemy hits
             for (var col = 0; col < enemy_cols; col++) {
                 for (var row = 0; row < enemy_rows; row++) {
                     var enemy = enemies[row][col];
-                    if (enemy.alive and len(projectiles) > 0 and
+                    if (enemy.alive and len(projectiles) > i and
                         check_collision(
-                            projectiles[i].x, projectiles[i].y, 
-                            projectile_width, projectile_height,
-                            enemy.x, enemy.y, 
-                            enemy_width, enemy_height)) {
+                            int(projectiles[i].x), int(projectiles[i].y), 
+                            int(projectile_width), int(projectile_height),
+                            int(enemy.x), int(enemy.y), 
+                            int(enemy_width), int(enemy_height))) {
                         
                         // Mark enemy as dead
                         enemies[row][col].alive = false;
@@ -235,7 +235,7 @@ fun update() {
             level++;
             init_game();
             enemy_speed += 0.5;
-            enemy_move_interval = flx::max(0.2, enemy_move_interval - 0.1);
+            enemy_move_interval = flx::max(0.01, enemy_move_interval - 0.01);
         }
     }
     else if (state == ST_GAME_OVER) {
@@ -245,7 +245,7 @@ fun update() {
             lives = 3;
             level = 1;
             enemy_speed = 1;
-            enemy_move_interval = 1.0;
+            enemy_move_interval = 0.1;
             state = ST_PLAYING;
             init_game();
         }
