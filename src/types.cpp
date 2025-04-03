@@ -737,7 +737,7 @@ RuntimeValue* RuntimeValue::get_sub(std::string identifier) {
 RuntimeValue* RuntimeValue::get_sub(size_t index) {
 	if (!arr) return nullptr;
 	if (index >= (*arr).size()) {
-		throw std::runtime_error("invalid array access position");
+		throw std::runtime_error("invalid array access position " + std::to_string(index) + " in a array with size " + std::to_string((*arr).size()));
 	}
 	auto sub_value = (*arr)[index];
 	if (sub_value) {
