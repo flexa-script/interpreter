@@ -205,6 +205,11 @@ bool TypeDefinition::match_type_string(TypeDefinition ltype, TypeDefinition rtyp
 }
 
 bool TypeDefinition::match_type_array(TypeDefinition ltype, TypeDefinition rtype, bool strict, bool strict_array) {
+	if (TypeUtils::is_any(ltype.type)
+		|| TypeUtils::is_any(rtype.type)
+		|| TypeUtils::is_void(ltype.type)
+		|| TypeUtils::is_void(rtype.type)) return true;
+
 	TypeDefinition latype = TypeDefinition(TypeUtils::is_undefined(ltype.array_type) ? Type::T_ANY : ltype.array_type,
 		Type::T_UNDEFINED, std::vector<size_t>(), ltype.type_name, ltype.type_name_space);
 	TypeDefinition ratype = TypeDefinition(TypeUtils::is_undefined(rtype.array_type) ? Type::T_ANY : rtype.array_type,
