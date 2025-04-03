@@ -266,7 +266,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTAssignmentNode> astnode) {
 	auto declared_variable = std::dynamic_pointer_cast<SemanticVariable>(curr_scope->find_declared_variable(identifier));
 
 	if (TypeUtils::is_undefined(declared_variable->get_value()->type) && (astnode->identifier_vector.size() > 1 || astnode->identifier_vector[0].access_vector.size() > 0)) {
-		throw std::runtime_error("variable '" + astnode->identifier + "' is undefined");
+		throw std::runtime_error("base assigning variable '" + astnode->identifier + "' is undefined");
 	}
 
 	auto decl_var_expression = access_value(declared_variable->get_value(), astnode->identifier_vector);
@@ -1170,7 +1170,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTIdentifierNode> astnode) {
 	variable_expr->reset_ref();
 
 	if (TypeUtils::is_undefined(variable_expr->type)) {
-		throw std::runtime_error("variable '" + astnode->identifier + "' is undefined");
+		throw std::runtime_error("base variable '" + astnode->identifier + "' is undefined");
 	}
 
 	current_expression = *variable_expr;
@@ -1641,6 +1641,15 @@ std::shared_ptr<SemanticValue> SemanticAnalyser::access_value(std::shared_ptr<Se
 			next_value = std::make_shared<SemanticValue>(Type::T_CHAR, Type::T_UNDEFINED,
 				std::vector<size_t>(), "", "",
 				0, false, next_value->row, next_value->col);
+		}
+		else  if (access_vector.size() < value->dim.size()) {
+			std::vector<size_t> calc_dim;
+			// remove the first dimensions from the array
+			for (size_t i = access_vector.size(); i < value->dim.size(); ++i) {
+				calc_dim.push_back(value->dim[i]);
+			}
+			next_value = std::make_shared<SemanticValue>(*value, value->hash, value->is_const, value->row, value->col);
+			next_value->dim = calc_dim;
 		}
 	}
 
