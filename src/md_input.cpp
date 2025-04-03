@@ -65,7 +65,9 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 		{
 			std::lock_guard<std::mutex> lock(state_mutex);
 			is_released = previous_key_state[key] && !current_key_state[key];
-			previous_key_state[key] = false;
+			if (is_released) {
+				previous_key_state[key] = false;
+			}
 		}
 
 		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(flx_bool(is_released)));
