@@ -1,6 +1,8 @@
+#if defined(_WIN32) || defined(WIN32)
+
 #include <iostream>
 
-#include "graphics_utils.hpp"
+#include "graphics_utils_win.hpp"
 
 using namespace core::modules;
 
@@ -105,7 +107,7 @@ int Window::get_height() {
 	return height;
 }
 
-void Window::clear_screen(COLORREF color) {
+void Window::clear_screen(Color color) {
 	if (msg.message != WM_QUIT) {
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
@@ -116,7 +118,7 @@ void Window::clear_screen(COLORREF color) {
 			}
 		}
 		else {
-			HBRUSH hBrush = CreateSolidBrush(color);
+			HBRUSH hBrush = CreateSolidBrush(RGB(color.r, color.g, color.b));
 			RECT rect = { 0, 0, width, height };
 			FillRect(hdc_back_buffer, &rect, hBrush);
 			DeleteObject(hBrush);
@@ -127,7 +129,7 @@ void Window::clear_screen(COLORREF color) {
 	}
 }
 
-SIZE Window::get_text_size(const std::string& text, Font* font) {
+TextSize Window::get_text_size(const std::string& text, Font* font) {
 	RECT rect = { 0, 0, 0, 0 };
 	std::wstring wtext(text.begin(), text.end());
 
@@ -137,12 +139,15 @@ SIZE Window::get_text_size(const std::string& text, Font* font) {
 
 	SelectObject(hdc_back_buffer, old_font);
 
-	return SIZE{ rect.right - rect.left, rect.bottom - rect.top };
+	return TextSize{ rect.right - rect.left, rect.bottom - rect.top };
 }
 
-void Window::draw_text(int x, int y, const std::string& text, COLORREF color, Font* font) {
+void Window::draw_text(int x, int y, const std::string& text, Color color, Font* font) {
+	if (!font) {
+		throw std::runtime_error("null font");
+	}
 	HFONT old_font = (HFONT)SelectObject(hdc_back_buffer, font->font);
-	SetTextColor(hdc_back_buffer, color);
+	SetTextColor(hdc_back_buffer, RGB(color.r, color.g, color.b));
 	SetBkMode(hdc_back_buffer, TRANSPARENT);
 
 	std::wstring wtext(text.begin(), text.end());
@@ -166,12 +171,12 @@ void Window::draw_image(Image* image, int x, int y) {
 	DeleteDC(hdc_image);
 }
 
-void Window::draw_pixel(int x, int y, COLORREF color) {
-	SetPixel(hdc_back_buffer, x, y, color);
+void Window::draw_pixel(int x, int y, Color color) {
+	SetPixel(hdc_back_buffer, x, y, RGB(color.r, color.g, color.b));
 }
 
-void Window::draw_line(int x1, int y1, int x2, int y2, COLORREF color) {
-	HPEN pen = CreatePen(PS_SOLID, 1, color);
+void Window::draw_line(int x1, int y1, int x2, int y2, Color color) {
+	HPEN pen = CreatePen(PS_SOLID, 1, RGB(color.r, color.g, color.b));
 	HPEN old_pen = (HPEN)SelectObject(hdc_back_buffer, pen);
 	MoveToEx(hdc_back_buffer, x1, y1, nullptr);
 	LineTo(hdc_back_buffer, x2, y2);
@@ -179,8 +184,8 @@ void Window::draw_line(int x1, int y1, int x2, int y2, COLORREF color) {
 	DeleteObject(pen);
 }
 
-void Window::draw_rect(int x, int y, int width, int height, COLORREF color) {
-	HPEN pen = CreatePen(PS_SOLID, 1, color);
+void Window::draw_rect(int x, int y, int width, int height, Color color) {
+	HPEN pen = CreatePen(PS_SOLID, 1, RGB(color.r, color.g, color.b));
 	HPEN old_pen = (HPEN)SelectObject(hdc_back_buffer, pen);
 	HBRUSH old_brush = (HBRUSH)SelectObject(hdc_back_buffer, GetStockObject(NULL_BRUSH));
 	Rectangle(hdc_back_buffer, x, y, x + width, y + height);
@@ -189,15 +194,15 @@ void Window::draw_rect(int x, int y, int width, int height, COLORREF color) {
 	DeleteObject(pen);
 }
 
-void Window::fill_rect(int x, int y, int width, int height, COLORREF color) {
+void Window::fill_rect(int x, int y, int width, int height, Color color) {
 	RECT rect = { x, y, x + width, y + height };
-	HBRUSH brush = CreateSolidBrush(color);
+	HBRUSH brush = CreateSolidBrush(RGB(color.r, color.g, color.b));
 	FillRect(hdc_back_buffer, &rect, brush);
 	DeleteObject(brush);
 }
 
-void Window::draw_circle(int xc, int yc, int radius, COLORREF color) {
-	HPEN pen = CreatePen(PS_SOLID, 1, color);
+void Window::draw_circle(int xc, int yc, int radius, Color color) {
+	HPEN pen = CreatePen(PS_SOLID, 1, RGB(color.r, color.g, color.b));
 	HPEN old_pen = (HPEN)SelectObject(hdc_back_buffer, pen);
 	HBRUSH old_brush = (HBRUSH)SelectObject(hdc_back_buffer, GetStockObject(NULL_BRUSH));
 	Ellipse(hdc_back_buffer, xc - radius, yc - radius, xc + radius, yc + radius);
@@ -206,8 +211,8 @@ void Window::draw_circle(int xc, int yc, int radius, COLORREF color) {
 	DeleteObject(pen);
 }
 
-void Window::fill_circle(int xc, int yc, int radius, COLORREF color) {
-	HBRUSH brush = CreateSolidBrush(color);
+void Window::fill_circle(int xc, int yc, int radius, Color color) {
+	HBRUSH brush = CreateSolidBrush(RGB(color.r, color.g, color.b));
 	HBRUSH old_brush = (HBRUSH)SelectObject(hdc_back_buffer, brush);
 	HPEN old_pen = (HPEN)SelectObject(hdc_back_buffer, GetStockObject(NULL_PEN));
 	Ellipse(hdc_back_buffer, xc - radius, yc - radius, xc + radius, yc + radius);
@@ -268,7 +273,7 @@ LRESULT Window::handle_message(UINT umsg, WPARAM wparam, LPARAM lparam) {
 
 LRESULT CALLBACK Window::window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
 	Window* windows;
-	
+
 	if (umsg == WM_CREATE) {
 		windows = reinterpret_cast<Window*>(reinterpret_cast<LPCREATESTRUCT>(lparam)->lpCreateParams);
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(windows));
@@ -291,3 +296,5 @@ LRESULT CALLBACK Window::window_proc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM
 
 	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
+
+#endif // defined(_WIN32) || defined(WIN32)

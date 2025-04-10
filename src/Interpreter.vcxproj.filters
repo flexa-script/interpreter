@@ -141,7 +141,7 @@
     <ClInclude Include="md_graphics.hpp">
       <Filter>Header Files\modules\flx.core\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics_utils.hpp">
+    <ClInclude Include="graphics_utils_win.hpp">
       <Filter>Header Files\modules\flx.core\graphics</Filter>
     </ClInclude>
     <ClInclude Include="watch.hpp">
@@ -167,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="flx_interpreter.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_utils_niy.hpp">
+      <Filter>Header Files\modules\flx.core\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -251,7 +254,7 @@
     <ClCompile Include="md_graphics.cpp">
       <Filter>Source Files\modules\flx.core\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics_utils.cpp">
+    <ClCompile Include="graphics_utils_win.cpp">
       <Filter>Source Files\modules\flx.core\graphics</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
@@ -271,6 +274,12 @@
     </ClCompile>
     <ClCompile Include="constants.cpp">
       <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_utils_niy.cpp">
+      <Filter>Source Files\modules\flx.core\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics_utils.hpp">
+      <Filter>Header Files\modules\flx.core\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

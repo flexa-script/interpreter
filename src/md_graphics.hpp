@@ -2,7 +2,6 @@
 #define MD_GRAPHICS_HPP
 
 #include "module.hpp"
-#include "graphics_utils.hpp"
 
 namespace core {
 

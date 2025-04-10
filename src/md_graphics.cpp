@@ -6,6 +6,12 @@
 #include "semantic_analysis.hpp"
 #include "constants.hpp"
 
+#if defined(_WIN32) || defined(WIN32)
+#include "graphics_utils_win.hpp"
+#else
+#include "graphics_utils_niy.hpp"
+#endif // defined(_WIN32) || defined(WIN32)
+
 using namespace core::modules;
 using namespace core::runtime;
 using namespace core::analysis;
@@ -94,7 +100,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		r = (int)vals[1]->get_str()["r"]->get_i();
 		g = (int)vals[1]->get_str()["g"]->get_i();
 		b = (int)vals[1]->get_str()["b"]->get_i();
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->clear_screen(RGB(r, g, b));
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->clear_screen(Color(r, g, b));
 
 		};
 
@@ -150,7 +156,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		r = (int)vals[3]->get_str()["r"]->get_i();
 		g = (int)vals[3]->get_str()["g"]->get_i();
 		b = (int)vals[3]->get_str()["b"]->get_i();
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_pixel(x, y, RGB(r, g, b));
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_pixel(x, y, Color(r, g, b));
 
 		};
 
@@ -180,7 +186,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		r = (int)vals[5]->get_str()["r"]->get_i();
 		g = (int)vals[5]->get_str()["g"]->get_i();
 		b = (int)vals[5]->get_str()["b"]->get_i();
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_line(x1, y1, x2, y2, RGB(r, g, b));
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_line(x1, y1, x2, y2, Color(r, g, b));
 
 		};
 
@@ -210,7 +216,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		r = (int)vals[5]->get_str()["r"]->get_i();
 		g = (int)vals[5]->get_str()["g"]->get_i();
 		b = (int)vals[5]->get_str()["b"]->get_i();
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_rect(x, y, width, height, RGB(r, g, b));
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_rect(x, y, width, height, Color(r, g, b));
 
 		};
 
@@ -240,7 +246,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		r = (int)vals[5]->get_str()["r"]->get_i();
 		g = (int)vals[5]->get_str()["g"]->get_i();
 		b = (int)vals[5]->get_str()["b"]->get_i();
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->fill_rect(x, y, width, height, RGB(r, g, b));
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->fill_rect(x, y, width, height, Color(r, g, b));
 
 		};
 
@@ -268,7 +274,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		r = (int)vals[4]->get_str()["r"]->get_i();
 		g = (int)vals[4]->get_str()["g"]->get_i();
 		b = (int)vals[4]->get_str()["b"]->get_i();
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_circle(xc, yc, radius, RGB(r, g, b));
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_circle(xc, yc, radius, Color(r, g, b));
 
 		};
 
@@ -296,7 +302,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		r = (int)vals[4]->get_str()["r"]->get_i();
 		g = (int)vals[4]->get_str()["g"]->get_i();
 		b = (int)vals[4]->get_str()["b"]->get_i();
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->fill_circle(xc, yc, radius, RGB(r, g, b));
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->fill_circle(xc, yc, radius, Color(r, g, b));
 
 		};
 
@@ -379,7 +385,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 			throw std::runtime_error("there was an error handling font");
 		}
 
-		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_text(x, y, text, RGB(r, g, b), font);
+		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_text(x, y, text, Color(r, g, b), font);
 
 		};
 
@@ -411,8 +417,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		auto point = ((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->get_text_size(text, font);
 
 		flx_struct str = flx_struct();
-		str["width"] = visitor->allocate_value(new RuntimeValue(flx_int(point.cx * 2 * 0.905)));
-		str["height"] = visitor->allocate_value(new RuntimeValue(flx_int(point.cy * 2 * 0.875)));
+		str["width"] = visitor->allocate_value(new RuntimeValue(flx_int(point.width * 2 * 0.905)));
+		str["height"] = visitor->allocate_value(new RuntimeValue(flx_int(point.height * 2 * 0.875)));
 
 		RuntimeValue* res = visitor->allocate_value(new RuntimeValue(str, "Size", Constants::STD_NAMESPACE));
 
@@ -516,9 +522,6 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		if (!TypeUtils::is_void(font_value->type)) {
 			Font* font = (Font*)font_value->get_str()[INSTANCE_ID_NAME]->get_i();
 			if (font) {
-				if (font->font) {
-					DeleteObject(font->font);
-				}
 				delete font;
 				font_value->set_null();
 			}

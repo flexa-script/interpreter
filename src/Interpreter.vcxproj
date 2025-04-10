@@ -61,7 +61,8 @@
   <ItemGroup>
     <ClInclude Include="ast.hpp" />
     <ClInclude Include="constants.hpp" />
-    <ClInclude Include="graphics_utils.hpp" />
+    <ClInclude Include="graphics_utils_niy.hpp" />
+    <ClInclude Include="graphics_utils_win.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="watch.hpp" />
     <ClInclude Include="md_builtin.hpp" />
@@ -94,8 +95,10 @@
   <ItemGroup>
     <ClCompile Include="ast.cpp" />
     <ClCompile Include="constants.cpp" />
+    <ClCompile Include="graphics_utils_niy.cpp" />
+    <ClCompile Include="graphics_utils.hpp" />
     <ClCompile Include="utils.cpp" />
-    <ClCompile Include="graphics_utils.cpp" />
+    <ClCompile Include="graphics_utils_win.cpp" />
     <ClCompile Include="md_builtin.cpp" />
     <ClCompile Include="md_console.cpp" />
     <ClCompile Include="md_datetime.cpp" />
