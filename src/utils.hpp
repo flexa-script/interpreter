@@ -64,7 +64,7 @@ char _getch();
 		static std::string normalize_path_sep(const std::string& path);
 	};
 
-	class UUID {
+	class FlexaUUID {
 	public:
 		static std::string generate();
 	};

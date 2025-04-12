@@ -552,9 +552,9 @@ void Interpreter::visit(std::shared_ptr<ASTLambdaFunction> astnode) {
 	// generate an random identifier and evaluates
 	auto& fun = astnode->fun;
 
-	auto fun_name = "lambda@" + utils::UUID::generate();
+	auto fun_name = "lambda@" + utils::FlexaUUID::generate();
 	while (scopes[name_space].back()->already_declared_function_name(fun_name)) {
-		fun_name = "lambda@" + utils::UUID::generate();
+		fun_name = "lambda@" + utils::FlexaUUID::generate();
 	}
 
 	fun->identifier = fun_name;
@@ -2236,24 +2236,38 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 }
 
 void Interpreter::build_args(const std::vector<std::string>& args) {
-	// args
-	auto dim = std::vector<size_t>{ (size_t)args.size() };
-	auto var = std::make_shared<RuntimeVariable>("args", Type::T_ARRAY, Type::T_STRING, dim, "", "");
-	gc.add_var_root(var);
+	get_flexa_struct()->accept(this);
 
+	auto flx = std::make_shared<RuntimeVariable>("flx", Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Flexa", Constants::DEFAULT_NAMESPACE);
+	auto str_value = flx_struct();
+
+	// program args
+	auto dim = std::vector<size_t>{ (size_t)args.size() };
 	auto arr = flx_array(args.size());
 	for (size_t i = 0; i < args.size(); ++i) {
 		arr[i] = allocate_value(new RuntimeValue(args[i]));
 	}
-
-	var->set_value(allocate_value(new RuntimeValue(arr, Type::T_STRING, dim)));
-	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("args", var);
+	str_value["args"] = allocate_value(new RuntimeValue(arr, Type::T_STRING, dim));
 
 	// cwd
-	auto cwd_var = std::make_shared<RuntimeVariable>("cwd", Type::T_STRING, Type::T_UNDEFINED, std::vector<size_t>(), "", "");
-	gc.add_var_root(cwd_var);
-	cwd_var->set_value(allocate_value(new RuntimeValue(std::filesystem::current_path().string())));
-	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("cwd", cwd_var);
+	str_value["cwd"] = allocate_value(new RuntimeValue(std::filesystem::current_path().string()));
+
+	// so
+#ifdef linux
+
+	str_value["so"] = allocate_value(new RuntimeValue("linux"));
+
+#elif defined(_WIN32) || defined(WIN32)
+
+	str_value["so"] = allocate_value(new RuntimeValue("windows"));
+
+#endif // linux
+
+	flx->set_value(allocate_value(new RuntimeValue(str_value, "Flexa", Constants::DEFAULT_NAMESPACE)));
+	gc.add_var_root(flx);
+
+	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("flx", flx);
+
 }
 
 void Interpreter::set_curr_pos(size_t row, size_t col) {

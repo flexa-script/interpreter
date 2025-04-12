@@ -1812,16 +1812,11 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 }
 
 void SemanticAnalyser::build_args(const std::vector<std::string>& args) {
-	// program args
-	auto dim = std::vector<size_t>{ (size_t)args.size() };
-	auto var = std::make_shared<SemanticVariable>("args", Type::T_ARRAY, Type::T_STRING, dim, "", "", true, 0, 0);
-	var->set_value(std::make_shared<SemanticValue>(Type::T_ARRAY, Type::T_STRING, dim, "", "", 0, true, 0, 0));
-	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("args", var);
+	get_flexa_struct()->accept(this);
 
-	// cwd
-	auto cwd_var = std::make_shared<SemanticVariable>("cwd", Type::T_STRING, true, 0, 0);
-	cwd_var->set_value(std::make_shared<SemanticValue>(Type::T_STRING, 0, true, 0, 0));
-	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("cwd", cwd_var);
+	auto flx = std::make_shared<SemanticVariable>("flx", Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Flexa", Constants::DEFAULT_NAMESPACE, true, 0, 0);
+	flx->set_value(std::make_shared<SemanticValue>(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Flexa", Constants::DEFAULT_NAMESPACE, 0, true, 0, 0));
+	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("flx", flx);
 }
 
 bool SemanticAnalyser::is_return_node(std::shared_ptr<ASTNode> astnode) {

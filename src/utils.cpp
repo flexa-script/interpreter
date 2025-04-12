@@ -182,9 +182,9 @@ std::string PathUtils::normalize_path_sep(const std::string& path) {
 	return ret_str;
 }
 
-// UUID
+// FlexaUUID
 
-std::string utils::UUID::generate() {
+std::string utils::FlexaUUID::generate() {
 	static std::random_device dev;
 	static std::mt19937 rng(dev());
 

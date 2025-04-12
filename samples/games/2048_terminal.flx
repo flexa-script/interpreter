@@ -40,7 +40,12 @@ fun set_color(val: int) {
 }
 
 fun print_board(board: int[4][4]) {
-    system("cls");
+    if (flx.so == "windows") {
+        system("cls");
+    } else if (flx.so == "linux") {
+        system("clear");
+    }
+
     print(PRINT_HORIZONTAL_LINE);
     for (var i: int = 0; i < 4; i++) {
         print("\n|" + PRINT_BLANK_LINE + "|\n|" + PRINT_BLANK_LINE + "|\n|");
