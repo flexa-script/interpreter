@@ -104,7 +104,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 				program = parser.parse_program();
 				programs = std::map<std::string, std::shared_ptr<ASTProgramNode>>({ std::pair(prog_name, program) });
 			}
-			catch (const std::exception& e) {
+			catch (const std::runtime_error& e) {
 				std::string err = e.what();
 				remove_header(err);
 				std::cerr << utils::StringUtils::trim(err) << std::endl;
@@ -140,7 +140,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 				break;
 			}
 		}
-		catch (const std::exception& e) {
+		catch (const std::runtime_error& e) {
 			std::string err = e.what();
 			remove_header(err);
 			std::cerr << utils::StringUtils::trim(err) << std::endl;

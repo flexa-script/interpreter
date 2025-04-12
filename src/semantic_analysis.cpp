@@ -33,7 +33,7 @@ void SemanticAnalyser::visit(std::shared_ptr<ASTProgramNode> astnode) {
 		try {
 			statement->accept(this);
 		}
-		catch (std::exception ex) {
+		catch (std::runtime_error ex) {
 			if (curr_row == 0 || curr_col == 0) {
 				set_curr_pos(statement->row, statement->col);
 			}

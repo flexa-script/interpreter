@@ -57,7 +57,7 @@ fun print_board(board: int[4][4]) {
         print("\t|\n|" + PRINT_BLANK_LINE + "|");
     }
     print("\n|" + PRINT_BLANK_LINE + "|\n");
-    print(PRINT_HORIZONTAL_LINE);
+    println(PRINT_HORIZONTAL_LINE);
 }
 
 fun moves_up(board: int[4][4]) {

@@ -60,7 +60,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 			cpfile->set(str, "File", Constants::STD_NAMESPACE);
 			visitor->current_expression_value = cpfile;
 		}
-		catch (std::exception ex) {
+		catch (std::runtime_error ex) {
 			throw std::runtime_error(ex.what());
 		}
 		};

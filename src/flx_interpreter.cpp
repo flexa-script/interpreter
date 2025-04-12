@@ -88,7 +88,7 @@ int FlexaInterpreter::interpreter() {
 		source_programs = load_programs(args.source_files);
 		source_programs.emplace(source_programs.begin(), main_program_src);
 	}
-	catch (const std::exception& e) {
+	catch (const std::runtime_error& e) {
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
@@ -132,7 +132,7 @@ int FlexaInterpreter::interpreter() {
 
 		return result;
 	}
-	catch (const std::exception& e) {
+	catch (const std::runtime_error& e) {
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}

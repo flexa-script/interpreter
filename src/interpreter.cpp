@@ -48,7 +48,7 @@ void Interpreter::visit(std::shared_ptr<ASTProgramNode> astnode) {
 				break;
 			}
 		}
-		catch (std::exception ex) {
+		catch (std::runtime_error ex) {
 			if (curr_row == 0 || curr_col == 0) {
 				set_curr_pos(statement->row, statement->col);
 			}
@@ -1010,7 +1010,7 @@ void Interpreter::visit(std::shared_ptr<ASTTryCatchNode> astnode) {
 		scopes[name_space].pop_back();
 		gc.collect();
 	}
-	catch (std::exception ex) {
+	catch (std::runtime_error ex) {
 		scopes[name_space].pop_back();
 		gc.collect();
 
@@ -2255,11 +2255,11 @@ void Interpreter::build_args(const std::vector<std::string>& args) {
 	// so
 #ifdef linux
 
-	str_value["so"] = allocate_value(new RuntimeValue("linux"));
+	str_value["so"] = allocate_value(new RuntimeValue(flx_string("linux")));
 
 #elif defined(_WIN32) || defined(WIN32)
 
-	str_value["so"] = allocate_value(new RuntimeValue("windows"));
+	str_value["so"] = allocate_value(new RuntimeValue(lx_string("windows")));
 
 #endif // linux
 
