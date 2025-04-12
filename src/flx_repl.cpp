@@ -46,7 +46,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 		input_line = read(">>> ");
 		input_line = std::regex_replace(input_line, std::regex("^ +| +$"), "$1");
 
-		if (input_line == "#quit") {
+		if (input_line == "#exit") {
 			break;
 		}
 		else if (input_line == "#help") {
@@ -60,7 +60,7 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 			std::cout << std::setw(20);
 			std::cout << "" << ">>> #load .\\main.flx\n\n";
 
-			std::cout << " #quit              Exits the Flexa REPL.\n";
+			std::cout << " #exit              Exits the Flexa REPL.\n";
 			std::cout << std::setw(20);
 			std::cout << "" << "functions and variables in the global scope.\n\n";
 
@@ -134,6 +134,10 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 					&& source.find(';') == std::string::npos) {
 					std::cout << RuntimeOperations::parse_value_to_string(interpreter.current_expression_value) << std::endl;
 				}
+			}
+
+			if (interpreter.exit_from_program){
+				break;
 			}
 		}
 		catch (const std::exception& e) {

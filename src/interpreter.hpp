@@ -22,6 +22,7 @@ namespace core {
 
 		class Interpreter : public Visitor, public ScopeManager {
 		public:
+			bool exit_from_program = false;
 			std::map<std::string, std::function<void()>> builtin_functions;
 			RuntimeValue* current_expression_value;
 			GarbageCollector gc;
@@ -44,7 +45,6 @@ namespace core {
 			bool continue_block = false;
 			bool break_block = false;
 			bool return_from_function = false;
-			bool exit_from_program = false;
 			bool executed_elif = false;
 			bool has_string_access = false;
 			bool exception = false;
