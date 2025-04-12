@@ -1,4 +1,6 @@
+#if defined(_WIN32) || defined(WIN32)
 #include <Windows.h>
+#endif // defined(_WIN32) || defined(WIN32)
 #include <memory>
 
 #include "md_sound.hpp"
@@ -32,7 +34,18 @@ void ModuleSound::register_functions(Interpreter* visitor) {
 
 		auto file_path = val->get_s();
 		std::wstring wfile_path = std::wstring(file_path.begin(), file_path.end());
+
+#ifdef linux
+
+		throw std::runtime_error("Not implemented yet");
+		
+#elif  defined(_WIN32) || defined(WIN32)
+
 		PlaySound(wfile_path.c_str(), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
+
+#endif // linux
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -42,12 +55,34 @@ void ModuleSound::register_functions(Interpreter* visitor) {
 
 		auto file_path = val->get_s();
 		std::wstring wfile_path = std::wstring(file_path.begin(), file_path.end());
+
+#ifdef linux
+
+		throw std::runtime_error("Not implemented yet");
+		
+#elif  defined(_WIN32) || defined(WIN32)
+
 		PlaySound(wfile_path.c_str(), NULL, SND_ASYNC | SND_FILENAME);
+
+#endif // linux
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
 	visitor->builtin_functions["stop_sound"] = [this, visitor]() {
+
+#ifdef linux
+
+		throw std::runtime_error("Not implemented yet");
+
+#elif  defined(_WIN32) || defined(WIN32)
+
 		PlaySound(NULL, 0, 0);
+
+#endif // linux
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -56,7 +91,18 @@ void ModuleSound::register_functions(Interpreter* visitor) {
 		auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("volume"))->get_value();
 
 		unsigned long volume = val->get_f() * 65535;
+
+#ifdef linux
+
+		throw std::runtime_error("Not implemented yet");
+
+#elif  defined(_WIN32) || defined(WIN32)
+
 		waveOutSetVolume(0, MAKELONG(volume, volume));
+
+#endif // linux
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 }

@@ -378,7 +378,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 		RuntimeValue* font_value = vals[5];
 		if (TypeUtils::is_void(font_value->type)) {
-			throw std::exception("font is null");
+			throw std::runtime_error("font is null");
 		}
 		Font* font = (Font*)font_value->get_str()[INSTANCE_ID_NAME]->get_i();
 		if (!font) {
@@ -407,7 +407,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		std::string text = vals[1]->get_s();
 		RuntimeValue* font_value = vals[2];
 		if (TypeUtils::is_void(font_value->type)) {
-			throw std::exception("font is null");
+			throw std::runtime_error("font is null");
 		}
 		Font* font = (Font*)font_value->get_str()[INSTANCE_ID_NAME]->get_i();
 		if (!font) {
@@ -466,7 +466,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 
 		RuntimeValue* win = vals[0];
 		if (TypeUtils::is_void(win->type)) {
-			throw std::exception("window is null");
+			throw std::runtime_error("window is null");
 		}
 		auto window = ((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i());
 		if (!window) {
@@ -474,7 +474,7 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		}
 		RuntimeValue* img = vals[1];
 		if (TypeUtils::is_void(img->type)) {
-			throw std::exception("window is null");
+			throw std::runtime_error("window is null");
 		}
 		auto image = ((Image*)img->get_str()[INSTANCE_ID_NAME]->get_i());
 		if (!image) {

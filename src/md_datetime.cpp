@@ -49,13 +49,33 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 
 		if (scope->total_declared_variables() == 0) {
 			t = time(nullptr);
+
+#ifdef linux
+
+			gmtime_r(&t, tm);
+
+#elif defined(_WIN32) || defined(WIN32)
+		
 			gmtime_s(tm, &t);
+
+#endif // linux
+
 		}
 		else if (scope->total_declared_variables() == 1) {
 			auto val = std::dynamic_pointer_cast<RuntimeVariable>(scope->find_declared_variable("timestamp"))->get_value();
 
 			t = val->get_i();
+
+#ifdef linux
+
+			gmtime_r(&t, tm);
+
+#elif defined(_WIN32) || defined(WIN32)
+		
 			gmtime_s(tm, &t);
+
+#endif // linux
+			
 		}
 		else {
 			auto vals = std::vector{
@@ -91,7 +111,16 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 		time_t rt = vals[1]->get_str()["timestamp"]->get_i();
 		time_t t = difftime(lt, rt);
 		tm* tm = new struct tm();
+
+#ifdef linux
+
+		gmtime_r(&t, tm);
+
+#elif defined(_WIN32) || defined(WIN32)
+	
 		gmtime_s(tm, &t);
+
+#endif // linux		
 
 		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(tm_to_date_time(visitor, t, tm), "DateTime", Constants::STD_NAMESPACE));
 
@@ -107,7 +136,17 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 		time_t t = vals[0]->get_str()["timestamp"]->get_i();
 		std::string fmt = vals[1]->get_s();
 		tm* tm = new struct tm();
+
+#ifdef linux
+
+		gmtime_r(&t, tm);
+
+#elif defined(_WIN32) || defined(WIN32)
+	
 		gmtime_s(tm, &t);
+
+#endif // linux
+		
 		char buffer[80];
 		strftime(buffer, 80, fmt.c_str(), tm);
 
@@ -125,7 +164,17 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 		time_t t = vals[0]->get_str()["timestamp"]->get_i();
 		std::string fmt = vals[1]->get_s();
 		tm* tm = new struct tm();
+		
+#ifdef linux
+
+		localtime_r(&t, tm);
+
+#elif defined(_WIN32) || defined(WIN32)
+		
 		localtime_s(tm, &t);
+
+#endif // linux
+
 		char buffer[80];
 		strftime(buffer, 80, fmt.c_str(), tm);
 
@@ -139,12 +188,26 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 
 		time_t t = val->get_str()["timestamp"]->get_i();
 		tm* tm = new struct tm();
-		gmtime_s(tm, &t);
+
 		char buffer[26];
+
+#ifdef linux
+
+		gmtime_r(&t, tm);
+
+		if (!asctime_r(tm, buffer)) {
+			throw std::runtime_error("Error trying to convert date/time to ASCII string");
+		}
+
+#elif defined(_WIN32) || defined(WIN32)
 		
+		gmtime_s(tm, &t);
+
 		if (asctime_s(buffer, sizeof(buffer), tm) != 0) {
 			throw std::runtime_error("Error trying to convert date/time to ASCII string");
 		}
+
+#endif // linux
 
 		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::string{ buffer }));
 
@@ -156,12 +219,26 @@ void ModuleDateTime::register_functions(Interpreter* visitor) {
 
 		time_t t = val->get_str()["timestamp"]->get_i();
 		tm* tm = new struct tm();
-		localtime_s(tm, &t);
+
 		char buffer[26];
+
+#ifdef linux
+
+		localtime_r(&t, tm);
+
+		if (!asctime_r(tm, buffer)) {
+			throw std::runtime_error("Error trying to convert date/time to ASCII string");
+		}
+
+#elif defined(_WIN32) || defined(WIN32)
+		
+		localtime_s(tm, &t);
 
 		if (asctime_s(buffer, sizeof(buffer), tm) != 0) {
 			throw std::runtime_error("Error trying to convert date/time to ASCII string");
 		}
+
+#endif // linux
 
 		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(std::string{ buffer }));
 

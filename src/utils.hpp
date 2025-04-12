@@ -4,16 +4,20 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 namespace utils {
 
-#ifdef __unix__
+#ifdef linux
+
+bool _kbhit();
+char _getch();
 
 #ifndef __max
-#define __max(a,b) max(a,b)
+#define __max(a,b) std::max(a,b)
 #endif // !__max
 #ifndef __min
-#define __min(a,b) min(a,b)
+#define __min(a,b) std::min(a,b)
 #endif // !__min
 
 #elif defined(_WIN32) || defined(WIN32)
@@ -25,7 +29,7 @@ namespace utils {
 #define __min(a,b) (((a) < (b)) ? (a) : (b))
 #endif // !__min
 
-#endif // !__unix__
+#endif // !linux
 
 	class StringUtils {
 	public:

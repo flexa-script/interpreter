@@ -182,42 +182,72 @@ ASTLambdaFunction::ASTLambdaFunction(std::shared_ptr<ASTFunctionDefinitionNode> 
 ASTValueNode::ASTValueNode(Value* value, size_t row, size_t col)
 	: ASTExprNode(row, col), value(value) {}
 
+#ifdef linux
+template<>
+#endif // !linux
 void ASTLiteralNode<flx_bool>::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTLiteralNode<flx_bool>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 intmax_t ASTLiteralNode<flx_bool>::hash(Visitor* v) {
 	return v->hash(std::dynamic_pointer_cast<ASTLiteralNode<flx_bool>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 void ASTLiteralNode<flx_int>::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTLiteralNode<flx_int>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 intmax_t ASTLiteralNode<flx_int>::hash(Visitor* v) {
 	return v->hash(std::dynamic_pointer_cast<ASTLiteralNode<flx_int>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 void ASTLiteralNode<flx_float>::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTLiteralNode<flx_float>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 intmax_t ASTLiteralNode<flx_float>::hash(Visitor* v) {
 	return v->hash(std::dynamic_pointer_cast<ASTLiteralNode<flx_float>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 void ASTLiteralNode<flx_char>::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTLiteralNode<flx_char>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 intmax_t ASTLiteralNode<flx_char>::hash(Visitor* v) {
 	return v->hash(std::dynamic_pointer_cast<ASTLiteralNode<flx_char>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 void ASTLiteralNode<flx_string>::accept(Visitor* v) {
 	v->visit(std::dynamic_pointer_cast<ASTLiteralNode<flx_string>>(shared_from_this()));
 }
 
+#ifdef linux
+template<>
+#endif // !linux
 intmax_t ASTLiteralNode<flx_string>::hash(Visitor* v) {
 	return v->hash(std::dynamic_pointer_cast<ASTLiteralNode<flx_string>>(shared_from_this()));
 }

@@ -9,6 +9,7 @@
 #include <functional>
 
 #include "gcobject.hpp"
+#include "utils.hpp"
 
 namespace core {
 

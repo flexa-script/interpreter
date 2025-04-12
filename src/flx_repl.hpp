@@ -9,11 +9,11 @@
 #include "interpreter.hpp"
 #include "flx_utils.hpp"
 
-#ifdef __unix__
+#ifdef linux
 #define clear_screen() system("clear")
 #elif defined(_WIN32) || defined(WIN32)
 #define clear_screen() system("cls")
-#endif // !__unix__
+#endif // !linux
 
 namespace interpreter {
 

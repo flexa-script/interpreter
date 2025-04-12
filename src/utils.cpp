@@ -1,10 +1,53 @@
-#include <Windows.h>
 #include <filesystem>
 #include <random>
+#include <iterator>
 
 #include "utils.hpp"
 
 using namespace utils;
+
+#ifdef linux
+
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/select.h>
+#include <limits.h>
+
+bool utils::_kbhit() {
+    termios oldt, newt;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+    timeval tv = {0, 0};
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    int ret = select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ret > 0;
+}
+
+char utils::_getch() {
+    termios oldt, newt;
+    char ch;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ch;
+}
+
+#elif defined(_WIN32) || defined(WIN32)
+
+#include <Windows.h>
+
+#endif // linux
 
 // StringUtils
 
@@ -104,12 +147,28 @@ intmax_t StringUtils::hashcode(const std::string& str) {
 // PathUtils
 
 std::string PathUtils::get_current_path() {
+
+#ifdef linux
+
+	char result[PATH_MAX];
+	ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+
+    if (count == -1) {
+        throw std::runtime_error("there was not possible to obtain executable path");
+    }
+
+    std::filesystem::path path(std::string(result, count));
+
+#elif defined(_WIN32) || defined(WIN32)
+
 	HMODULE this_process_handle = GetModuleHandle(NULL);
 	wchar_t this_process_path[MAX_PATH];
 
 	GetModuleFileNameW(NULL, this_process_path, sizeof(this_process_path));
 
-	std::filesystem::path path(this_process_path);
+    std::filesystem::path path(this_process_path);
+
+#endif // linux
 
 	return normalize_path_sep(path.remove_filename().generic_string());
 }

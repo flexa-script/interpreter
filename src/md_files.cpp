@@ -54,7 +54,8 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 		std::fstream* fs = nullptr;
 		try {
-			fs = new std::fstream(vals[0]->get_s(), parmode);
+			std::ios_base::openmode mode = std::ios_base::openmode(parmode);
+			fs = new std::fstream(vals[0]->get_s(), mode);
 			str[INSTANCE_ID_NAME] = visitor->allocate_value(new RuntimeValue(flx_int(fs)));
 			cpfile->set(str, "File", Constants::STD_NAMESPACE);
 			visitor->current_expression_value = cpfile;

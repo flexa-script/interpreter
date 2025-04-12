@@ -989,7 +989,7 @@ void Interpreter::visit(std::shared_ptr<ASTForEachNode> astnode) {
 		break;
 	}
 	default:
-		throw std::exception("invalid foreach iterable type");
+		throw std::runtime_error("invalid foreach iterable type");
 	}
 
 	scopes[name_space].pop_back();
@@ -1062,7 +1062,7 @@ void Interpreter::visit(std::shared_ptr<ASTThrowNode> astnode) {
 			throw std::runtime_error("expected flx::Exception not " + TypeDefinition::buid_type_str(*throw_expression));
 		}
 
-		throw std::exception(throw_expression->get_str()["error"]->get_s().c_str());
+		throw std::runtime_error(throw_expression->get_str()["error"]->get_s().c_str());
 	}
 	// handle bare string
 	else if (TypeUtils::is_string(throw_expression->type)) {

@@ -1,5 +1,19 @@
+#ifdef linux
+
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <cstring>
+
+#elif defined(_WIN32) || defined(WIN32)
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+
+#endif // linux
+
 
 #include "md_http.hpp"
 
@@ -7,8 +21,6 @@
 #include "semantic_analysis.hpp"
 #include "utils.hpp"
 #include "constants.hpp"
-
-#pragma comment(lib, "ws2_32.lib")
 
 using namespace core::modules;
 using namespace core::runtime;
@@ -30,7 +42,7 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 
 		RuntimeValue* config_value = val;
 		if (TypeUtils::is_void(config_value->type)) {
-			throw std::exception("'req' is null");
+			throw std::runtime_error("'req' is null");
 		}
 		flx_struct config_str = config_value->get_str();
 		std::string hostname = config_str["hostname"]->get_s();
@@ -78,6 +90,39 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 			headers += header.first + ": " + header.second->get_s() + "\r\n";
 		}
 
+#ifdef linux
+
+		int sock;
+		struct addrinfo hints;
+		struct addrinfo* result = nullptr;
+
+		// set hints to DNS resolution
+		memset(&hints, 0, sizeof(hints));
+		hints.ai_family = AF_INET; // IPv4
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;
+
+		// resolve DNS
+		if (getaddrinfo(hostname.c_str(), port.c_str(), &hints, &result) != 0) {
+			throw std::runtime_error("Failed to resolve hostname.");
+		}
+
+		// create socket
+		sock = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+		if (sock < 0) {
+			freeaddrinfo(result);
+			throw std::runtime_error("Socket creation failed.");
+		}
+
+		// connect to server
+		if (connect(sock, result->ai_addr, result->ai_addrlen) < 0) {
+			close(sock);
+			freeaddrinfo(result);
+			throw std::runtime_error("Connection failed.");
+		}
+		
+#elif defined(_WIN32) || defined(WIN32)
+
 		WSADATA wsa;
 		SOCKET sock;
 		struct sockaddr_in server;
@@ -115,6 +160,8 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 			WSACleanup();
 			throw std::runtime_error("Connection failed. Error: " + WSAGetLastError());
 		}
+		
+#endif // linux
 
 		// prepare HTTP request
 		std::string request = method + " " + path + parameters + " HTTP/1.1\r\n";
@@ -145,9 +192,17 @@ void ModuleHTTP::register_functions(Interpreter* visitor) {
 		char buffer[8192];
 		int bytes_received = recv(sock, buffer, sizeof(buffer), 0);
 
+#ifdef linux
+
+		close(sock);
+		
+#elif defined(_WIN32) || defined(WIN32)
+		
 		closesocket(sock);
 		freeaddrinfo(result);
 		WSACleanup();
+		
+#endif // linux
 
 		std::string raw_response(buffer, bytes_received);
 		std::vector<std::string> response_lines = utils::StringUtils::split(raw_response, "\r\n");

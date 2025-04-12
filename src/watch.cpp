@@ -68,21 +68,21 @@ std::string Stopwatch::get_elapsed_formatted() {
 
 // ChronoStopwatch
 
-ChronoStopwatch::ChronoStopwatch() : start_time(std::chrono::high_resolution_clock::now()), Watch(0) { }
+ChronoStopwatch::ChronoStopwatch() : start_time(std::chrono::steady_clock::now()), Watch(0) { }
 
 ChronoStopwatch::~ChronoStopwatch() = default;
 
 void ChronoStopwatch::start() {
-	start_time = std::chrono::high_resolution_clock::now();
+	start_time = std::chrono::steady_clock::now();
 }
 
 void ChronoStopwatch::stop() {
-	elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
+	elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start_time).count();
 }
 
 void ChronoStopwatch::reset() {
 	elapsed = 0;
-	start_time = std::chrono::high_resolution_clock::now();
+	start_time = std::chrono::steady_clock::now();
 }
 
 std::string ChronoStopwatch::get_elapsed_formatted() {

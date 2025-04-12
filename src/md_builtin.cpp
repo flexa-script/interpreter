@@ -1,6 +1,8 @@
 #include <iostream>
 #include <thread>
+#if defined(_WIN32) || defined(WIN32)
 #include <conio.h>
+#endif // defined(_WIN32) || defined(WIN32)
 
 #include "md_builtin.hpp"
 
@@ -9,11 +11,13 @@
 #include "interpreter.hpp"
 #include "constants.hpp"
 #include "visitor.hpp"
+#include "utils.hpp"
 
 using namespace core;
 using namespace core::modules;
 using namespace core::runtime;
 using namespace core::analysis;
+using namespace utils;
 
 ModuleBuiltin::ModuleBuiltin() {
 	build_decls();

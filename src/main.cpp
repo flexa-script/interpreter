@@ -2,12 +2,20 @@
 #include "flx_interpreter.hpp"
 #include "watch.hpp"
 
+#ifdef linux
+#include <locale.h>
+#elif defined(_WIN32) || defined(WIN32)
 #include <Windows.h>
+#endif // linux
 
 using namespace interpreter;
 
 int main(int argc, const char* argv[]) {
+#ifdef linux
+	setlocale(LC_ALL, "en_US.UTF-8");
+#elif defined(_WIN32) || defined(WIN32)
 	SetConsoleOutputCP(CP_UTF8);
+#endif // linux
 
 	auto args = FlexaCliArgs(argc, argv);
 

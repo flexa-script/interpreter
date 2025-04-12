@@ -7,13 +7,13 @@
 #include "md_console.hpp"
 #include "md_input.hpp"
 #include "md_sound.hpp"
-#include "md_HTTP.hpp"
+#include "md_http.hpp"
 
 using namespace core;
 
 std::string const Constants::NAME = "Flexa";
 
-std::string const Constants::VER = "v1.0.7";
+std::string const Constants::VER = "v1.1.3";
 
 std::string const Constants::YEAR = "2025";
 
