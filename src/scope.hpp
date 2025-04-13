@@ -17,6 +17,7 @@ namespace core {
 		std::unordered_map<std::string, StructureDefinition> structure_symbol_table;
 		std::unordered_multimap<std::string, FunctionDefinition> function_symbol_table;
 		std::unordered_map<std::string, std::shared_ptr<Variable>> variable_symbol_table;
+		bool declared_flexa_struct = false;
 
 	public:
 		std::string name;
@@ -42,6 +43,8 @@ namespace core {
 		std::pair<std::unordered_multimap<std::string, FunctionDefinition>::iterator,
 			std::unordered_multimap<std::string, FunctionDefinition>::iterator> find_declared_functions(const std::string& identifier);
 		std::shared_ptr<Variable> find_declared_variable(const std::string& identifier);
+
+		void declare_flexa_struct(core::Visitor* visitor);
 
 	};
 

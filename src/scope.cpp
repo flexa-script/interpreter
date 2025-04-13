@@ -178,3 +178,19 @@ void Scope::declare_variable(const std::string& identifier, const std::shared_pt
 void Scope::declare_function(const std::string& identifier, FunctionDefinition function) {
 	function_symbol_table.insert(std::make_pair(identifier, function));
 }
+
+void Scope::declare_flexa_struct(core::Visitor* visitor) {
+	if (declared_flexa_struct) {
+		return;
+	}
+	declared_flexa_struct = true;
+
+	std::map<std::string, VariableDefinition> variables;
+	variables.emplace("args", VariableDefinition("args", Type::T_ARRAY, "", "",
+		Type::T_STRING, std::vector<std::shared_ptr<ASTExprNode>>(), nullptr, false, 0, 0));
+	variables.emplace("cwd", VariableDefinition("cwd", Type::T_STRING, "", "",
+		Type::T_UNDEFINED, std::vector<std::shared_ptr<ASTExprNode>>(), nullptr, false, 0, 0));
+	variables.emplace("so", VariableDefinition("so", Type::T_STRING, "", "",
+		Type::T_UNDEFINED, std::vector<std::shared_ptr<ASTExprNode>>(), nullptr, false, 0, 0));
+	std::make_shared<ASTStructDefinitionNode>("Flexa", variables, 0, 0)->accept(visitor);
+}

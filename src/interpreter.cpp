@@ -30,6 +30,8 @@ Interpreter::Interpreter(std::shared_ptr<Scope> global_scope, std::shared_ptr<AS
 
 	scopes[main_program->name_space].push_back(global_scope);
 
+	global_scope->declare_flexa_struct(this);
+
 	build_args(args);
 }
 
@@ -2236,8 +2238,6 @@ void Interpreter::declare_function_block_parameters(const std::string& name_spac
 }
 
 void Interpreter::build_args(const std::vector<std::string>& args) {
-	get_flexa_struct()->accept(this);
-
 	auto flx = std::make_shared<RuntimeVariable>("flx", Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Flexa", Constants::DEFAULT_NAMESPACE);
 	auto str_value = flx_struct();
 
@@ -2259,7 +2259,7 @@ void Interpreter::build_args(const std::vector<std::string>& args) {
 
 #elif defined(_WIN32) || defined(WIN32)
 
-	str_value["so"] = allocate_value(new RuntimeValue(lx_string("windows")));
+	str_value["so"] = allocate_value(new RuntimeValue(flx_string("windows")));
 
 #endif // linux
 

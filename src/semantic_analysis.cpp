@@ -17,6 +17,8 @@ SemanticAnalyser::SemanticAnalyser(std::shared_ptr<Scope> global_scope, std::sha
 
 	scopes[main_program->name_space].push_back(global_scope);
 
+	global_scope->declare_flexa_struct(this);
+
 	if (main_program->name_space != Constants::DEFAULT_NAMESPACE) {
 		program_nmspaces[main_program->name].push_back(Constants::DEFAULT_NAMESPACE);
 	}
@@ -1812,8 +1814,6 @@ bool SemanticAnalyser::returns(std::shared_ptr<ASTNode> astnode) {
 }
 
 void SemanticAnalyser::build_args(const std::vector<std::string>& args) {
-	get_flexa_struct()->accept(this);
-
 	auto flx = std::make_shared<SemanticVariable>("flx", Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Flexa", Constants::DEFAULT_NAMESPACE, true, 0, 0);
 	flx->set_value(std::make_shared<SemanticValue>(Type::T_STRUCT, Type::T_UNDEFINED, std::vector<size_t>(), "Flexa", Constants::DEFAULT_NAMESPACE, 0, true, 0, 0));
 	scopes[Constants::DEFAULT_NAMESPACE].back()->declare_variable("flx", flx);

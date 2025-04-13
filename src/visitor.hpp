@@ -77,8 +77,6 @@ namespace core {
 		virtual void set_curr_pos(size_t row, size_t col) = 0;
 		virtual std::string msg_header() = 0;
 
-		std::shared_ptr<ASTStructDefinitionNode> get_flexa_struct();
-
 		virtual void visit(std::shared_ptr<ASTProgramNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTUsingNode>) = 0;
 		virtual void visit(std::shared_ptr<ASTIncludeNamespaceNode>) = 0;
