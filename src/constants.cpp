@@ -4,6 +4,7 @@
 #include "md_datetime.hpp"
 #include "md_graphics.hpp"
 #include "md_files.hpp"
+#include "md_gc.hpp"
 #include "md_console.hpp"
 #include "md_input.hpp"
 #include "md_sound.hpp"
@@ -13,7 +14,7 @@ using namespace core;
 
 std::string const Constants::NAME = "Flexa";
 
-std::string const Constants::VER = "v1.4.0";
+std::string const Constants::VER = "v1.4.1";
 
 std::string const Constants::YEAR = "2025";
 
@@ -54,6 +55,7 @@ std::vector<std::string> const Constants::STD_LIBS = {
 
 std::unordered_map<std::string, std::shared_ptr<modules::Module>> const Constants::BUILT_IN_LIBS = {
 	{"builtin", std::shared_ptr<modules::ModuleBuiltin>(new modules::ModuleBuiltin())},
+	{"flx.core.gc", std::shared_ptr<modules::ModuleGC>(new modules::ModuleGC())},
 	{"flx.core.graphics", std::shared_ptr<modules::ModuleGraphics>(new modules::ModuleGraphics())},
 	{"flx.core.files", std::shared_ptr<modules::ModuleFiles>(new modules::ModuleFiles())},
 	{"flx.core.console", std::shared_ptr<modules::ModuleConsole>(new modules::ModuleConsole())},

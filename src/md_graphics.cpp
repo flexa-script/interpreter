@@ -102,6 +102,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		b = (int)vals[1]->get_str()["b"]->get_i();
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->clear_screen(Color(r, g, b));
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["get_current_width"] = [this, visitor]() {
@@ -158,6 +160,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		b = (int)vals[3]->get_str()["b"]->get_i();
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_pixel(x, y, Color(r, g, b));
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["draw_line"] = [this, visitor]() {
@@ -187,6 +191,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		g = (int)vals[5]->get_str()["g"]->get_i();
 		b = (int)vals[5]->get_str()["b"]->get_i();
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_line(x1, y1, x2, y2, Color(r, g, b));
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -218,6 +224,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		b = (int)vals[5]->get_str()["b"]->get_i();
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_rect(x, y, width, height, Color(r, g, b));
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["fill_rect"] = [this, visitor]() {
@@ -248,6 +256,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		b = (int)vals[5]->get_str()["b"]->get_i();
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->fill_rect(x, y, width, height, Color(r, g, b));
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["draw_circle"] = [this, visitor]() {
@@ -276,6 +286,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		b = (int)vals[4]->get_str()["b"]->get_i();
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_circle(xc, yc, radius, Color(r, g, b));
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["fill_circle"] = [this, visitor]() {
@@ -303,6 +315,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		g = (int)vals[4]->get_str()["g"]->get_i();
 		b = (int)vals[4]->get_str()["b"]->get_i();
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->fill_circle(xc, yc, radius, Color(r, g, b));
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -386,6 +400,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		}
 
 		((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->draw_text(x, y, text, Color(r, g, b), font);
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -484,6 +500,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 		int y = (int)vals[3]->get_i();
 		window->draw_image(image, x, y);
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["update"] = [this, visitor]() {
@@ -496,6 +514,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 				((Window*)win->get_str()[INSTANCE_ID_NAME]->get_i())->update();
 			}
 		}
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -512,6 +532,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 			}
 		}
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["destroy_font"] = [this, visitor]() {
@@ -527,6 +549,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 			}
 		}
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["destroy_image"] = [this, visitor]() {
@@ -541,6 +565,8 @@ void ModuleGraphics::register_functions(Interpreter* visitor) {
 				img_value->set_null();
 			}
 		}
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 

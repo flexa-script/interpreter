@@ -1,0 +1,26 @@
+using flx.core.gc;
+
+include namespace flx;
+
+gc_enable(false);
+
+println(gc_is_enabled());
+
+var x = 0;
+while (true) {
+  x += 1;
+
+  if (x >= 99999) {
+    break;
+  }
+}
+
+system("pause");
+
+gc_collect();
+
+system("pause");
+
+gc_enable(true);
+
+println(gc_is_enabled());

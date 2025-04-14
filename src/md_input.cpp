@@ -32,6 +32,9 @@ void ModuleInput::register_functions(SemanticAnalyser* visitor) {
 void ModuleInput::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["update_key_states"] = [this, visitor]() {
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 #ifdef linux
 
 		throw std::runtime_error("Not implemented yet");
@@ -45,8 +48,6 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 		}
 
 #endif // linux
-
-		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 	};
 
@@ -130,6 +131,8 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 
 	visitor->builtin_functions["set_mouse_position"] = [this, visitor]() {
 
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 #ifdef linux
 		
 		throw std::runtime_error("Not implemented yet");
@@ -147,8 +150,6 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 		SetCursorPos(x, y);
 
 #endif // linux
-
-		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
 
 		};
 
@@ -173,7 +174,6 @@ void ModuleInput::register_functions(Interpreter* visitor) {
 
 		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(flx_bool(is_pressed)));
 		
-
 		};
 }
 

@@ -82,6 +82,7 @@ using uncategorized.problems;
 using uncategorized.super;
 using uncategorized.tests;
 
+using libs.core.gc;
 using libs.core.datetime_test;
 using libs.core.files_test;
 using libs.core.http_test;

@@ -63,6 +63,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		catch (std::runtime_error ex) {
 			throw std::runtime_error(ex.what());
 		}
+
 		};
 
 	visitor->builtin_functions["read"] = [this, visitor]() {
@@ -85,6 +86,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 			visitor->current_expression_value = rval;
 		}
+
 		};
 
 	visitor->builtin_functions["read_line"] = [this, visitor]() {
@@ -102,6 +104,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 			visitor->current_expression_value = rval;
 		}
+
 		};
 
 	visitor->builtin_functions["read_all_bytes"] = [this, visitor]() {
@@ -140,6 +143,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 			visitor->current_expression_value = rval;
 		}
+
 		};
 
 	visitor->builtin_functions["write"] = [this, visitor]() {
@@ -154,6 +158,9 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 			std::fstream* fs = ((std::fstream*)cpfile->get_str()[INSTANCE_ID_NAME]->get_i());
 			*fs << vals[1]->get_s();
 		}
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["write_bytes"] = [this, visitor]() {
@@ -179,6 +186,9 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 
 			fs->write(buffer, sizeof(buffer));
 		}
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["is_open"] = [this, visitor]() {
@@ -190,6 +200,7 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 			rval->set(flx_bool(((std::fstream*)val->get_str()[INSTANCE_ID_NAME]->get_i())->is_open()));
 			visitor->current_expression_value = rval;
 		}
+
 		};
 
 	visitor->builtin_functions["close"] = [this, visitor]() {
@@ -203,6 +214,9 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 				val->set_null();
 			}
 		}
+
+		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
+
 		};
 
 	visitor->builtin_functions["is_file"] = [this, visitor]() {
@@ -281,7 +295,6 @@ void ModuleFiles::register_functions(Interpreter* visitor) {
 		std::filesystem::remove_all(path);
 
 		visitor->current_expression_value = visitor->allocate_value(new RuntimeValue(Type::T_UNDEFINED));
-
 
 		};
 
