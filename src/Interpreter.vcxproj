@@ -124,7 +124,6 @@
     <ClCompile Include="scope.cpp" />
     <ClCompile Include="md_sound.cpp" />
     <ClCompile Include="token.cpp" />
-    <ClCompile Include="token_constants.cpp" />
     <ClCompile Include="token_constants.hpp" />
     <ClCompile Include="types.cpp" />
     <ClCompile Include="visitor.cpp" />

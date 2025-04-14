@@ -1,6 +1,6 @@
-#include <memory>
-
 #include "md_graphics.hpp"
+
+#include <memory>
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"

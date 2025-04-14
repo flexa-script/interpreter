@@ -1,8 +1,8 @@
+#include "utils.hpp"
+
 #include <filesystem>
 #include <random>
 #include <iterator>
-
-#include "utils.hpp"
 
 using namespace utils;
 

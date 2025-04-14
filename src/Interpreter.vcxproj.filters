@@ -227,9 +227,6 @@
     <ClCompile Include="scope.cpp">
       <Filter>Source Files\core\visitor</Filter>
     </ClCompile>
-    <ClCompile Include="token_constants.cpp">
-      <Filter>Source Files\core\lexer</Filter>
-    </ClCompile>
     <ClCompile Include="md_sound.cpp">
       <Filter>Source Files\modules\flx.core</Filter>
     </ClCompile>

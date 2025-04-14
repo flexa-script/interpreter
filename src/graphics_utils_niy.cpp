@@ -1,8 +1,8 @@
 #if !defined(_WIN32) && !defined(WIN32)
 
-#include <stdexcept>
-
 #include "graphics_utils_niy.hpp"
+
+#include <stdexcept>
 
 using namespace core::modules;
 

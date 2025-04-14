@@ -1,9 +1,9 @@
+#include "md_sound.hpp"
+
 #if defined(_WIN32) || defined(WIN32)
 #include <Windows.h>
 #endif // defined(_WIN32) || defined(WIN32)
 #include <memory>
-
-#include "md_sound.hpp"
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"

@@ -1,7 +1,8 @@
+#include "ast.hpp"
+
 #include <utility>
 #include <numeric>
 
-#include "ast.hpp"
 #include "utils.hpp"
 
 using namespace core;

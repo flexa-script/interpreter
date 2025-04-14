@@ -1,3 +1,5 @@
+#include "md_http.hpp"
+
 #ifdef linux
 
 #include <sys/socket.h>
@@ -13,9 +15,6 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #endif // linux
-
-
-#include "md_http.hpp"
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"

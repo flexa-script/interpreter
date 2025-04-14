@@ -1,6 +1,7 @@
+#include "parser.hpp"
+
 #include <cmath>
 
-#include "parser.hpp"
 #include "utils.hpp"
 #include "visitor.hpp"
 #include "constants.hpp"

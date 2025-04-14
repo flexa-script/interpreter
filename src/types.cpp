@@ -1,6 +1,6 @@
-#include <cmath>
-
 #include "types.hpp"
+
+#include <cmath>
 
 #include "utils.hpp"
 #include "exception_handler.hpp"

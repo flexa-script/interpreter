@@ -1,6 +1,6 @@
-#include <filesystem>
-
 #include "flx_interpreter.hpp"
+
+#include <filesystem>
 
 #include "lexer.hpp"
 #include "parser.hpp"

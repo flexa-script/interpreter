@@ -1,10 +1,10 @@
+#include "md_builtin.hpp"
+
 #include <iostream>
 #include <thread>
 #if defined(_WIN32) || defined(WIN32)
 #include <conio.h>
 #endif // defined(_WIN32) || defined(WIN32)
-
-#include "md_builtin.hpp"
 
 #include "types.hpp"
 #include "semantic_analysis.hpp"

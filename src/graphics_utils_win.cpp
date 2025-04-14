@@ -1,8 +1,8 @@
 #if defined(_WIN32) || defined(WIN32)
 
-#include <iostream>
-
 #include "graphics_utils_win.hpp"
+
+#include <iostream>
 
 using namespace core::modules;
 

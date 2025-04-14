@@ -1,3 +1,5 @@
+#include "md_console.hpp"
+
 #ifdef linux
 
 #include <unistd.h>
@@ -11,8 +13,6 @@
 #include <Windows.h>
 
 #endif // linux
-
-#include "md_console.hpp"
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"

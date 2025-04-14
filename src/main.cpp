@@ -1,12 +1,12 @@
-﻿#include "flx_repl.hpp"
-#include "flx_interpreter.hpp"
-#include "watch.hpp"
-
-#ifdef linux
+﻿#ifdef linux
 #include <locale.h>
 #elif defined(_WIN32) || defined(WIN32)
 #include <Windows.h>
 #endif // linux
+
+#include "flx_repl.hpp"
+#include "flx_interpreter.hpp"
+#include "watch.hpp"
 
 using namespace interpreter;
 

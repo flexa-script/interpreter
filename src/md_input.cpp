@@ -1,8 +1,8 @@
+#include "md_input.hpp"
+
 #if defined(_WIN32) || defined(WIN32)
 #include <Windows.h>
-#endif // efined(_WIN32) || defined(WIN32)
-
-#include "md_input.hpp"
+#endif // defined(_WIN32) || defined(WIN32)
 
 #include "interpreter.hpp"
 #include "semantic_analysis.hpp"

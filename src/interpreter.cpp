@@ -1,6 +1,6 @@
-#include <filesystem>
-
 #include "interpreter.hpp"
+
+#include <filesystem>
 
 #include "exception_handler.hpp"
 #include "token.hpp"

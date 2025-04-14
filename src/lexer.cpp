@@ -1,7 +1,7 @@
+#include "lexer.hpp"
+
 #include <stack>
 #include <stdexcept>
-
-#include "lexer.hpp"
 
 using namespace core;
 using namespace core::parser;
