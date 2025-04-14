@@ -204,7 +204,11 @@ void GarbageCollector::sweep() {
 }
 
 void GarbageCollector::collect() {
-	if (heap.size() <= 9999) {
+	if (!enable) {
+		return;
+	}
+
+	if (heap.size() <= max_heap) {
 		return;
 	}
 

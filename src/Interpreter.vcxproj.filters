@@ -171,6 +171,9 @@
     <ClInclude Include="graphics_utils_niy.hpp">
       <Filter>Header Files\modules\flx.core\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="md_gc.hpp">
+      <Filter>Header Files\modules\flx.core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -277,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="graphics_utils.hpp">
       <Filter>Header Files\modules\flx.core\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="md_gc.cpp">
+      <Filter>Source Files\modules\flx.core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -20,6 +20,9 @@ namespace core {
 			std::vector<std::weak_ptr<flx_array>> array_roots;
 
 		public:
+			bool enable = true;
+			size_t max_heap = 9999;
+
 			GarbageCollector();
 			~GarbageCollector();
 

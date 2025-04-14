@@ -13,7 +13,7 @@ using namespace core;
 
 std::string const Constants::NAME = "Flexa";
 
-std::string const Constants::VER = "v1.3.5";
+std::string const Constants::VER = "v1.4.0";
 
 std::string const Constants::YEAR = "2025";
 
@@ -49,8 +49,7 @@ std::vector<std::string> const Constants::STD_LIBS = {
 	"flx.std.DSL.FML",
 	"flx.std.DSL.JSON",
 	"flx.std.DSL.YAML",
-	"flx.std.DSL.XML",
-	"flx.std.DSL.CSV"
+	"flx.std.DSL.XML"
 };
 
 std::unordered_map<std::string, std::shared_ptr<modules::Module>> const Constants::BUILT_IN_LIBS = {
