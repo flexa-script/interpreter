@@ -64,6 +64,7 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "codecvt": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "cinttypes": "cpp"
     }
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <cstdint>
 
 namespace utils {
 
