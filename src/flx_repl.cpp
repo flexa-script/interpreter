@@ -1,5 +1,7 @@
 #include "flx_repl.hpp"
 
+#include <filesystem>
+
 #include "utils.hpp"
 #include "types.hpp"
 #include "constants.hpp"
@@ -30,8 +32,8 @@ void FlexaRepl::count_scopes(const std::string& input_line, size_t& open_scopes)
 }
 
 int FlexaRepl::execute(const FlexaCliArgs& args) {
-	std::cout << Constants::NAME << " " << Constants::VER << " [" << Constants::YEAR << "]\n";
-	std::cout << "Type \"#help\" for more information.\n";
+	std::cout << Constants::NAME << " " << Constants::VER << " [" << Constants::YEAR << "]" << std::endl;
+	std::cout << "Type \"#help\" for more information." << std::endl;
 
 	std::shared_ptr<Scope> semantic_global_scope = std::make_shared<Scope>(nullptr);
 	std::shared_ptr<Scope> interpreter_global_scope = std::make_shared<Scope>(nullptr);
@@ -50,21 +52,21 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 			break;
 		}
 		else if (input_line == "#help") {
-			std::cout << "\n" << "Welcome to " << Constants::NAME << " " << Constants::VER << "! \n";
-			std::cout << "To use this interactive REPL, just type in regular Flexa commands and hit\n";
-			std::cout << "enter. You can also make use of the following commands: \n\n";
+			std::cout << std::endl << "Welcome to " << Constants::NAME << " " << Constants::VER << "!" << std::endl;
+			std::cout << "To use this interactive REPL, just type in regular Flexa commands and hit" << std::endl;
+			std::cout << "enter. You can also make use of the following commands:" << std::endl << std::endl;
 
-			std::cout << " #load \"file path\"  Loads variable and function declarations from a specified\n";
+			std::cout << " #load \"file path\"  Loads variable and function declarations from a specified" << std::endl;
 			std::cout << std::setw(20);
-			std::cout << "" << "file into memory, e.g.\n";
+			std::cout << "" << "file into memory, e.g." << std::endl;
 			std::cout << std::setw(20);
-			std::cout << "" << ">>> #load .\\main.flx\n\n";
+			std::cout << "" << ">>> #load ." << std::string{ std::filesystem::path::preferred_separator } << "script.flx" << std::endl << std::endl;
 
-			std::cout << " #exit              Exits the Flexa REPL.\n";
+			std::cout << " #exit              Exits the Flexa REPL." << std::endl;
 			std::cout << std::setw(20);
-			std::cout << "" << "functions and variables in the global scope.\n\n";
+			std::cout << "" << "functions and variables in the global scope." << std::endl << std::endl;
 
-			std::cout << " #clear             Clears the terminal window.\n\n";
+			std::cout << " #clear             Clears the terminal window." << std::endl << std::endl;
 		}
 		else if (input_line.starts_with("#load")) {
 			if (input_line.size() <= 6) {
@@ -73,6 +75,12 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 			}
 
 			std::string file_path = input_line.substr(6);
+
+			// removes ""
+			if (file_path.starts_with('"') && file_path.ends_with('"')) {
+				file_path = file_path.substr(1, file_path.size() - 2);
+			}
+
 			source = FlxUtils::load_source(file_path);
 			prog_name = FlxUtils::get_prog_name(file_path);
 			file_load = true;
