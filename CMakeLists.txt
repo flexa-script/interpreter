@@ -16,8 +16,8 @@ add_executable(flexa_interpreter
 # include src/ for headers
 target_include_directories(flexa_interpreter PRIVATE src/)
 
-# opt: additional flags (debug, optmization, etc.)
+# flags de compilação (avisos e afins)
 target_compile_options(flexa_interpreter PRIVATE -Wall -Wextra)
 
-# opt: link external libs (ex: OpenGL, SDL, etc.)
-# target_link_libraries(flexa_interpreter PRIVATE SDL2 OpenGL)
+# flags de linkagem para maior portabilidade
+target_link_options(flexa_interpreter PRIVATE -static)
