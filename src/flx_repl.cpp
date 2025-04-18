@@ -64,7 +64,6 @@ int FlexaRepl::execute(const FlexaCliArgs& args) {
 
 			std::cout << " #exit              Exits the Flexa REPL." << std::endl;
 			std::cout << std::setw(20);
-			std::cout << "" << "functions and variables in the global scope." << std::endl << std::endl;
 
 			std::cout << " #clear             Clears the terminal window." << std::endl << std::endl;
 		}
